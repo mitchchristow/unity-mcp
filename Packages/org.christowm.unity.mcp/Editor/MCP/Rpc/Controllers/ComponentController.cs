@@ -13,6 +13,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             JsonRpcDispatcher.RegisterMethod("unity.add_component", AddComponent);
             JsonRpcDispatcher.RegisterMethod("unity.set_component_property", SetProperty);
             JsonRpcDispatcher.RegisterMethod("unity.set_material_color", SetMaterialColor);
+            JsonRpcDispatcher.RegisterMethod("unity.set_material", SetMaterial);
         }
 
         private static JObject AddComponent(JObject p)
@@ -116,6 +117,28 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             
             // Assign to sharedMaterial to avoid the leak warning
             renderer.sharedMaterial = newMaterial;
+
+            return new JObject { ["ok"] = true };
+        }
+
+        private static JObject SetMaterial(JObject p)
+        {
+            int id = p["id"].Value<int>();
+            string path = p["path"]?.ToString();
+            
+            if (string.IsNullOrEmpty(path)) throw new Exception("Path is required");
+
+            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            if (go == null) throw new Exception("Object not found");
+
+            var renderer = go.GetComponent<Renderer>();
+            if (renderer == null) throw new Exception("Object has no Renderer");
+
+            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null) throw new Exception($"Material not found at path: {path}");
+
+            Undo.RecordObject(renderer, "Set Material");
+            renderer.sharedMaterial = material;
 
             return new JObject { ["ok"] = true };
         }

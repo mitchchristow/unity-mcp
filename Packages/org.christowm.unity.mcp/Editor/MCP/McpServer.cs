@@ -40,7 +40,6 @@ namespace UnityMcp.Editor.MCP
             HierarchyController.Register();
             ComponentController.Register();
             PlaymodeController.Register();
-            PlaymodeController.Register();
             ScriptController.Register();
             PrefabController.Register();
             ShaderController.Register();
