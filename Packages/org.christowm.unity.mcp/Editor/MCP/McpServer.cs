@@ -40,7 +40,11 @@ namespace UnityMcp.Editor.MCP
             HierarchyController.Register();
             ComponentController.Register();
             PlaymodeController.Register();
+            PlaymodeController.Register();
             ScriptController.Register();
+            PrefabController.Register();
+            ShaderController.Register();
+            EditorStateController.Register();
             // TODO: Register other controllers here
 
             // Start HTTP Server
