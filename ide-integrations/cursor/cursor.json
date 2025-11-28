@@ -1,0 +1,17 @@
+{
+    "mcpServers": {
+        "unity": {
+            "command": "curl",
+            "args": [
+                "-X",
+                "POST",
+                "-H",
+                "Content-Type: application/json",
+                "-d",
+                "@-",
+                "http://localhost:17890/mcp/rpc"
+            ],
+            "env": {}
+        }
+    }
+}

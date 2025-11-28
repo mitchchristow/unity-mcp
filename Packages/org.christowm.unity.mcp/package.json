@@ -1,0 +1,13 @@
+{
+  "name": "org.christowm.unity.mcp",
+  "version": "1.0.0",
+  "displayName": "Christow MCP Server",
+  "description": "MCP server integration for Unity Editor",
+  "unity": "2021.3",
+  "author": {
+    "name": "Mitch Christow"
+  },
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
+}

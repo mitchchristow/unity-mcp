@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "com.unity.feature.development": "1.0.2",
+    "com.unity.ide.visualstudio": "2.0.25",
+    "com.unity.multiplayer.center": "1.0.0",
+    "com.unity.test-framework": "1.6.0",
+    "com.unity.timeline": "1.8.9",
+    "com.unity.ugui": "2.0.0",
+    "org.christowm.unity.mcp": "file:../Packages/org.christowm.unity.mcp",
+    "com.unity.modules.accessibility": "1.0.0",
+    "com.unity.modules.ui": "1.0.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
+}

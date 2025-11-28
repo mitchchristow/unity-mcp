@@ -1,0 +1,8 @@
+{
+    "label": "RPC",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "description": "Remote Procedure Call documentation."
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "label": "IDE configuration",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "description": "Configure your favorite IDE to work with Unity MCP."
+    }
+}
