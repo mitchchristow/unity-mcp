@@ -1100,6 +1100,7 @@ const TOOLS = [
       required: ["id"],
     },
   },
+  // Note: NavMesh tools kept separate for clarity since they have different parameters
   {
     name: "unity_set_navmesh_destination",
     description: "Set destination for a NavMeshAgent (Play mode only)",
@@ -1156,6 +1157,131 @@ const TOOLS = [
   },
   // Scene Stats Tools removed - use resources instead:
   // unity://scene/stats, unity://scene/analysis, unity://memory/stats, unity://assets/stats
+  
+  // === 2D Game Development Tools ===
+  // Consolidated sprite tool
+  {
+    name: "unity_sprite",
+    description: "Sprite operations: create (new sprite object), set_sprite, set_property, get_info",
+    inputSchema: {
+      type: "object",
+      properties: {
+        action: { type: "string", enum: ["create", "set_sprite", "set_property", "get_info"], description: "Sprite action" },
+        id: { type: "integer", description: "Instance ID (for set_sprite, set_property, get_info)" },
+        name: { type: "string", description: "Name for new sprite object (create)" },
+        spritePath: { type: "string", description: "Path to sprite asset" },
+        parentId: { type: "integer", description: "Parent object ID (create)" },
+        position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
+        color: { type: "object", properties: { r: { type: "number" }, g: { type: "number" }, b: { type: "number" }, a: { type: "number" } } },
+        flipX: { type: "boolean" },
+        flipY: { type: "boolean" },
+        sortingLayerName: { type: "string" },
+        sortingOrder: { type: "integer" },
+        drawMode: { type: "string", enum: ["Simple", "Sliced", "Tiled"] },
+      },
+      required: ["action"],
+    },
+  },
+  // Consolidated tilemap tool
+  {
+    name: "unity_tilemap",
+    description: "Tilemap operations: create, set_tile, get_tile, clear_tile, fill, box_fill, clear_all, get_info",
+    inputSchema: {
+      type: "object",
+      properties: {
+        action: { type: "string", enum: ["create", "set_tile", "get_tile", "clear_tile", "fill", "box_fill", "clear_all", "get_info"], description: "Tilemap action" },
+        id: { type: "integer", description: "Tilemap GameObject ID (for tile operations)" },
+        name: { type: "string", description: "Name for new tilemap (create action)" },
+        tilePath: { type: "string", description: "Path to tile asset" },
+        x: { type: "integer", description: "Cell X position" },
+        y: { type: "integer", description: "Cell Y position" },
+        z: { type: "integer", description: "Cell Z position (default 0)" },
+        startX: { type: "integer", description: "Start X for fill operations" },
+        startY: { type: "integer", description: "Start Y for fill operations" },
+        endX: { type: "integer", description: "End X for fill operations" },
+        endY: { type: "integer", description: "End Y for fill operations" },
+        createGrid: { type: "boolean", default: true, description: "Create parent Grid (for create action)" },
+        cellLayout: { type: "string", enum: ["Rectangle", "Hexagon", "Isometric", "IsometricZAsY"], description: "Grid cell layout" },
+        cellSize: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        sortingLayerName: { type: "string" },
+        sortingOrder: { type: "integer" },
+      },
+      required: ["action"],
+    },
+  },
+  // Consolidated 2D physics body tool
+  {
+    name: "unity_physics_2d_body",
+    description: "2D physics body operations: add_collider, add_rigidbody, set_rigidbody",
+    inputSchema: {
+      type: "object",
+      properties: {
+        action: { type: "string", enum: ["add_collider", "add_rigidbody", "set_rigidbody"], description: "Physics body action" },
+        id: { type: "integer", description: "Instance ID of the GameObject" },
+        colliderType: { type: "string", enum: ["Box", "Circle", "Capsule", "Polygon", "Edge"], description: "For add_collider" },
+        isTrigger: { type: "boolean" },
+        offset: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        size: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        radius: { type: "number" },
+        bodyType: { type: "string", enum: ["Dynamic", "Kinematic", "Static"] },
+        mass: { type: "number" },
+        linearDamping: { type: "number" },
+        angularDamping: { type: "number" },
+        gravityScale: { type: "number" },
+        freezeRotation: { type: "boolean" },
+        simulated: { type: "boolean" },
+      },
+      required: ["action", "id"],
+    },
+  },
+  // 2D Physics queries
+  {
+    name: "unity_physics_2d_query",
+    description: "2D physics queries: raycast, overlap_circle, overlap_box",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", enum: ["raycast", "overlap_circle", "overlap_box"], description: "Query type" },
+        origin: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, description: "Ray origin or circle/box center" },
+        direction: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, description: "For raycast" },
+        distance: { type: "number", description: "For raycast" },
+        radius: { type: "number", description: "For overlap_circle" },
+        size: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, description: "For overlap_box" },
+        angle: { type: "number", description: "Rotation for overlap_box" },
+        layerMask: { type: "integer" },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "unity_set_physics_2d_property",
+    description: "Set 2D physics settings (gravity, iterations, etc.)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        gravity: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        velocityIterations: { type: "integer" },
+        positionIterations: { type: "integer" },
+        velocityThreshold: { type: "number" },
+        queriesHitTriggers: { type: "boolean" },
+        queriesStartInColliders: { type: "boolean" },
+        autoSyncTransforms: { type: "boolean" },
+      },
+    },
+  },
+  {
+    name: "unity_set_sorting_layer",
+    description: "Set sorting layer and order on a renderer",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer" },
+        layerName: { type: "string" },
+        order: { type: "integer" },
+      },
+      required: ["id"],
+    },
+  },
 ];
 
 // List Tools Handler
@@ -1329,6 +1455,98 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     rpcParams = { path: args.path };
     if (args.action === "write") rpcParams.content = args.content;
     if (args.action === "list_dir") { rpcParams.recursive = args.recursive; rpcParams.filter = args.filter; }
+  } else if (toolName === "unity_sprite") {
+    // Consolidated sprite tool
+    const actionMap = {
+      create: "unity.create_sprite_object",
+      set_sprite: "unity.set_sprite",
+      set_property: "unity.set_sprite_renderer_property",
+      get_info: "unity.get_sprite_renderer_info"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid sprite action: ${args.action}`);
+    if (args.action === "create") {
+      rpcParams = { name: args.name, spritePath: args.spritePath, parentId: args.parentId, position: args.position, sortingLayer: args.sortingLayerName, sortingOrder: args.sortingOrder, color: args.color };
+    } else if (args.action === "set_sprite") {
+      rpcParams = { id: args.id, spritePath: args.spritePath };
+    } else if (args.action === "set_property") {
+      rpcParams = { id: args.id, color: args.color, flipX: args.flipX, flipY: args.flipY, sortingLayerName: args.sortingLayerName, sortingOrder: args.sortingOrder, drawMode: args.drawMode };
+    } else {
+      rpcParams = { id: args.id };
+    }
+  } else if (toolName === "unity_tilemap") {
+    // Consolidated tilemap tool
+    const actionMap = {
+      create: "unity.create_tilemap",
+      set_tile: "unity.set_tile",
+      get_tile: "unity.get_tile",
+      clear_tile: "unity.clear_tile",
+      fill: "unity.fill_tiles",
+      box_fill: "unity.box_fill_tiles",
+      clear_all: "unity.clear_all_tiles",
+      get_info: "unity.get_tilemap_info"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid tilemap action: ${args.action}`);
+    rpcParams = { id: args.id };
+    if (args.action === "create") {
+      rpcParams = { name: args.name, createGrid: args.createGrid, cellLayout: args.cellLayout, cellSize: args.cellSize, sortingLayerName: args.sortingLayerName, sortingOrder: args.sortingOrder };
+    } else if (args.action === "set_tile" || args.action === "get_tile" || args.action === "clear_tile") {
+      rpcParams.x = args.x; rpcParams.y = args.y; rpcParams.z = args.z;
+      if (args.action === "set_tile") rpcParams.tilePath = args.tilePath;
+    } else if (args.action === "fill" || args.action === "box_fill") {
+      rpcParams.tilePath = args.tilePath;
+      rpcParams.startX = args.startX; rpcParams.startY = args.startY;
+      rpcParams.endX = args.endX; rpcParams.endY = args.endY;
+      rpcParams.z = args.z;
+    }
+  } else if (toolName === "unity_physics_2d_body") {
+    // Consolidated 2D physics body tool
+    const actionMap = {
+      add_collider: "unity.add_2d_collider",
+      add_rigidbody: "unity.add_rigidbody_2d",
+      set_rigidbody: "unity.set_rigidbody_2d_property"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid physics 2d body action: ${args.action}`);
+    rpcParams = { id: args.id };
+    if (args.action === "add_collider") {
+      rpcParams.type = args.colliderType;
+      rpcParams.isTrigger = args.isTrigger;
+      rpcParams.offset = args.offset;
+      rpcParams.size = args.size;
+      rpcParams.radius = args.radius;
+    } else {
+      rpcParams.bodyType = args.bodyType;
+      rpcParams.mass = args.mass;
+      rpcParams.linearDamping = args.linearDamping;
+      rpcParams.angularDamping = args.angularDamping;
+      rpcParams.gravityScale = args.gravityScale;
+      rpcParams.freezeRotation = args.freezeRotation;
+      rpcParams.simulated = args.simulated;
+    }
+  } else if (toolName === "unity_physics_2d_query") {
+    // Consolidated 2D physics query tool
+    const queryMap = {
+      raycast: "unity.raycast_2d",
+      overlap_circle: "unity.overlap_circle_2d",
+      overlap_box: "unity.overlap_box_2d"
+    };
+    rpcMethod = queryMap[args.query];
+    if (!rpcMethod) throw new Error(`Invalid physics 2d query: ${args.query}`);
+    rpcParams = { layerMask: args.layerMask };
+    if (args.query === "raycast") {
+      rpcParams.origin = args.origin;
+      rpcParams.direction = args.direction;
+      rpcParams.distance = args.distance;
+    } else if (args.query === "overlap_circle") {
+      rpcParams.center = args.origin;
+      rpcParams.radius = args.radius;
+    } else {
+      rpcParams.center = args.origin;
+      rpcParams.size = args.size;
+      rpcParams.angle = args.angle;
+    }
   } else {
     // Standard tool name to RPC method mapping
     rpcMethod = toolName.replace("unity_", "unity.");
@@ -1554,6 +1772,31 @@ const RESOURCES = [
     description: "WebSocket connection status and event buffer info",
     mimeType: "application/json",
   },
+  // 2D Game Development Resources
+  {
+    uri: "unity://sprites",
+    name: "Sprite Assets",
+    description: "List of all sprite assets in the project",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://tilemaps",
+    name: "Tilemaps",
+    description: "List of all tilemaps in the scene",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://tiles",
+    name: "Tile Assets",
+    description: "List of all tile assets in the project",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://2d/physics",
+    name: "2D Physics Settings",
+    description: "2D physics configuration (gravity, iterations, etc.)",
+    mimeType: "application/json",
+  },
 ];
 
 // List Resources Handler
@@ -1702,6 +1945,19 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
             },
           ],
         };
+      // 2D Resources
+      case "unity://sprites":
+        rpcMethod = "unity.list_sprites";
+        break;
+      case "unity://tilemaps":
+        rpcMethod = "unity.list_tilemaps";
+        break;
+      case "unity://tiles":
+        rpcMethod = "unity.list_tiles";
+        break;
+      case "unity://2d/physics":
+        rpcMethod = "unity.get_physics_2d_settings";
+        break;
       default:
         throw new Error(`Unknown resource: ${uri}`);
     }

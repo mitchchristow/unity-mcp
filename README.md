@@ -21,8 +21,9 @@ This project implements a **Model Context Protocol (MCP)** server that runs insi
 - **Particles**: Create and configure particle systems.
 - **Navigation**: Bake NavMesh, add agents, and calculate paths.
 - **Build Pipeline**: Configure build settings and build players.
+- **2D Game Development**: Sprites, tilemaps, 2D physics - perfect for strategy games.
 - **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
-- **MCP Resources**: 32 resources expose project state for AI context (including event history).
+- **MCP Resources**: 36 resources expose project state for AI context (including events and 2D assets).
 - **Secure**: Supports Named Pipes (Windows) and Unix Sockets (Mac/Linux).
 
 ## Installation
@@ -215,6 +216,15 @@ MCP Resources provide **read-only** context about your Unity project. The AI aut
 | `unity://events/recent` | Recent events (selection, playmode, console, etc.) |
 | `unity://events/types` | Available event types and payloads |
 | `unity://events/status` | WebSocket connection status |
+
+### 2D Game Development
+
+| Resource URI | Description |
+|--------------|-------------|
+| `unity://sprites` | Sprite assets in project |
+| `unity://tilemaps` | Tilemaps in scene |
+| `unity://tiles` | Tile assets in project |
+| `unity://2d/physics` | 2D physics settings |
 
 ## Documentation
 

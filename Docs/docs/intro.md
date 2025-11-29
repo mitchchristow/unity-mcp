@@ -23,7 +23,8 @@ This project allows external AI agents and IDEs (like Cursor, VS Code, and Antig
 - **Terrain & Particles**: Create terrains and particle systems.
 - **Navigation**: Bake NavMesh, configure agents, and calculate paths.
 - **Build Pipeline**: Configure build settings and create builds.
-- **MCP Resources**: 32 resources expose project state for AI context.
+- **2D Game Development**: Sprites, tilemaps, 2D physics - ideal for strategy games.
+- **MCP Resources**: 36 resources expose project state for AI context.
 - **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
 - **Secure IPC**: Named Pipes (Windows) and Unix Sockets (Mac/Linux) support.
 
@@ -115,6 +116,7 @@ Resources provide **read-only** data. The AI reads these automatically for conte
 | Systems | `unity://physics`, `unity://tags`, `unity://layers`, `unity://audio/settings`, `unity://navmesh/settings` |
 | Project | `unity://packages`, `unity://build/settings`, `unity://build/targets`, `unity://editor/windows` |
 | Events | `unity://events/recent`, `unity://events/types`, `unity://events/status` |
+| 2D Development | `unity://sprites`, `unity://tilemaps`, `unity://tiles`, `unity://2d/physics` |
 
 ## Architecture
 

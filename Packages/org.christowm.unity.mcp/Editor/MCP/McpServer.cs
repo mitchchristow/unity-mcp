@@ -78,6 +78,11 @@ namespace UnityMcp.Editor.MCP
             
             // Event Controller (for event history access)
             EventController.Register();
+            
+            // 2D Game Development Controllers
+            Sprite2DController.Register();
+            TilemapController.Register();
+            Physics2DController.Register();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);
