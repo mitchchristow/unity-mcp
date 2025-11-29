@@ -22,8 +22,9 @@ This project implements a **Model Context Protocol (MCP)** server that runs insi
 - **Navigation**: Bake NavMesh, add agents, and calculate paths.
 - **Build Pipeline**: Configure build settings and build players.
 - **2D Game Development**: Sprites, tilemaps, 2D physics - perfect for strategy games.
+- **Scripting Assistance**: Create scripts from templates, monitor compilation, explore component APIs.
 - **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
-- **MCP Resources**: 36 resources expose project state for AI context (including events and 2D assets).
+- **MCP Resources**: 41 resources expose project state for AI context (including events, 2D, and scripting).
 - **Secure**: Supports Named Pipes (Windows) and Unix Sockets (Mac/Linux).
 
 ## Installation
@@ -107,9 +108,9 @@ npm start
 node index.js
 ```
 
-## Available Tools (79)
+## Available Tools (87)
 
-The MCP server exposes 79 tools organized by category. Many tools use an `action` parameter to consolidate related operations.
+The MCP server exposes 87 tools organized by category. Many tools use an `action` parameter to consolidate related operations.
 
 ### Core Tools
 
@@ -160,8 +161,9 @@ The MCP server exposes 79 tools organized by category. Many tools use an `action
 - **Audio**: `unity_create_audio_source`, `unity_set_audio_source_property`, `unity_get_audio_source_info`, `unity_audio_playback`, `unity_set_audio_clip`
 - **Build**: `unity_set_build_target`, `unity_add_scene_to_build`, `unity_remove_scene_from_build`, `unity_get_scenes_in_build`, `unity_build_player`
 - **Packages**: `unity_get_package_info`, `unity_add_package`, `unity_remove_package`, `unity_search_packages`
+- **Scripting**: `unity_create_script`, `unity_get_component_api`
 
-## Available Resources (29)
+## Available Resources (41)
 
 MCP Resources provide **read-only** context about your Unity project. The AI automatically reads these for context without needing tool calls.
 
@@ -226,11 +228,23 @@ MCP Resources provide **read-only** context about your Unity project. The AI aut
 | `unity://tiles` | Tile assets in project |
 | `unity://2d/physics` | 2D physics settings |
 
+### Scripting Assistance
+
+| Resource URI | Description |
+|--------------|-------------|
+| `unity://scripts/errors` | Current compilation errors |
+| `unity://scripts/warnings` | Current compilation warnings |
+| `unity://scripts/templates` | Available script templates |
+| `unity://scripts/status` | Whether Unity is compiling |
+| `unity://components/types` | Component types by category |
+
 ## Documentation
 
 Full documentation is available in the `Docs/` directory.
 
 - [**RPC API Reference**](Docs/docs/rpc/overview.md): List of all available commands.
+- [**2D Development**](Docs/docs/2d-development/overview.md): Guide to 2D game development support.
+- [**Scripting Assistance**](Docs/docs/scripting/overview.md): Script creation and API exploration.
 - [**Event System**](Docs/docs/events/overview.md): How to listen to real-time events.
 - [**IDE Configuration**](Docs/docs/ide-configuration/cursor.md): Setup guides for each IDE.
 - [**Contributing**](Docs/docs/development/contributing.md): How to build and test the server.

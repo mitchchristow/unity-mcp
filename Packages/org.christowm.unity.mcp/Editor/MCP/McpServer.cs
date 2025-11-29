@@ -83,6 +83,9 @@ namespace UnityMcp.Editor.MCP
             Sprite2DController.Register();
             TilemapController.Register();
             Physics2DController.Register();
+            
+            // Scripting Assistance Controller
+            ScriptingController.Register();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);

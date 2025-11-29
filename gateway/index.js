@@ -1282,6 +1282,37 @@ const TOOLS = [
       required: ["id"],
     },
   },
+  // === Scripting Assistance Tools ===
+  {
+    name: "unity_create_script",
+    description: "Create a C# script from template (monobehaviour, scriptableobject, editor, singleton, statemachine, etc.)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Asset path (e.g., Assets/Scripts/MyScript.cs)" },
+        className: { type: "string", description: "Class name (defaults to filename)" },
+        template: { 
+          type: "string", 
+          enum: ["monobehaviour", "monobehaviour_empty", "scriptableobject", "editor", "editorwindow", "interface", "enum", "struct", "class", "singleton", "statemachine"],
+          description: "Script template type"
+        },
+        namespace: { type: "string", description: "Optional namespace" },
+        content: { type: "string", description: "Custom content (overrides template)" },
+      },
+      required: ["path"],
+    },
+  },
+  {
+    name: "unity_get_component_api",
+    description: "Get API information (properties, methods, fields) for a component type",
+    inputSchema: {
+      type: "object",
+      properties: {
+        type: { type: "string", description: "Component type name (e.g., 'Rigidbody', 'SpriteRenderer')" },
+      },
+      required: ["type"],
+    },
+  },
 ];
 
 // List Tools Handler
@@ -1797,6 +1828,37 @@ const RESOURCES = [
     description: "2D physics configuration (gravity, iterations, etc.)",
     mimeType: "application/json",
   },
+  // Scripting Resources
+  {
+    uri: "unity://scripts/errors",
+    name: "Compilation Errors",
+    description: "Current C# compilation errors",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://scripts/warnings",
+    name: "Compilation Warnings",
+    description: "Current C# compilation warnings",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://scripts/templates",
+    name: "Script Templates",
+    description: "Available script templates (MonoBehaviour, ScriptableObject, etc.)",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://scripts/status",
+    name: "Compilation Status",
+    description: "Whether Unity is currently compiling scripts",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://components/types",
+    name: "Component Types",
+    description: "List of common Unity component types by category",
+    mimeType: "application/json",
+  },
 ];
 
 // List Resources Handler
@@ -1957,6 +2019,22 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
         break;
       case "unity://2d/physics":
         rpcMethod = "unity.get_physics_2d_settings";
+        break;
+      // Scripting resources
+      case "unity://scripts/errors":
+        rpcMethod = "unity.get_compilation_errors";
+        break;
+      case "unity://scripts/warnings":
+        rpcMethod = "unity.get_compilation_warnings";
+        break;
+      case "unity://scripts/templates":
+        rpcMethod = "unity.get_script_templates";
+        break;
+      case "unity://scripts/status":
+        rpcMethod = "unity.is_compiling";
+        break;
+      case "unity://components/types":
+        rpcMethod = "unity.list_component_types";
         break;
       default:
         throw new Error(`Unknown resource: ${uri}`);

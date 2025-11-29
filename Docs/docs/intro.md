@@ -24,7 +24,8 @@ This project allows external AI agents and IDEs (like Cursor, VS Code, and Antig
 - **Navigation**: Bake NavMesh, configure agents, and calculate paths.
 - **Build Pipeline**: Configure build settings and create builds.
 - **2D Game Development**: Sprites, tilemaps, 2D physics - ideal for strategy games.
-- **MCP Resources**: 36 resources expose project state for AI context.
+- **Scripting Assistance**: Create scripts from templates, monitor compilation, explore APIs.
+- **MCP Resources**: 41 resources expose project state for AI context.
 - **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
 - **Secure IPC**: Named Pipes (Windows) and Unix Sockets (Mac/Linux) support.
 
@@ -49,9 +50,9 @@ The system consists of two components:
 └─────────────┘                └─────────────┘                └─────────────┘
 ```
 
-## Available Tools (79)
+## Available Tools (87)
 
-The server exposes 79 tools organized by category. Many tools use an `action` parameter for consolidated operations.
+The server exposes 87 tools organized by category. Many tools use an `action` parameter for consolidated operations.
 
 ### Core Tools
 
@@ -91,8 +92,9 @@ These tools use an `action` parameter to combine related operations:
 - **Audio**: Audio sources and playback
 - **Build**: Build targets and configuration
 - **Packages**: Package management
+- **Scripting**: Script creation, API exploration
 
-## Available Resources (29)
+## Available Resources (41)
 
 Resources provide **read-only** data. The AI reads these automatically for context instead of calling tools.
 
@@ -117,6 +119,7 @@ Resources provide **read-only** data. The AI reads these automatically for conte
 | Project | `unity://packages`, `unity://build/settings`, `unity://build/targets`, `unity://editor/windows` |
 | Events | `unity://events/recent`, `unity://events/types`, `unity://events/status` |
 | 2D Development | `unity://sprites`, `unity://tilemaps`, `unity://tiles`, `unity://2d/physics` |
+| Scripting | `unity://scripts/errors`, `unity://scripts/warnings`, `unity://scripts/templates`, `unity://scripts/status`, `unity://components/types` |
 
 ## Architecture
 
