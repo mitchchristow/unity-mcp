@@ -179,55 +179,24 @@ const TOOLS = [
       required: ["id", "path"],
     },
   },
-  // === Selection Tools ===
+  // === Selection Tools (consolidated) ===
+  // unity_get_selection removed - use unity://selection resource
   {
-    name: "unity_get_selection",
-    description: "Get currently selected objects in Unity Editor",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_set_selection",
-    description: "Set selection to specific objects by instance IDs",
+    name: "unity_selection",
+    description: "Manage selection: set (by IDs), clear, select_by_name, focus (frame in scene view)",
     inputSchema: {
       type: "object",
       properties: {
-        ids: { type: "array", items: { type: "integer" }, description: "Array of instance IDs to select" },
+        action: { type: "string", enum: ["set", "clear", "select_by_name", "focus"], description: "Selection action" },
+        ids: { type: "array", items: { type: "integer" }, description: "Instance IDs for 'set' action" },
+        name: { type: "string", description: "Name pattern for 'select_by_name' (e.g., 'Player', 'Enemy*')" },
+        additive: { type: "boolean", description: "Add to selection for 'select_by_name'" },
       },
-      required: ["ids"],
-    },
-  },
-  {
-    name: "unity_clear_selection",
-    description: "Clear the current selection",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_select_by_name",
-    description: "Select objects by name (supports * wildcard)",
-    inputSchema: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "Name pattern (e.g., 'Player', 'Enemy*', '*Light*')" },
-        additive: { type: "boolean", description: "Add to current selection instead of replacing" },
-      },
-      required: ["name"],
-    },
-  },
-  {
-    name: "unity_focus_selection",
-    description: "Focus the Scene view camera on the current selection",
-    inputSchema: {
-      type: "object",
-      properties: {},
+      required: ["action"],
     },
   },
   // === Menu Tools ===
+  // unity_list_menu_items removed - use unity://menu/items resource
   {
     name: "unity_execute_menu",
     description: "Execute a Unity menu item by path (e.g., 'GameObject/3D Object/Cube')",
@@ -239,62 +208,21 @@ const TOOLS = [
       required: ["path"],
     },
   },
+  // === Search Tools (consolidated) ===
   {
-    name: "unity_list_menu_items",
-    description: "List common Unity menu items",
+    name: "unity_find_objects",
+    description: "Find objects by: name (wildcard *), tag, component type, or layer",
     inputSchema: {
       type: "object",
       properties: {
-        category: { type: "string", description: "Filter by category (e.g., 'GameObject', 'Edit', 'Assets')" },
-      },
-    },
-  },
-  // === Search Tools ===
-  {
-    name: "unity_find_objects_by_name",
-    description: "Find objects by name (supports * wildcard)",
-    inputSchema: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "Name pattern (e.g., 'Player', '*Enemy*')" },
+        by: { type: "string", enum: ["name", "tag", "component", "layer"], description: "Search criterion" },
+        name: { type: "string", description: "Name pattern for 'name' search (e.g., 'Player', '*Enemy*')" },
+        tag: { type: "string", description: "Tag for 'tag' search" },
+        component: { type: "string", description: "Component type for 'component' search (e.g., 'Rigidbody')" },
+        layer: { type: "string", description: "Layer for 'layer' search" },
         includeInactive: { type: "boolean", default: true },
       },
-      required: ["name"],
-    },
-  },
-  {
-    name: "unity_find_objects_by_tag",
-    description: "Find all objects with a specific tag",
-    inputSchema: {
-      type: "object",
-      properties: {
-        tag: { type: "string", description: "Tag name (e.g., 'Player', 'Enemy')" },
-      },
-      required: ["tag"],
-    },
-  },
-  {
-    name: "unity_find_objects_by_component",
-    description: "Find all objects that have a specific component",
-    inputSchema: {
-      type: "object",
-      properties: {
-        component: { type: "string", description: "Component type name (e.g., 'Rigidbody', 'Camera', 'Light')" },
-        includeInactive: { type: "boolean", default: true },
-      },
-      required: ["component"],
-    },
-  },
-  {
-    name: "unity_find_objects_by_layer",
-    description: "Find all objects on a specific layer",
-    inputSchema: {
-      type: "object",
-      properties: {
-        layer: { type: "string", description: "Layer name or index" },
-        includeInactive: { type: "boolean", default: true },
-      },
-      required: ["layer"],
+      required: ["by"],
     },
   },
   {
@@ -309,52 +237,18 @@ const TOOLS = [
       },
     },
   },
-  // === Component Tools ===
+  // === Component Tools (consolidated) ===
   {
-    name: "unity_add_component",
-    description: "Add a component to a game object",
+    name: "unity_component",
+    description: "Manage components: add, remove, list (get all), or get_properties",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "integer", description: "Instance ID of the game object" },
-        type: { type: "string", description: "Component type (e.g., 'Rigidbody', 'BoxCollider')" },
+        action: { type: "string", enum: ["add", "remove", "list", "get_properties"], description: "Component action" },
+        type: { type: "string", description: "Component type (for add/remove/get_properties)" },
       },
-      required: ["id", "type"],
-    },
-  },
-  {
-    name: "unity_get_components",
-    description: "Get all components on a game object",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_get_component_properties",
-    description: "Get all properties of a specific component",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-        component: { type: "string", description: "Component type name" },
-      },
-      required: ["id", "component"],
-    },
-  },
-  {
-    name: "unity_remove_component",
-    description: "Remove a component from a game object",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-        component: { type: "string", description: "Component type name to remove" },
-      },
-      required: ["id", "component"],
+      required: ["id", "action"],
     },
   },
   {
@@ -369,111 +263,48 @@ const TOOLS = [
       required: ["id"],
     },
   },
-  // === File Tools ===
+  // === File Tools (consolidated) ===
   {
-    name: "unity_read_file",
-    description: "Read contents of a file in the project",
+    name: "unity_file",
+    description: "File operations: read, write, exists, list_dir, create_dir",
     inputSchema: {
       type: "object",
       properties: {
-        path: { type: "string", description: "File path (e.g., 'Assets/Scripts/Player.cs')" },
+        action: { type: "string", enum: ["read", "write", "exists", "list_dir", "create_dir"], description: "File action" },
+        path: { type: "string", description: "File or directory path" },
+        content: { type: "string", description: "File content (for write)" },
+        recursive: { type: "boolean", description: "Recursive (for list_dir)" },
+        filter: { type: "string", description: "File filter for list_dir (e.g., '*.cs')" },
       },
-      required: ["path"],
+      required: ["action", "path"],
     },
   },
+  // === Screenshot Tools (consolidated) ===
   {
-    name: "unity_write_file",
-    description: "Write content to a file in the project",
+    name: "unity_capture",
+    description: "Capture screenshot from Game view (game) or Scene view (scene)",
     inputSchema: {
       type: "object",
       properties: {
-        path: { type: "string", description: "File path (e.g., 'Assets/Scripts/Enemy.cs')" },
-        content: { type: "string", description: "File content" },
-      },
-      required: ["path", "content"],
-    },
-  },
-  {
-    name: "unity_file_exists",
-    description: "Check if a file or directory exists",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string" },
-      },
-      required: ["path"],
-    },
-  },
-  {
-    name: "unity_list_directory",
-    description: "List contents of a directory",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string", default: "Assets" },
-        recursive: { type: "boolean", default: false },
-        filter: { type: "string", description: "File filter (e.g., '*.cs', '*.prefab')" },
-      },
-    },
-  },
-  {
-    name: "unity_create_directory",
-    description: "Create a new directory",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string", description: "Directory path to create" },
-      },
-      required: ["path"],
-    },
-  },
-  // === Screenshot Tools ===
-  {
-    name: "unity_capture_screenshot",
-    description: "Capture a screenshot from the Game view",
-    inputSchema: {
-      type: "object",
-      properties: {
-        filename: { type: "string", description: "Output filename (default: screenshot_timestamp.png)" },
-        superSize: { type: "integer", default: 1, description: "Resolution multiplier" },
-      },
-    },
-  },
-  {
-    name: "unity_capture_scene_view",
-    description: "Capture an image from the Scene view camera",
-    inputSchema: {
-      type: "object",
-      properties: {
+        view: { type: "string", enum: ["game", "scene"], description: "Which view to capture" },
         filename: { type: "string", description: "Output filename" },
-        width: { type: "integer", default: 1920 },
-        height: { type: "integer", default: 1080 },
+        superSize: { type: "integer", default: 1, description: "Resolution multiplier (game view only)" },
+        width: { type: "integer", default: 1920, description: "Width (scene view only)" },
+        height: { type: "integer", default: 1080, description: "Height (scene view only)" },
       },
+      required: ["view"],
     },
   },
-  // === Playmode Tools ===
+  // === Playmode Tools (consolidated) ===
   {
-    name: "unity_play",
-    description: "Enter play mode",
+    name: "unity_playmode",
+    description: "Control Unity play mode - play (enter), stop (exit), or pause (toggle)",
     inputSchema: {
       type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_stop",
-    description: "Exit play mode",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_pause",
-    description: "Toggle pause in play mode",
-    inputSchema: {
-      type: "object",
-      properties: {},
+      properties: {
+        action: { type: "string", enum: ["play", "stop", "pause"], description: "Play mode action" },
+      },
+      required: ["action"],
     },
   },
   // === Lighting Tools (Phase 2) ===
@@ -534,14 +365,7 @@ const TOOLS = [
       },
     },
   },
-  {
-    name: "unity_list_lights",
-    description: "List all lights in the scene",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_lights removed - use unity://lights resource
   // === Camera Tools (Phase 2) ===
   {
     name: "unity_create_camera",
@@ -590,14 +414,7 @@ const TOOLS = [
       required: ["id"],
     },
   },
-  {
-    name: "unity_list_cameras",
-    description: "List all cameras in the scene",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_cameras removed - use unity://cameras resource
   {
     name: "unity_get_scene_view_camera",
     description: "Get the Scene view camera position and settings",
@@ -621,14 +438,7 @@ const TOOLS = [
     },
   },
   // === Physics Tools (Phase 2) ===
-  {
-    name: "unity_get_physics_settings",
-    description: "Get current physics settings",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_get_physics_settings removed - use unity://physics/settings resource
   {
     name: "unity_set_gravity",
     description: "Set the gravity vector",
@@ -691,22 +501,8 @@ const TOOLS = [
     },
   },
   // === Tag/Layer Tools (Phase 2) ===
-  {
-    name: "unity_list_tags",
-    description: "List all available tags",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_list_layers",
-    description: "List all available layers",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_tags removed - use unity://tags resource
+  // unity_list_layers removed - use unity://layers resource
   {
     name: "unity_set_object_tag",
     description: "Set the tag of a GameObject",
@@ -751,124 +547,42 @@ const TOOLS = [
       properties: {},
     },
   },
-  // === Undo Tools (Phase 2) ===
+  // === Undo Tools (consolidated) ===
   {
-    name: "unity_undo",
-    description: "Perform an undo operation",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_redo",
-    description: "Perform a redo operation",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_get_undo_history",
-    description: "Get information about the undo history",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_clear_undo",
-    description: "Clear all undo history (requires confirm: true)",
+    name: "unity_undo_action",
+    description: "Manage undo/redo: undo, redo, get_history, clear (requires confirm), begin_group, end_group",
     inputSchema: {
       type: "object",
       properties: {
-        confirm: { type: "boolean", description: "Must be true to confirm clearing" },
+        action: { type: "string", enum: ["undo", "redo", "get_history", "clear", "begin_group", "end_group"], description: "Undo action to perform" },
+        name: { type: "string", description: "Name for begin_group action" },
+        confirm: { type: "boolean", description: "Required true for clear action" },
       },
-      required: ["confirm"],
+      required: ["action"],
     },
   },
+  // === Animation Tools (Phase 3, consolidated) ===
   {
-    name: "unity_begin_undo_group",
-    description: "Begin a new undo group",
-    inputSchema: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "Name for the undo group" },
-      },
-    },
-  },
-  {
-    name: "unity_end_undo_group",
-    description: "End the current undo group",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  // === Animation Tools (Phase 3) ===
-  {
-    name: "unity_get_animator_info",
-    description: "Get information about an Animator component on a GameObject",
+    name: "unity_animator",
+    description: "Animator control: get_info, get_parameters, set_parameter, play_state",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "integer", description: "Instance ID of the game object" },
+        action: { type: "string", enum: ["get_info", "get_parameters", "set_parameter", "play_state"], description: "Animator action" },
+        name: { type: "string", description: "Parameter name (for set_parameter)" },
+        floatValue: { type: "number", description: "Float value (for set_parameter)" },
+        intValue: { type: "integer", description: "Int value (for set_parameter)" },
+        boolValue: { type: "boolean", description: "Bool value (for set_parameter)" },
+        trigger: { type: "boolean", description: "Trigger (for set_parameter)" },
+        stateName: { type: "string", description: "State name (for play_state)" },
+        layer: { type: "integer", description: "Layer (for play_state, default: 0)" },
+        normalizedTime: { type: "number", description: "Start time 0-1 (for play_state)" },
       },
-      required: ["id"],
+      required: ["id", "action"],
     },
   },
-  {
-    name: "unity_set_animator_parameter",
-    description: "Set a parameter on an Animator",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-        name: { type: "string", description: "Parameter name" },
-        floatValue: { type: "number" },
-        intValue: { type: "integer" },
-        boolValue: { type: "boolean" },
-        trigger: { type: "boolean", description: "Set to true to trigger" },
-      },
-      required: ["id", "name"],
-    },
-  },
-  {
-    name: "unity_get_animator_parameters",
-    description: "Get all parameters from an Animator",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_play_animator_state",
-    description: "Play a specific animator state",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-        stateName: { type: "string", description: "Name of the state to play" },
-        layer: { type: "integer", description: "Animator layer (default: 0)" },
-        normalizedTime: { type: "number", description: "Start time (0-1)" },
-      },
-      required: ["id", "stateName"],
-    },
-  },
-  {
-    name: "unity_list_animation_clips",
-    description: "List all animation clips in the project",
-    inputSchema: {
-      type: "object",
-      properties: {
-        folder: { type: "string", description: "Folder to search (default: Assets)" },
-        limit: { type: "integer", default: 50 },
-      },
-    },
-  },
+  // unity_list_animation_clips removed - use unity://animation/clips resource
   {
     name: "unity_get_animation_clip_info",
     description: "Get detailed information about an animation clip",
@@ -930,38 +644,18 @@ const TOOLS = [
     },
   },
   {
-    name: "unity_play_audio",
-    description: "Play audio on an AudioSource (only works in Play mode)",
+    name: "unity_audio_playback",
+    description: "Control audio playback: play or stop (Play mode only for play)",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "integer", description: "Instance ID of the game object" },
+        action: { type: "string", enum: ["play", "stop"], description: "Playback action" },
       },
-      required: ["id"],
+      required: ["id", "action"],
     },
   },
-  {
-    name: "unity_stop_audio",
-    description: "Stop audio on an AudioSource",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_list_audio_clips",
-    description: "List all audio clips in the project",
-    inputSchema: {
-      type: "object",
-      properties: {
-        folder: { type: "string", description: "Folder to search (default: Assets)" },
-        limit: { type: "integer", default: 50 },
-      },
-    },
-  },
+  // unity_list_audio_clips removed - use unity://audio/clips resource
   {
     name: "unity_set_audio_clip",
     description: "Set the audio clip on an AudioSource",
@@ -974,14 +668,7 @@ const TOOLS = [
       required: ["id", "clipPath"],
     },
   },
-  {
-    name: "unity_get_audio_settings",
-    description: "Get global audio settings",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_get_audio_settings removed - use unity://audio/settings resource
   // === UI Tools (Phase 3) ===
   {
     name: "unity_create_canvas",
@@ -1065,23 +752,9 @@ const TOOLS = [
       required: ["id"],
     },
   },
-  {
-    name: "unity_list_ui_elements",
-    description: "List all UI elements in the scene",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_ui_elements removed - use unity://ui/elements resource
   // === Build Tools (Phase 3) ===
-  {
-    name: "unity_get_build_settings",
-    description: "Get the current build settings",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_get_build_settings removed - use unity://build/settings resource
   {
     name: "unity_set_build_target",
     description: "Set the active build target",
@@ -1138,23 +811,9 @@ const TOOLS = [
       required: ["locationPath"],
     },
   },
-  {
-    name: "unity_get_build_target_list",
-    description: "Get a list of available build targets",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_get_build_target_list removed - use unity://build/targets resource
   // === Package Tools (Phase 3) ===
-  {
-    name: "unity_list_packages",
-    description: "List all installed packages",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_packages removed - use unity://packages resource
   {
     name: "unity_get_package_info",
     description: "Get detailed information about a specific package",
@@ -1240,41 +899,22 @@ const TOOLS = [
     },
   },
   {
-    name: "unity_set_terrain_height",
-    description: "Set terrain height at a specific point",
+    name: "unity_terrain_height",
+    description: "Get or set terrain height at a point: action 'get' or 'set'",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "integer", description: "Instance ID of the terrain GameObject" },
+        action: { type: "string", enum: ["get", "set"], description: "Get or set height" },
         x: { type: "number", description: "X position" },
         z: { type: "number", description: "Z position" },
-        height: { type: "number", description: "Target height" },
-        radius: { type: "integer", description: "Brush radius (default: 1)" },
+        height: { type: "number", description: "Target height (for set)" },
+        radius: { type: "integer", description: "Brush radius (for set, default: 1)" },
       },
-      required: ["id"],
+      required: ["id", "action"],
     },
   },
-  {
-    name: "unity_get_terrain_height",
-    description: "Get terrain height at a specific point",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the terrain GameObject" },
-        x: { type: "number", description: "X position" },
-        z: { type: "number", description: "Z position" },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_list_terrains",
-    description: "List all terrains in the scene",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_terrains removed - use unity://terrains resource
   {
     name: "unity_set_terrain_layer",
     description: "Set a terrain layer (texture)",
@@ -1333,12 +973,14 @@ const TOOLS = [
     },
   },
   {
-    name: "unity_set_particle_main",
-    description: "Set properties on the main particle system module",
+    name: "unity_set_particle_module",
+    description: "Set particle system module: main, emission, or shape",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "integer", description: "Instance ID of the game object" },
+        module: { type: "string", enum: ["main", "emission", "shape"], description: "Which module to configure" },
+        // Main module properties
         duration: { type: "number" },
         loop: { type: "boolean" },
         startLifetime: { type: "number" },
@@ -1349,98 +991,47 @@ const TOOLS = [
         simulationSpeed: { type: "number" },
         playOnAwake: { type: "boolean" },
         startColor: { type: "object", properties: { r: { type: "number" }, g: { type: "number" }, b: { type: "number" }, a: { type: "number" } } },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_set_particle_emission",
-    description: "Set properties on the emission module",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
+        // Emission module properties
         enabled: { type: "boolean" },
         rateOverTime: { type: "number" },
         rateOverDistance: { type: "number" },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_set_particle_shape",
-    description: "Set properties on the shape module",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-        enabled: { type: "boolean" },
+        // Shape module properties
         shapeType: { type: "string", enum: ["Sphere", "Hemisphere", "Cone", "Box", "Mesh", "Circle", "Edge"] },
         radius: { type: "number" },
         angle: { type: "number" },
         arc: { type: "number" },
       },
-      required: ["id"],
+      required: ["id", "module"],
     },
   },
   {
-    name: "unity_play_particle_system",
-    description: "Play a particle system",
+    name: "unity_particle_playback",
+    description: "Control particle system: play or stop",
     inputSchema: {
       type: "object",
       properties: {
         id: { type: "integer", description: "Instance ID of the game object" },
+        action: { type: "string", enum: ["play", "stop"], description: "Playback action" },
         withChildren: { type: "boolean", default: true },
+        clear: { type: "boolean", description: "Clear particles on stop" },
       },
-      required: ["id"],
+      required: ["id", "action"],
     },
   },
-  {
-    name: "unity_stop_particle_system",
-    description: "Stop a particle system",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Instance ID of the game object" },
-        withChildren: { type: "boolean", default: true },
-        clear: { type: "boolean", description: "Clear all particles immediately" },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_list_particle_systems",
-    description: "List all particle systems in the scene",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_particle_systems removed - use unity://particle-systems resource
   // === NavMesh Tools (Phase 4) ===
   {
-    name: "unity_bake_navmesh",
-    description: "Bake the navigation mesh",
+    name: "unity_navmesh_build",
+    description: "Build or clear the navigation mesh",
     inputSchema: {
       type: "object",
-      properties: {},
+      properties: {
+        action: { type: "string", enum: ["bake", "clear"], description: "Bake or clear the NavMesh" },
+      },
+      required: ["action"],
     },
   },
-  {
-    name: "unity_clear_navmesh",
-    description: "Clear the navigation mesh",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_get_navmesh_settings",
-    description: "Get current NavMesh settings",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_get_navmesh_settings removed - use unity://navmesh/settings resource
   {
     name: "unity_add_navmesh_agent",
     description: "Add a NavMeshAgent component to a GameObject",
@@ -1516,14 +1107,7 @@ const TOOLS = [
       required: ["id", "destination"],
     },
   },
-  {
-    name: "unity_list_navmesh_agents",
-    description: "List all NavMeshAgents in the scene",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // unity_list_navmesh_agents removed - use unity://navmesh/agents resource
   {
     name: "unity_calculate_path",
     description: "Calculate a path between two points on the NavMesh",
@@ -1536,139 +1120,37 @@ const TOOLS = [
       required: ["start", "end"],
     },
   },
-  // === Editor Window Tools (Phase 4) ===
+  // === Editor Window Tools (consolidated) ===
+  // unity_list_windows removed - use unity://editor/windows resource
   {
-    name: "unity_open_window",
-    description: "Open a Unity Editor window",
+    name: "unity_window",
+    description: "Manage editor windows: open, close, focus, or get_info",
     inputSchema: {
       type: "object",
       properties: {
-        type: { type: "string", description: "Window type (Scene, Game, Hierarchy, Project, Inspector, Console, Animation, Animator, Profiler, Lighting, Navigation)" },
+        action: { type: "string", enum: ["open", "close", "focus", "get_info"], description: "Window action" },
+        type: { type: "string", description: "Window type (Scene, Game, Hierarchy, Project, Inspector, Console, etc.)" },
+        id: { type: "integer", description: "Window instance ID (for close/focus/get_info)" },
         utility: { type: "boolean", description: "Open as utility window" },
       },
-      required: ["type"],
+      required: ["action"],
     },
   },
   {
-    name: "unity_close_window",
-    description: "Close a Unity Editor window",
+    name: "unity_open_panel",
+    description: "Open Inspector (for object), Project Settings, or Preferences panel",
     inputSchema: {
       type: "object",
       properties: {
-        id: { type: "integer", description: "Window instance ID" },
-        type: { type: "string", description: "Window type (alternative to ID)" },
+        panel: { type: "string", enum: ["inspector", "project_settings", "preferences"], description: "Which panel to open" },
+        objectId: { type: "integer", description: "Object to inspect (for inspector panel)" },
+        path: { type: "string", description: "Settings/preferences path" },
       },
+      required: ["panel"],
     },
   },
-  {
-    name: "unity_list_windows",
-    description: "List all open Editor windows",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_focus_window",
-    description: "Focus an Editor window",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Window instance ID" },
-        type: { type: "string", description: "Window type (alternative to ID)" },
-      },
-    },
-  },
-  {
-    name: "unity_get_window_info",
-    description: "Get information about an Editor window",
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: { type: "integer", description: "Window instance ID" },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "unity_open_inspector",
-    description: "Open the Inspector window for a specific object",
-    inputSchema: {
-      type: "object",
-      properties: {
-        objectId: { type: "integer", description: "Object to inspect" },
-      },
-    },
-  },
-  {
-    name: "unity_open_project_settings",
-    description: "Open a specific Project Settings panel",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string", description: "Settings path (e.g., 'Project/Player', 'Project/Quality')" },
-      },
-    },
-  },
-  {
-    name: "unity_open_preferences",
-    description: "Open the Preferences window",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string", description: "Preference path (optional)" },
-      },
-    },
-  },
-  // === Scene Stats Tools (Phase 4) ===
-  {
-    name: "unity_get_scene_stats",
-    description: "Get comprehensive scene statistics",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_get_render_stats",
-    description: "Get render-related statistics",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_get_memory_stats",
-    description: "Get memory statistics",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_get_object_counts",
-    description: "Get counts of different component types in the scene",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_get_asset_stats",
-    description: "Get statistics about project assets",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_analyze_scene",
-    description: "Analyze scene and provide optimization suggestions",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
+  // Scene Stats Tools removed - use resources instead:
+  // unity://scene/stats, unity://scene/analysis, unity://memory/stats, unity://assets/stats
 ];
 
 // List Tools Handler
@@ -1681,19 +1163,174 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // Call Tool Handler
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const toolName = request.params.name;
-  const args = request.params.arguments;
+  const args = request.params.arguments || {};
 
   // Map MCP tool names to Unity RPC methods
-  // Convention: unity_tool_name -> unity.tool_name (mostly)
-  // Some might need manual mapping if names diverge.
-  
-  let rpcMethod = toolName.replace("unity_", "unity.");
-  
-  // Specific overrides if needed
-  if (toolName === "unity_play_mode") rpcMethod = "unity.play"; // Example if we had a divergence
+  let rpcMethod;
+  let rpcParams = args;
+
+  // Handle consolidated tools
+  if (toolName === "unity_playmode") {
+    // Map action to individual RPC methods
+    const actionMap = { play: "unity.play", stop: "unity.stop", pause: "unity.pause" };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid playmode action: ${args.action}`);
+    rpcParams = {};
+  } else if (toolName === "unity_undo_action") {
+    // Map action to individual RPC methods
+    const actionMap = {
+      undo: "unity.undo",
+      redo: "unity.redo",
+      get_history: "unity.get_undo_history",
+      clear: "unity.clear_undo",
+      begin_group: "unity.begin_undo_group",
+      end_group: "unity.end_undo_group"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid undo action: ${args.action}`);
+    // Pass relevant params based on action
+    if (args.action === "clear") rpcParams = { confirm: args.confirm };
+    else if (args.action === "begin_group") rpcParams = { name: args.name };
+    else rpcParams = {};
+  } else if (toolName === "unity_selection") {
+    // Map action to individual RPC methods
+    const actionMap = {
+      set: "unity.set_selection",
+      clear: "unity.clear_selection",
+      select_by_name: "unity.select_by_name",
+      focus: "unity.focus_selection"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid selection action: ${args.action}`);
+    // Pass relevant params based on action
+    if (args.action === "set") rpcParams = { ids: args.ids };
+    else if (args.action === "select_by_name") rpcParams = { name: args.name, additive: args.additive };
+    else rpcParams = {};
+  } else if (toolName === "unity_capture") {
+    // Map view to RPC method
+    rpcMethod = args.view === "game" ? "unity.capture_screenshot" : "unity.capture_scene_view";
+    rpcParams = { filename: args.filename };
+    if (args.view === "game") rpcParams.superSize = args.superSize;
+    else { rpcParams.width = args.width; rpcParams.height = args.height; }
+  } else if (toolName === "unity_audio_playback") {
+    rpcMethod = args.action === "play" ? "unity.play_audio" : "unity.stop_audio";
+    rpcParams = { id: args.id };
+  } else if (toolName === "unity_particle_playback") {
+    rpcMethod = args.action === "play" ? "unity.play_particle_system" : "unity.stop_particle_system";
+    rpcParams = { id: args.id, withChildren: args.withChildren };
+    if (args.action === "stop") rpcParams.clear = args.clear;
+  } else if (toolName === "unity_window") {
+    const actionMap = {
+      open: "unity.open_window",
+      close: "unity.close_window",
+      focus: "unity.focus_window",
+      get_info: "unity.get_window_info"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid window action: ${args.action}`);
+    rpcParams = { type: args.type, id: args.id, utility: args.utility };
+  } else if (toolName === "unity_find_objects") {
+    const actionMap = {
+      name: "unity.find_objects_by_name",
+      tag: "unity.find_objects_by_tag",
+      component: "unity.find_objects_by_component",
+      layer: "unity.find_objects_by_layer"
+    };
+    rpcMethod = actionMap[args.by];
+    if (!rpcMethod) throw new Error(`Invalid find_objects criterion: ${args.by}`);
+    rpcParams = { includeInactive: args.includeInactive };
+    if (args.by === "name") rpcParams.name = args.name;
+    else if (args.by === "tag") rpcParams.tag = args.tag;
+    else if (args.by === "component") rpcParams.component = args.component;
+    else if (args.by === "layer") rpcParams.layer = args.layer;
+  } else if (toolName === "unity_terrain_height") {
+    rpcMethod = args.action === "get" ? "unity.get_terrain_height" : "unity.set_terrain_height";
+    rpcParams = { id: args.id, x: args.x, z: args.z };
+    if (args.action === "set") { rpcParams.height = args.height; rpcParams.radius = args.radius; }
+  } else if (toolName === "unity_navmesh_build") {
+    rpcMethod = args.action === "bake" ? "unity.bake_navmesh" : "unity.clear_navmesh";
+    rpcParams = {};
+  } else if (toolName === "unity_animator") {
+    const actionMap = {
+      get_info: "unity.get_animator_info",
+      get_parameters: "unity.get_animator_parameters",
+      set_parameter: "unity.set_animator_parameter",
+      play_state: "unity.play_animator_state"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid animator action: ${args.action}`);
+    rpcParams = { id: args.id };
+    if (args.action === "set_parameter") {
+      rpcParams.name = args.name;
+      if (args.floatValue !== undefined) rpcParams.floatValue = args.floatValue;
+      if (args.intValue !== undefined) rpcParams.intValue = args.intValue;
+      if (args.boolValue !== undefined) rpcParams.boolValue = args.boolValue;
+      if (args.trigger !== undefined) rpcParams.trigger = args.trigger;
+    } else if (args.action === "play_state") {
+      rpcParams.stateName = args.stateName;
+      rpcParams.layer = args.layer;
+      rpcParams.normalizedTime = args.normalizedTime;
+    }
+  } else if (toolName === "unity_set_particle_module") {
+    const moduleMap = {
+      main: "unity.set_particle_main",
+      emission: "unity.set_particle_emission",
+      shape: "unity.set_particle_shape"
+    };
+    rpcMethod = moduleMap[args.module];
+    if (!rpcMethod) throw new Error(`Invalid particle module: ${args.module}`);
+    rpcParams = { id: args.id };
+    // Copy relevant properties based on module
+    const props = ["duration", "loop", "startLifetime", "startSpeed", "startSize", "maxParticles",
+                   "gravityModifier", "simulationSpeed", "playOnAwake", "startColor",
+                   "enabled", "rateOverTime", "rateOverDistance",
+                   "shapeType", "radius", "angle", "arc"];
+    props.forEach(p => { if (args[p] !== undefined) rpcParams[p] = args[p]; });
+  } else if (toolName === "unity_open_panel") {
+    const panelMap = {
+      inspector: "unity.open_inspector",
+      project_settings: "unity.open_project_settings",
+      preferences: "unity.open_preferences"
+    };
+    rpcMethod = panelMap[args.panel];
+    if (!rpcMethod) throw new Error(`Invalid panel: ${args.panel}`);
+    rpcParams = {};
+    if (args.panel === "inspector") rpcParams.objectId = args.objectId;
+    else rpcParams.path = args.path;
+  } else if (toolName === "unity_component") {
+    const actionMap = {
+      add: "unity.add_component",
+      remove: "unity.remove_component",
+      list: "unity.get_components",
+      get_properties: "unity.get_component_properties"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid component action: ${args.action}`);
+    rpcParams = { id: args.id };
+    if (args.action === "add" || args.action === "remove" || args.action === "get_properties") {
+      rpcParams.type = args.type;
+      if (args.action === "remove") rpcParams.component = args.type; // API uses 'component' param
+    }
+  } else if (toolName === "unity_file") {
+    const actionMap = {
+      read: "unity.read_file",
+      write: "unity.write_file",
+      exists: "unity.file_exists",
+      list_dir: "unity.list_directory",
+      create_dir: "unity.create_directory"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid file action: ${args.action}`);
+    rpcParams = { path: args.path };
+    if (args.action === "write") rpcParams.content = args.content;
+    if (args.action === "list_dir") { rpcParams.recursive = args.recursive; rpcParams.filter = args.filter; }
+  } else {
+    // Standard tool name to RPC method mapping
+    rpcMethod = toolName.replace("unity_", "unity.");
+  }
 
   try {
-    const result = await callUnity(rpcMethod, args);
+    const result = await callUnity(rpcMethod, rpcParams);
     return {
       content: [
         {
