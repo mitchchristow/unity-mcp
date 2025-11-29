@@ -67,6 +67,13 @@ namespace UnityMcp.Editor.MCP
             UIController.Register();
             BuildController.Register();
             PackageController.Register();
+            
+            // Phase 4 Controllers
+            TerrainController.Register();
+            ParticleController.Register();
+            NavMeshController.Register();
+            EditorWindowController.Register();
+            SceneStatsController.Register();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);

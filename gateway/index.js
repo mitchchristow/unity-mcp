@@ -1198,6 +1198,477 @@ const TOOLS = [
       },
     },
   },
+  // === Terrain Tools (Phase 4) ===
+  {
+    name: "unity_create_terrain",
+    description: "Create a new terrain",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        width: { type: "number", description: "Terrain width (default: 500)" },
+        length: { type: "number", description: "Terrain length (default: 500)" },
+        height: { type: "number", description: "Terrain height (default: 100)" },
+        heightmapResolution: { type: "integer", description: "Heightmap resolution (default: 513)" },
+        position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
+      },
+    },
+  },
+  {
+    name: "unity_get_terrain_info",
+    description: "Get information about a terrain",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the terrain GameObject" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_terrain_size",
+    description: "Set the size of a terrain",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the terrain GameObject" },
+        width: { type: "number" },
+        length: { type: "number" },
+        height: { type: "number" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_terrain_height",
+    description: "Set terrain height at a specific point",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the terrain GameObject" },
+        x: { type: "number", description: "X position" },
+        z: { type: "number", description: "Z position" },
+        height: { type: "number", description: "Target height" },
+        radius: { type: "integer", description: "Brush radius (default: 1)" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_get_terrain_height",
+    description: "Get terrain height at a specific point",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the terrain GameObject" },
+        x: { type: "number", description: "X position" },
+        z: { type: "number", description: "Z position" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_list_terrains",
+    description: "List all terrains in the scene",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_set_terrain_layer",
+    description: "Set a terrain layer (texture)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the terrain GameObject" },
+        layerIndex: { type: "integer", description: "Layer index (0-based)" },
+        texturePath: { type: "string", description: "Path to texture asset" },
+        tileSize: { type: "number", description: "Texture tile size (default: 10)" },
+      },
+      required: ["id", "texturePath"],
+    },
+  },
+  {
+    name: "unity_flatten_terrain",
+    description: "Flatten the entire terrain to a specific height",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the terrain GameObject" },
+        height: { type: "number", description: "Target height (default: 0)" },
+      },
+      required: ["id"],
+    },
+  },
+  // === Particle System Tools (Phase 4) ===
+  {
+    name: "unity_create_particle_system",
+    description: "Create a new particle system",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
+        parentId: { type: "integer" },
+        duration: { type: "number" },
+        startLifetime: { type: "number" },
+        startSpeed: { type: "number" },
+        startSize: { type: "number" },
+        maxParticles: { type: "integer" },
+        loop: { type: "boolean" },
+        startColor: { type: "object", properties: { r: { type: "number" }, g: { type: "number" }, b: { type: "number" }, a: { type: "number" } } },
+      },
+    },
+  },
+  {
+    name: "unity_get_particle_system_info",
+    description: "Get information about a particle system",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_particle_main",
+    description: "Set properties on the main particle system module",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        duration: { type: "number" },
+        loop: { type: "boolean" },
+        startLifetime: { type: "number" },
+        startSpeed: { type: "number" },
+        startSize: { type: "number" },
+        maxParticles: { type: "integer" },
+        gravityModifier: { type: "number" },
+        simulationSpeed: { type: "number" },
+        playOnAwake: { type: "boolean" },
+        startColor: { type: "object", properties: { r: { type: "number" }, g: { type: "number" }, b: { type: "number" }, a: { type: "number" } } },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_particle_emission",
+    description: "Set properties on the emission module",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        enabled: { type: "boolean" },
+        rateOverTime: { type: "number" },
+        rateOverDistance: { type: "number" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_particle_shape",
+    description: "Set properties on the shape module",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        enabled: { type: "boolean" },
+        shapeType: { type: "string", enum: ["Sphere", "Hemisphere", "Cone", "Box", "Mesh", "Circle", "Edge"] },
+        radius: { type: "number" },
+        angle: { type: "number" },
+        arc: { type: "number" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_play_particle_system",
+    description: "Play a particle system",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        withChildren: { type: "boolean", default: true },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_stop_particle_system",
+    description: "Stop a particle system",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        withChildren: { type: "boolean", default: true },
+        clear: { type: "boolean", description: "Clear all particles immediately" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_list_particle_systems",
+    description: "List all particle systems in the scene",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  // === NavMesh Tools (Phase 4) ===
+  {
+    name: "unity_bake_navmesh",
+    description: "Bake the navigation mesh",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_clear_navmesh",
+    description: "Clear the navigation mesh",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_get_navmesh_settings",
+    description: "Get current NavMesh settings",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_add_navmesh_agent",
+    description: "Add a NavMeshAgent component to a GameObject",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        speed: { type: "number" },
+        angularSpeed: { type: "number" },
+        acceleration: { type: "number" },
+        stoppingDistance: { type: "number" },
+        radius: { type: "number" },
+        height: { type: "number" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_navmesh_agent",
+    description: "Set properties on a NavMeshAgent",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        speed: { type: "number" },
+        angularSpeed: { type: "number" },
+        acceleration: { type: "number" },
+        stoppingDistance: { type: "number" },
+        radius: { type: "number" },
+        height: { type: "number" },
+        baseOffset: { type: "number" },
+        autoTraverseOffMeshLink: { type: "boolean" },
+        autoBraking: { type: "boolean" },
+        autoRepath: { type: "boolean" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_get_navmesh_agent_info",
+    description: "Get information about a NavMeshAgent",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_add_navmesh_obstacle",
+    description: "Add a NavMeshObstacle component to a GameObject",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        carve: { type: "boolean" },
+        shape: { type: "string", enum: ["Box", "Capsule"] },
+        size: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_navmesh_destination",
+    description: "Set destination for a NavMeshAgent (Play mode only)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        destination: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } } },
+      },
+      required: ["id", "destination"],
+    },
+  },
+  {
+    name: "unity_list_navmesh_agents",
+    description: "List all NavMeshAgents in the scene",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_calculate_path",
+    description: "Calculate a path between two points on the NavMesh",
+    inputSchema: {
+      type: "object",
+      properties: {
+        start: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } }, description: "Start position" },
+        end: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, z: { type: "number" } }, description: "End position" },
+      },
+      required: ["start", "end"],
+    },
+  },
+  // === Editor Window Tools (Phase 4) ===
+  {
+    name: "unity_open_window",
+    description: "Open a Unity Editor window",
+    inputSchema: {
+      type: "object",
+      properties: {
+        type: { type: "string", description: "Window type (Scene, Game, Hierarchy, Project, Inspector, Console, Animation, Animator, Profiler, Lighting, Navigation)" },
+        utility: { type: "boolean", description: "Open as utility window" },
+      },
+      required: ["type"],
+    },
+  },
+  {
+    name: "unity_close_window",
+    description: "Close a Unity Editor window",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Window instance ID" },
+        type: { type: "string", description: "Window type (alternative to ID)" },
+      },
+    },
+  },
+  {
+    name: "unity_list_windows",
+    description: "List all open Editor windows",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_focus_window",
+    description: "Focus an Editor window",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Window instance ID" },
+        type: { type: "string", description: "Window type (alternative to ID)" },
+      },
+    },
+  },
+  {
+    name: "unity_get_window_info",
+    description: "Get information about an Editor window",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Window instance ID" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_open_inspector",
+    description: "Open the Inspector window for a specific object",
+    inputSchema: {
+      type: "object",
+      properties: {
+        objectId: { type: "integer", description: "Object to inspect" },
+      },
+    },
+  },
+  {
+    name: "unity_open_project_settings",
+    description: "Open a specific Project Settings panel",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Settings path (e.g., 'Project/Player', 'Project/Quality')" },
+      },
+    },
+  },
+  {
+    name: "unity_open_preferences",
+    description: "Open the Preferences window",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Preference path (optional)" },
+      },
+    },
+  },
+  // === Scene Stats Tools (Phase 4) ===
+  {
+    name: "unity_get_scene_stats",
+    description: "Get comprehensive scene statistics",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_get_render_stats",
+    description: "Get render-related statistics",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_get_memory_stats",
+    description: "Get memory statistics",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_get_object_counts",
+    description: "Get counts of different component types in the scene",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_get_asset_stats",
+    description: "Get statistics about project assets",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_analyze_scene",
+    description: "Analyze scene and provide optimization suggestions",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
 ];
 
 // List Tools Handler
@@ -1367,6 +1838,61 @@ const RESOURCES = [
     description: "List of all installed packages",
     mimeType: "application/json",
   },
+  // Phase 4 Resources
+  {
+    uri: "unity://terrains",
+    name: "Terrains",
+    description: "List of all terrains in the scene",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://particle-systems",
+    name: "Particle Systems",
+    description: "List of all particle systems in the scene",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://navmesh/agents",
+    name: "NavMesh Agents",
+    description: "List of all NavMesh agents in the scene",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://navmesh/settings",
+    name: "NavMesh Settings",
+    description: "Current NavMesh settings",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://editor/windows",
+    name: "Editor Windows",
+    description: "List of all open editor windows",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://scene/stats",
+    name: "Scene Statistics",
+    description: "Comprehensive scene statistics",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://scene/analysis",
+    name: "Scene Analysis",
+    description: "Scene analysis with optimization suggestions",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://memory/stats",
+    name: "Memory Statistics",
+    description: "Memory usage statistics",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://assets/stats",
+    name: "Asset Statistics",
+    description: "Project asset counts and statistics",
+    mimeType: "application/json",
+  },
 ];
 
 // List Resources Handler
@@ -1448,6 +1974,34 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
         break;
       case "unity://packages":
         rpcMethod = "unity.list_packages";
+        break;
+      // Phase 4 Resources
+      case "unity://terrains":
+        rpcMethod = "unity.list_terrains";
+        break;
+      case "unity://particle-systems":
+        rpcMethod = "unity.list_particle_systems";
+        break;
+      case "unity://navmesh/agents":
+        rpcMethod = "unity.list_navmesh_agents";
+        break;
+      case "unity://navmesh/settings":
+        rpcMethod = "unity.get_navmesh_settings";
+        break;
+      case "unity://editor/windows":
+        rpcMethod = "unity.list_windows";
+        break;
+      case "unity://scene/stats":
+        rpcMethod = "unity.get_scene_stats";
+        break;
+      case "unity://scene/analysis":
+        rpcMethod = "unity.analyze_scene";
+        break;
+      case "unity://memory/stats":
+        rpcMethod = "unity.get_memory_stats";
+        break;
+      case "unity://assets/stats":
+        rpcMethod = "unity.get_asset_stats";
         break;
       default:
         throw new Error(`Unknown resource: ${uri}`);
