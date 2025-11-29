@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // NavMeshBuilder obsolete warning - Unity 6 still requires this for editor baking
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -367,4 +368,5 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         }
     }
 }
+#pragma warning restore CS0618
 

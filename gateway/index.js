@@ -15,6 +15,11 @@ const WebSocket = require("ws");
 const UNITY_RPC_URL = "http://localhost:17890/mcp/rpc";
 const UNITY_WS_URL = "ws://localhost:17891/mcp/events";
 
+// Event buffer for storing recent WebSocket events
+const MAX_EVENT_BUFFER = 100;
+const eventBuffer = [];
+let wsConnected = false;
+
 // Initialize MCP Server
 const server = new Server(
   {
@@ -1530,6 +1535,25 @@ const RESOURCES = [
     description: "Project asset counts and statistics",
     mimeType: "application/json",
   },
+  // Real-time Events Resources
+  {
+    uri: "unity://events/recent",
+    name: "Recent Events",
+    description: "Recent Unity events captured via WebSocket (selection, playmode, console, etc.)",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://events/types",
+    name: "Event Types",
+    description: "List of all available event types and their payloads",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://events/status",
+    name: "Event Stream Status",
+    description: "WebSocket connection status and event buffer info",
+    mimeType: "application/json",
+  },
 ];
 
 // List Resources Handler
@@ -1640,6 +1664,44 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       case "unity://assets/stats":
         rpcMethod = "unity.get_asset_stats";
         break;
+      // Event resources are handled locally in the gateway
+      case "unity://events/recent":
+        // Return locally buffered events
+        return {
+          contents: [
+            {
+              uri: uri,
+              mimeType: "application/json",
+              text: JSON.stringify({
+                events: getBufferedEvents(50),
+                count: eventBuffer.length,
+                maxBuffer: MAX_EVENT_BUFFER,
+                wsConnected: wsConnected
+              }, null, 2),
+            },
+          ],
+        };
+      case "unity://events/types":
+        rpcMethod = "unity.get_event_types";
+        break;
+      case "unity://events/status":
+        // Return local WebSocket status
+        return {
+          contents: [
+            {
+              uri: uri,
+              mimeType: "application/json",
+              text: JSON.stringify({
+                connected: wsConnected,
+                url: UNITY_WS_URL,
+                bufferedEvents: eventBuffer.length,
+                maxBuffer: MAX_EVENT_BUFFER,
+                oldestEvent: eventBuffer.length > 0 ? eventBuffer[0].timestamp : null,
+                newestEvent: eventBuffer.length > 0 ? eventBuffer[eventBuffer.length - 1].timestamp : null
+              }, null, 2),
+            },
+          ],
+        };
       default:
         throw new Error(`Unknown resource: ${uri}`);
     }
@@ -1660,27 +1722,87 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   }
 });
 
-// WebSocket Event Listener (Optional: Forward logs to MCP logging if supported)
-// For now, we just keep the connection alive to show we can.
+// WebSocket Event Listener - Captures Unity events in real-time
+let wsInstance = null;
+
 function connectWebSocket() {
+  if (wsInstance && wsInstance.readyState === WebSocket.OPEN) {
+    return; // Already connected
+  }
+
   const ws = new WebSocket(UNITY_WS_URL);
+  wsInstance = ws;
 
   ws.on("open", () => {
-    // console.error("Connected to Unity Events");
+    wsConnected = true;
+    console.error("[MCP Gateway] Connected to Unity WebSocket events");
   });
 
   ws.on("message", (data) => {
-    // In the future, we can forward these as MCP Notifications
-    // server.sendNotification(...)
+    try {
+      const event = JSON.parse(data.toString());
+      
+      // Add to event buffer
+      eventBuffer.push({
+        ...event,
+        receivedAt: new Date().toISOString()
+      });
+      
+      // Keep buffer size limited
+      while (eventBuffer.length > MAX_EVENT_BUFFER) {
+        eventBuffer.shift();
+      }
+
+      // Log important events (can be disabled in production)
+      if (event.event === "console.log" && event.data?.type === "error") {
+        console.error(`[Unity Error] ${event.data.message}`);
+      } else if (event.event === "playmode.changed") {
+        console.error(`[Unity] Play mode: ${event.data.state}`);
+      } else if (event.event === "scripts.compilation_started") {
+        console.error("[Unity] Script compilation started...");
+      } else if (event.event === "scripts.compilation_finished") {
+        console.error("[Unity] Script compilation finished");
+      }
+      
+      // In the future, we can forward these as MCP Notifications
+      // server.sendNotification({ method: "unity/event", params: event });
+    } catch (err) {
+      // Ignore parse errors
+    }
   });
 
   ws.on("error", (err) => {
-    // console.error("WebSocket error:", err.message);
+    wsConnected = false;
+    // Don't log connection refused errors during reconnect attempts
+    if (err.code !== "ECONNREFUSED") {
+      console.error("[MCP Gateway] WebSocket error:", err.message);
+    }
   });
 
   ws.on("close", () => {
+    wsConnected = false;
+    wsInstance = null;
+    // Reconnect after delay
     setTimeout(connectWebSocket, 5000);
   });
+}
+
+// Helper to get buffered events
+function getBufferedEvents(limit = 50, eventType = null) {
+  let events = eventBuffer;
+  
+  // Filter by event type if specified
+  if (eventType) {
+    events = events.filter(e => e.event === eventType || e.event?.startsWith(eventType + "."));
+  }
+  
+  // Return most recent events up to limit
+  return events.slice(-limit);
+}
+
+// Helper to clear event buffer
+function clearEventBuffer() {
+  eventBuffer.length = 0;
 }
 
 connectWebSocket();

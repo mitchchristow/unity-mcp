@@ -23,8 +23,8 @@ This project allows external AI agents and IDEs (like Cursor, VS Code, and Antig
 - **Terrain & Particles**: Create terrains and particle systems.
 - **Navigation**: Bake NavMesh, configure agents, and calculate paths.
 - **Build Pipeline**: Configure build settings and create builds.
-- **MCP Resources**: 29 resources expose project state for AI context.
-- **Real-time Events**: Listen to console logs and scene changes via WebSockets.
+- **MCP Resources**: 32 resources expose project state for AI context.
+- **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
 - **Secure IPC**: Named Pipes (Windows) and Unix Sockets (Mac/Linux) support.
 
 ## Getting Started
@@ -114,6 +114,7 @@ Resources provide **read-only** data. The AI reads these automatically for conte
 | Objects | `unity://lights`, `unity://cameras`, `unity://terrains`, `unity://particles`, `unity://ui/elements` |
 | Systems | `unity://physics`, `unity://tags`, `unity://layers`, `unity://audio/settings`, `unity://navmesh/settings` |
 | Project | `unity://packages`, `unity://build/settings`, `unity://build/targets`, `unity://editor/windows` |
+| Events | `unity://events/recent`, `unity://events/types`, `unity://events/status` |
 
 ## Architecture
 

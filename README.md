@@ -21,8 +21,8 @@ This project implements a **Model Context Protocol (MCP)** server that runs insi
 - **Particles**: Create and configure particle systems.
 - **Navigation**: Bake NavMesh, add agents, and calculate paths.
 - **Build Pipeline**: Configure build settings and build players.
-- **Real-time Events**: Stream console logs and scene changes via WebSockets.
-- **MCP Resources**: 29 resources expose project state for AI context.
+- **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
+- **MCP Resources**: 32 resources expose project state for AI context (including event history).
 - **Secure**: Supports Named Pipes (Windows) and Unix Sockets (Mac/Linux).
 
 ## Installation
@@ -207,6 +207,14 @@ MCP Resources provide **read-only** context about your Unity project. The AI aut
 | `unity://build/settings` | Build settings |
 | `unity://build/targets` | Available build targets |
 | `unity://editor/windows` | Open editor windows |
+
+### Real-time Events
+
+| Resource URI | Description |
+|--------------|-------------|
+| `unity://events/recent` | Recent events (selection, playmode, console, etc.) |
+| `unity://events/types` | Available event types and payloads |
+| `unity://events/status` | WebSocket connection status |
 
 ## Documentation
 

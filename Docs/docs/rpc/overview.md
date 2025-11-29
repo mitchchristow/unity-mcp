@@ -217,6 +217,12 @@ The Unity MCP Server exposes the following JSON-RPC 2.0 methods.
 
 - `unity.execute_menu(path)`: Executes a menu item by path.
 
+## Events
+
+- `unity.get_recent_events(limit?)`: Returns recent events from the event history.
+- `unity.clear_event_history()`: Clears the event history buffer.
+- `unity.get_event_types()`: Returns list of available event types and their payloads.
+
 ## Editor State
 
 - `unity.get_project_info()`: Returns Unity version, platform, project path, and play state.

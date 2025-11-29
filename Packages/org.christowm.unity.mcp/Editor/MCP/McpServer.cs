@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityMcp.Editor.Networking;
 using UnityMcp.Editor.MCP.Rpc.Controllers;
+using UnityMcp.Editor.MCP.Events;
 
 namespace UnityMcp.Editor.MCP
 {
@@ -74,6 +75,9 @@ namespace UnityMcp.Editor.MCP
             NavMeshController.Register();
             EditorWindowController.Register();
             SceneStatsController.Register();
+            
+            // Event Controller (for event history access)
+            EventController.Register();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);
@@ -92,6 +96,9 @@ namespace UnityMcp.Editor.MCP
             _unixServer.Start();
 #endif
 
+            // Initialize Event Broadcaster (for real-time events via WebSocket)
+            EventBroadcaster.Initialize();
+
             // Hook into assembly reload to stop server
             AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
         }
@@ -99,6 +106,10 @@ namespace UnityMcp.Editor.MCP
         private static void OnBeforeAssemblyReload()
         {
             Debug.Log("[MCP] Stopping server before assembly reload...");
+            
+            // Shutdown event broadcaster first
+            EventBroadcaster.Shutdown();
+            
             _httpServer?.Stop();
             _httpServer = null;
             
