@@ -60,6 +60,13 @@ namespace UnityMcp.Editor.MCP
             PhysicsController.Register();
             TagLayerController.Register();
             UndoController.Register();
+            
+            // Phase 3 Controllers
+            AnimationController.Register();
+            AudioController.Register();
+            UIController.Register();
+            BuildController.Register();
+            PackageController.Register();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);

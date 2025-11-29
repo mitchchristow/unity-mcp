@@ -805,6 +805,399 @@ const TOOLS = [
       properties: {},
     },
   },
+  // === Animation Tools (Phase 3) ===
+  {
+    name: "unity_get_animator_info",
+    description: "Get information about an Animator component on a GameObject",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_animator_parameter",
+    description: "Set a parameter on an Animator",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        name: { type: "string", description: "Parameter name" },
+        floatValue: { type: "number" },
+        intValue: { type: "integer" },
+        boolValue: { type: "boolean" },
+        trigger: { type: "boolean", description: "Set to true to trigger" },
+      },
+      required: ["id", "name"],
+    },
+  },
+  {
+    name: "unity_get_animator_parameters",
+    description: "Get all parameters from an Animator",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_play_animator_state",
+    description: "Play a specific animator state",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        stateName: { type: "string", description: "Name of the state to play" },
+        layer: { type: "integer", description: "Animator layer (default: 0)" },
+        normalizedTime: { type: "number", description: "Start time (0-1)" },
+      },
+      required: ["id", "stateName"],
+    },
+  },
+  {
+    name: "unity_list_animation_clips",
+    description: "List all animation clips in the project",
+    inputSchema: {
+      type: "object",
+      properties: {
+        folder: { type: "string", description: "Folder to search (default: Assets)" },
+        limit: { type: "integer", default: 50 },
+      },
+    },
+  },
+  {
+    name: "unity_get_animation_clip_info",
+    description: "Get detailed information about an animation clip",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Asset path to the animation clip" },
+      },
+      required: ["path"],
+    },
+  },
+  // === Audio Tools (Phase 3) ===
+  {
+    name: "unity_create_audio_source",
+    description: "Create an AudioSource component on a GameObject",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        volume: { type: "number" },
+        pitch: { type: "number" },
+        loop: { type: "boolean" },
+        playOnAwake: { type: "boolean" },
+        spatialBlend: { type: "number", description: "0 = 2D, 1 = 3D" },
+        clipPath: { type: "string", description: "Path to audio clip asset" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_audio_source_property",
+    description: "Set properties on an AudioSource",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        volume: { type: "number" },
+        pitch: { type: "number" },
+        loop: { type: "boolean" },
+        playOnAwake: { type: "boolean" },
+        spatialBlend: { type: "number" },
+        mute: { type: "boolean" },
+        priority: { type: "integer" },
+        minDistance: { type: "number" },
+        maxDistance: { type: "number" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_get_audio_source_info",
+    description: "Get information about an AudioSource",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_play_audio",
+    description: "Play audio on an AudioSource (only works in Play mode)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_stop_audio",
+    description: "Stop audio on an AudioSource",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_list_audio_clips",
+    description: "List all audio clips in the project",
+    inputSchema: {
+      type: "object",
+      properties: {
+        folder: { type: "string", description: "Folder to search (default: Assets)" },
+        limit: { type: "integer", default: 50 },
+      },
+    },
+  },
+  {
+    name: "unity_set_audio_clip",
+    description: "Set the audio clip on an AudioSource",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        clipPath: { type: "string", description: "Path to audio clip asset" },
+      },
+      required: ["id", "clipPath"],
+    },
+  },
+  {
+    name: "unity_get_audio_settings",
+    description: "Get global audio settings",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  // === UI Tools (Phase 3) ===
+  {
+    name: "unity_create_canvas",
+    description: "Create a new Canvas with EventSystem",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        renderMode: { type: "string", enum: ["ScreenSpaceOverlay", "ScreenSpaceCamera", "WorldSpace"] },
+      },
+    },
+  },
+  {
+    name: "unity_create_ui_element",
+    description: "Create a UI element (Button, Text, Image, Panel, etc.)",
+    inputSchema: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: ["Panel", "Button", "Text", "Image", "RawImage", "InputField", "Slider", "Toggle", "Dropdown", "ScrollView"] },
+        parentId: { type: "integer", description: "Parent Canvas or UI element ID" },
+        name: { type: "string" },
+        position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        size: { type: "object", properties: { width: { type: "number" }, height: { type: "number" } } },
+      },
+      required: ["type"],
+    },
+  },
+  {
+    name: "unity_set_ui_text",
+    description: "Set text on a UI Text component",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        text: { type: "string" },
+        fontSize: { type: "integer" },
+        color: { type: "object", properties: { r: { type: "number" }, g: { type: "number" }, b: { type: "number" }, a: { type: "number" } } },
+        alignment: { type: "string", enum: ["UpperLeft", "UpperCenter", "UpperRight", "MiddleLeft", "MiddleCenter", "MiddleRight", "LowerLeft", "LowerCenter", "LowerRight"] },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_ui_image",
+    description: "Set properties on a UI Image component",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        color: { type: "object", properties: { r: { type: "number" }, g: { type: "number" }, b: { type: "number" }, a: { type: "number" } } },
+        spritePath: { type: "string", description: "Path to sprite asset" },
+        fillAmount: { type: "number" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_set_rect_transform",
+    description: "Set RectTransform properties on a UI element",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+        anchoredPosition: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        sizeDelta: { type: "object", properties: { width: { type: "number" }, height: { type: "number" } } },
+        anchorMin: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        anchorMax: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        pivot: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_get_ui_info",
+    description: "Get UI information about a GameObject",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "integer", description: "Instance ID of the game object" },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "unity_list_ui_elements",
+    description: "List all UI elements in the scene",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  // === Build Tools (Phase 3) ===
+  {
+    name: "unity_get_build_settings",
+    description: "Get the current build settings",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_set_build_target",
+    description: "Set the active build target",
+    inputSchema: {
+      type: "object",
+      properties: {
+        target: { type: "string", description: "Build target (e.g., StandaloneWindows64, Android, iOS)" },
+        targetGroup: { type: "string", description: "Build target group (optional)" },
+      },
+      required: ["target"],
+    },
+  },
+  {
+    name: "unity_add_scene_to_build",
+    description: "Add a scene to the build settings",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Scene path (e.g., Assets/Scenes/Level1.unity)" },
+        enabled: { type: "boolean", default: true },
+      },
+      required: ["path"],
+    },
+  },
+  {
+    name: "unity_remove_scene_from_build",
+    description: "Remove a scene from the build settings",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Scene path" },
+        index: { type: "integer", description: "Scene index (alternative to path)" },
+      },
+    },
+  },
+  {
+    name: "unity_get_scenes_in_build",
+    description: "Get all scenes in the build settings",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_build_player",
+    description: "Build the player",
+    inputSchema: {
+      type: "object",
+      properties: {
+        locationPath: { type: "string", description: "Output path for the build" },
+        target: { type: "string", description: "Build target (optional, uses current if not specified)" },
+        development: { type: "boolean", default: false },
+      },
+      required: ["locationPath"],
+    },
+  },
+  {
+    name: "unity_get_build_target_list",
+    description: "Get a list of available build targets",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  // === Package Tools (Phase 3) ===
+  {
+    name: "unity_list_packages",
+    description: "List all installed packages",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "unity_get_package_info",
+    description: "Get detailed information about a specific package",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "Package name (e.g., com.unity.inputsystem)" },
+      },
+      required: ["name"],
+    },
+  },
+  {
+    name: "unity_add_package",
+    description: "Add a package to the project",
+    inputSchema: {
+      type: "object",
+      properties: {
+        packageId: { type: "string", description: "Package ID (e.g., 'com.unity.inputsystem' or 'com.unity.inputsystem@1.0.0')" },
+      },
+      required: ["packageId"],
+    },
+  },
+  {
+    name: "unity_remove_package",
+    description: "Remove a package from the project",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "Package name" },
+      },
+      required: ["name"],
+    },
+  },
+  {
+    name: "unity_search_packages",
+    description: "Search for packages in the Unity registry",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search query (leave empty to list all)" },
+      },
+    },
+  },
 ];
 
 // List Tools Handler
@@ -931,6 +1324,49 @@ const RESOURCES = [
     description: "List of all available layers",
     mimeType: "application/json",
   },
+  // Phase 3 Resources
+  {
+    uri: "unity://animation/clips",
+    name: "Animation Clips",
+    description: "List of all animation clips in the project",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://audio/clips",
+    name: "Audio Clips",
+    description: "List of all audio clips in the project",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://audio/settings",
+    name: "Audio Settings",
+    description: "Global audio settings",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://ui/elements",
+    name: "UI Elements",
+    description: "List of all UI elements in the scene",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://build/settings",
+    name: "Build Settings",
+    description: "Current build settings and scenes",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://build/targets",
+    name: "Build Targets",
+    description: "Available build targets",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://packages",
+    name: "Installed Packages",
+    description: "List of all installed packages",
+    mimeType: "application/json",
+  },
 ];
 
 // List Resources Handler
@@ -990,6 +1426,28 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
         break;
       case "unity://layers":
         rpcMethod = "unity.list_layers";
+        break;
+      // Phase 3 Resources
+      case "unity://animation/clips":
+        rpcMethod = "unity.list_animation_clips";
+        break;
+      case "unity://audio/clips":
+        rpcMethod = "unity.list_audio_clips";
+        break;
+      case "unity://audio/settings":
+        rpcMethod = "unity.get_audio_settings";
+        break;
+      case "unity://ui/elements":
+        rpcMethod = "unity.list_ui_elements";
+        break;
+      case "unity://build/settings":
+        rpcMethod = "unity.get_build_settings";
+        break;
+      case "unity://build/targets":
+        rpcMethod = "unity.get_build_target_list";
+        break;
+      case "unity://packages":
+        rpcMethod = "unity.list_packages";
         break;
       default:
         throw new Error(`Unknown resource: ${uri}`);
