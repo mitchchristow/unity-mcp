@@ -83,11 +83,28 @@ Create `.cursor/mcp.json`:
 }
 ```
 
-#### Antigravity (⚠️ Under Construction)
+#### Antigravity (⚠️ Global Config Only)
 
-> **Note**: Antigravity integration is experimental and may not work correctly. Configuration files are provided but have not been fully tested.
+> **Note**: According to the [Antigravity MCP documentation](https://antigravity.google/docs/mcp), Antigravity **only supports global MCP configuration**. Per-project configuration is not available.
 
-The `workspace.json` file in the project root provides basic configuration for Antigravity.
+**Setup:**
+
+1. Open Antigravity → Click **"..."** → **"Manage MCP Servers"** → **"View raw config"**
+2. Add this configuration (update the path to your installation):
+
+```json
+{
+  "mcpServers": {
+    "unity": {
+      "command": "node",
+      "args": ["/absolute/path/to/unity-mcp/gateway/index.js"],
+      "cwd": "/absolute/path/to/unity-mcp"
+    }
+  }
+}
+```
+
+See [Antigravity Integration Guide](Docs/docs/ide-configuration/antigravity.md) for detailed instructions.
 
 #### VS Code (⚠️ Under Construction)
 
@@ -140,7 +157,10 @@ Want to extend the MCP server, fix bugs, or add new features? This section is fo
    ├── gateway/                            # Node.js MCP gateway
    │   └── index.js                        # Tool/Resource/Prompt definitions
    ├── Docs/                               # Documentation (Docusaurus)
-   ├── ide-integrations/                   # IDE-specific configs
+   ├── .cursor/                            # Cursor IDE MCP config
+   ├── ide-integrations/                   # IDE config templates
+   │   ├── antigravity/                    # Global config template
+   │   └── vscode/                         # VS Code extension (WIP)
    └── TODO.md                             # Future improvements roadmap
    ```
 

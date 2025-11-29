@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "unity": {
+      "command": "node",
+      "args": ["<ABSOLUTE_PATH_TO_PROJECT>/gateway/index.js"],
+      "cwd": "<ABSOLUTE_PATH_TO_PROJECT>"
+    }
+  }
+}

@@ -4,32 +4,75 @@ sidebar_position: 1
 
 # Antigravity Integration
 
-:::caution Under Construction
-Antigravity integration is **experimental** and has not been fully tested. The configuration files are provided, but you may encounter issues. Contributions and bug reports are welcome!
+:::caution Global Configuration Only
+According to the [Antigravity MCP documentation](https://antigravity.google/docs/mcp), Antigravity **only supports global MCP configuration**. Per-project/workspace configuration is not currently supported.
 :::
 
-Antigravity can natively communicate with the Unity MCP server to perform complex agentic tasks.
+Antigravity can communicate with the Unity MCP server to perform complex agentic tasks.
 
 ## Configuration
 
-The project includes configuration files that Antigravity automatically detects:
+Antigravity requires MCP servers to be configured **globally** in the user's home directory. There is no per-project configuration option.
 
-- `workspace.json` in the project root
-- `ide-integrations/antigravity/workspace.json`
+### Configuration File Location
+
+| OS | Path |
+|----|------|
+| **Windows** | `%USERPROFILE%\.gemini\antigravity\mcp_config.json` |
+| **macOS** | `~/.gemini/antigravity/mcp_config.json` |
+| **Linux** | `~/.gemini/antigravity/mcp_config.json` |
 
 ## Setup
 
-1. **Install Gateway Dependencies** (first time only):
-   ```bash
-   cd gateway
-   npm install
-   ```
+### Step 1: Install Gateway Dependencies
 
-2. **Ensure Unity is Running**: Open your Unity project and verify the MCP server is running (check Console for `[MCP] HTTP Server started`).
+```bash
+cd /path/to/unity-mcp/gateway
+npm install
+```
 
-3. **Open in Antigravity**: Open the project folder in Antigravity.
+### Step 2: Configure MCP Server Globally
 
-4. **Verify Connection**: The agent will automatically have access to the Unity toolset with **80 tools**, **42 resources**, and **8 prompts**.
+1. Open Antigravity
+2. Click the **"..."** dropdown at the top of the agent panel
+3. Select **"Manage MCP Servers"**
+4. Click **"View raw config"**
+5. Add the Unity MCP server configuration:
+
+```json
+{
+  "mcpServers": {
+    "unity": {
+      "command": "node",
+      "args": ["/absolute/path/to/unity-mcp/gateway/index.js"]
+    }
+  }
+}
+```
+
+:::warning Absolute Path Required
+You must use an **absolute path** to the `gateway/index.js` file. Relative paths and variables like `${workspaceFolder}` are not supported in the global configuration.
+
+**Examples:**
+- **Windows**: `"args": ["C:/Projects/unity-mcp/gateway/index.js"]`
+- **macOS/Linux**: `"args": ["/Users/yourname/Projects/unity-mcp/gateway/index.js"]`
+:::
+
+### Step 3: Ensure Unity is Running
+
+Open your Unity project and verify the MCP server is running by checking the Console for:
+```
+[MCP] HTTP Server started at http://localhost:17890/
+[MCP] WebSocket Event Server started at ws://localhost:17891/
+```
+
+### Step 4: Open in Antigravity
+
+Open any project folder in Antigravity. The Unity MCP server will be available globally for all projects.
+
+### Step 5: Verify Connection
+
+The agent will have access to the Unity toolset with **80 tools**, **42 resources**, and **8 prompts**.
 
 ## Example Prompts
 
@@ -110,18 +153,27 @@ Resources provide **read-only** context about the Unity project. The AI reads th
 | Systems | `unity://physics`, `unity://tags`, `unity://layers`, `unity://audio/settings`, `unity://navmesh/settings` |
 | Project | `unity://packages`, `unity://build/settings`, `unity://build/targets`, `unity://editor/windows` |
 
-## Manual Configuration
+## Troubleshooting
 
-If automatic detection doesn't work, ensure `workspace.json` exists in your project root:
+### MCP Server Not Recognized
 
-```json
-{
-  "mcpServers": {
-    "unity": {
-      "command": "node",
-      "args": ["./gateway/index.js"],
-      "cwd": "${workspaceFolder}"
-    }
-  }
-}
-```
+If Antigravity doesn't see the Unity MCP server:
+
+1. **Verify the config file location**: Ensure `mcp_config.json` is in the correct directory (see table above)
+2. **Check the path**: Make sure the path to `gateway/index.js` is an absolute path and the file exists
+3. **Restart Antigravity**: Close and reopen Antigravity after modifying the config
+4. **Check for JSON errors**: Ensure the JSON is valid (no trailing commas, proper quotes)
+
+### Connection Errors
+
+If the server is recognized but can't connect:
+
+1. **Ensure Unity is running**: The Unity Editor must be open with the MCP package installed
+2. **Check the Console**: Look for `[MCP] HTTP Server started` messages
+3. **Verify ports**: Ports 17890 (HTTP) and 17891 (WebSocket) must be available
+
+## Limitations
+
+- **Global only**: Per-project configuration is not supported by Antigravity
+- **Absolute paths**: You cannot use relative paths or workspace variables
+- **Single Unity instance**: The server connects to the first Unity instance found on the configured ports
