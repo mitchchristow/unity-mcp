@@ -4,7 +4,7 @@
 
 This project implements a **Model Context Protocol (MCP)** server that runs inside the Unity Editor. It allows AI-powered IDEs like **Cursor** to manipulate scenes, write scripts, and control play mode through natural language — enabling true "vibe coding" for game development.
 
-![Unity MCP Banner](https://placehold.co/600x200?text=Unity+MCP+Server)
+![Unity MCP Banner](assets/banner.png)
 
 ---
 
@@ -353,9 +353,9 @@ Pre-defined workflow templates for complex tasks:
 
 ```
 ┌─────────────┐     stdio      ┌─────────────┐     HTTP      ┌─────────────┐
-│   IDE/AI    │ ◄───────────► │   Gateway   │ ◄───────────► │    Unity    │
+│   IDE/AI    │ ◄────────────► │   Gateway   │ ◄───────────► │    Unity    │
 │  (Cursor)   │     MCP        │  (Node.js)  │   JSON-RPC    │   Editor    │
-└─────────────┘                └─────────────┘                └─────────────┘
+└─────────────┘                └─────────────┘               └─────────────┘
                                      │
                                      │ WebSocket
                                      ▼
