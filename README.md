@@ -2,7 +2,7 @@
 
 **Control the Unity Editor directly from your AI Assistant.**
 
-This project implements a **Model Context Protocol (MCP)** server that runs inside the Unity Editor. It allows AI-powered IDEs like **Cursor** to manipulate scenes, write scripts, and control play mode through natural language — enabling true "vibe coding" for game development.
+This project implements a **Model Context Protocol (MCP)** server that runs inside the Unity Editor. It allows AI-powered IDEs like **Cursor** to manipulate scenes, write scripts, and control play mode through natural language, enabling direct GenAI usage in game development.
 
 ![Unity MCP Banner](Assets/banner.png)
 
