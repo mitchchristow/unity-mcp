@@ -7,6 +7,15 @@
         "settings": {
             "unity.mcp.url": "http://localhost:17890/mcp/rpc",
             "unity.mcp.events": "ws://localhost:17891/mcp/events"
+        },
+        "mcpServers": {
+            "unity-gateway": {
+                "command": "node",
+                "args": [
+                    "./gateway/index.js"
+                ],
+                "cwd": "${workspaceFolder}"
+            }
         }
     }
 }

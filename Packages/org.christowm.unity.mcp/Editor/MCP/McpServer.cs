@@ -44,7 +44,22 @@ namespace UnityMcp.Editor.MCP
             PrefabController.Register();
             ShaderController.Register();
             EditorStateController.Register();
-            // TODO: Register other controllers here
+            AssetController.Register();
+            
+            // Phase 1 Controllers
+            MenuController.Register();
+            SearchController.Register();
+            FileController.Register();
+            ScreenshotController.Register();
+            SelectionController.Register();
+            ComponentInspectorController.Register();
+            
+            // Phase 2 Controllers
+            LightingController.Register();
+            CameraController.Register();
+            PhysicsController.Register();
+            TagLayerController.Register();
+            UndoController.Register();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);

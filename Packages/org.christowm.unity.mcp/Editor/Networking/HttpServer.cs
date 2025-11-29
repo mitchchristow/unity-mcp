@@ -1,9 +1,12 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEditor;
 using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.Networking
@@ -13,6 +16,17 @@ namespace UnityMcp.Editor.Networking
         private HttpListener _listener;
         private readonly string _url;
         private bool _isRunning;
+        
+        // Request queue for main thread processing
+        private static readonly Queue<PendingRequest> _requestQueue = new Queue<PendingRequest>();
+        private static readonly object _queueLock = new object();
+        private static bool _updateRegistered = false;
+
+        private class PendingRequest
+        {
+            public string Body;
+            public TaskCompletionSource<string> Tcs;
+        }
 
         public HttpServer(int port = 17890)
         {
@@ -30,6 +44,13 @@ namespace UnityMcp.Editor.Networking
                 _listener.Start();
                 _isRunning = true;
                 
+                // Register update handler for processing queue
+                if (!_updateRegistered)
+                {
+                    EditorApplication.update += ProcessRequestQueue;
+                    _updateRegistered = true;
+                }
+                
                 Debug.Log($"[MCP] HTTP Server started at {_url}");
                 
                 Task.Run(HandleConnections);
@@ -46,7 +67,62 @@ namespace UnityMcp.Editor.Networking
             _listener?.Stop();
             _listener?.Close();
             _listener = null;
+            
+            if (_updateRegistered)
+            {
+                EditorApplication.update -= ProcessRequestQueue;
+                _updateRegistered = false;
+            }
+            
+            // Clear any pending requests
+            lock (_queueLock)
+            {
+                while (_requestQueue.Count > 0)
+                {
+                    var pending = _requestQueue.Dequeue();
+                    pending.Tcs.TrySetException(new Exception("Server stopped"));
+                }
+            }
+            
             Debug.Log("[MCP] HTTP Server stopped.");
+        }
+
+        private static void ProcessRequestQueue()
+        {
+            // Process all pending requests in the queue
+            while (true)
+            {
+                PendingRequest request;
+                lock (_queueLock)
+                {
+                    if (_requestQueue.Count == 0) break;
+                    request = _requestQueue.Dequeue();
+                }
+
+                try
+                {
+                    var result = JsonRpcDispatcher.Handle(request.Body);
+                    request.Tcs.TrySetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    request.Tcs.TrySetException(ex);
+                }
+            }
+        }
+
+        private static void ForceEditorUpdate()
+        {
+            // Force Unity to process updates even when in background
+            // This wakes up the editor to process our queued requests
+            try
+            {
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            }
+            catch
+            {
+                // Fallback: ignored if not available
+            }
         }
 
         private async Task HandleConnections()
@@ -56,7 +132,7 @@ namespace UnityMcp.Editor.Networking
                 try
                 {
                     var ctx = await _listener.GetContextAsync();
-                    ProcessRequest(ctx);
+                    _ = ProcessRequestAsync(ctx); // Fire and forget
                 }
                 catch (HttpListenerException)
                 {
@@ -73,7 +149,7 @@ namespace UnityMcp.Editor.Networking
             }
         }
 
-        private async void ProcessRequest(HttpListenerContext ctx)
+        private async Task ProcessRequestAsync(HttpListenerContext ctx)
         {
             try
             {
@@ -90,34 +166,31 @@ namespace UnityMcp.Editor.Networking
                     body = await reader.ReadToEndAsync();
                 }
 
-                // Dispatch to JSON-RPC handler
-                // We need to run this on the main thread if it touches Unity API
-                // But for now, let's assume the Dispatcher handles threading or we use a MainThreadDispatcher
-                // Actually, Unity API calls MUST be on main thread.
-                // We'll use a simple MainThreadDispatcher pattern or EditorApplication.delayCall if needed.
-                // For this MVP, let's just try to run it. If it fails, we'll add MainThreadDispatcher.
-                // NOTE: Most Unity API calls will fail if run from this Task.
-                // We will implement a simple MainThread execution mechanism in McpServer or here.
-                
-                string responseJson = null;
-                
-                // Execute on main thread
+                // Create pending request and add to queue
                 var tcs = new TaskCompletionSource<string>();
+                var pendingRequest = new PendingRequest { Body = body, Tcs = tcs };
                 
-                UnityEditor.EditorApplication.delayCall += () =>
+                lock (_queueLock)
                 {
-                    try
-                    {
-                        var res = JsonRpcDispatcher.Handle(body);
-                        tcs.SetResult(res);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                };
+                    _requestQueue.Enqueue(pendingRequest);
+                }
+                
+                // Force Unity to wake up and process the queue
+                ForceEditorUpdate();
 
-                responseJson = await tcs.Task;
+                // Wait for result with timeout
+                var timeoutTask = Task.Delay(30000); // 30 second timeout
+                var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
+                
+                string responseJson;
+                if (completedTask == timeoutTask)
+                {
+                    responseJson = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-32000,\"message\":\"Request timeout - Unity Editor may be unresponsive\"},\"id\":null}";
+                }
+                else
+                {
+                    responseJson = await tcs.Task;
+                }
 
                 byte[] buffer = Encoding.UTF8.GetBytes(responseJson);
                 ctx.Response.ContentType = "application/json";
@@ -128,8 +201,15 @@ namespace UnityMcp.Editor.Networking
             catch (Exception ex)
             {
                 Debug.LogError($"[MCP] Error processing request: {ex}");
-                ctx.Response.StatusCode = 500;
-                ctx.Response.Close();
+                try
+                {
+                    ctx.Response.StatusCode = 500;
+                    ctx.Response.Close();
+                }
+                catch
+                {
+                    // Response may already be closed
+                }
             }
         }
     }

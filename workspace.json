@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "unity": {
+            "command": "node",
+            "args": [
+                "./gateway/index.js"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    }
+}
