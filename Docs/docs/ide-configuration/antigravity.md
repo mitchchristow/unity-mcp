@@ -4,6 +4,10 @@ sidebar_position: 1
 
 # Antigravity Integration
 
+:::caution Under Construction
+Antigravity integration is **experimental** and has not been fully tested. The configuration files are provided, but you may encounter issues. Contributions and bug reports are welcome!
+:::
+
 Antigravity can natively communicate with the Unity MCP server to perform complex agentic tasks.
 
 ## Configuration
@@ -25,7 +29,7 @@ The project includes configuration files that Antigravity automatically detects:
 
 3. **Open in Antigravity**: Open the project folder in Antigravity.
 
-4. **Verify Connection**: The agent will automatically have access to the Unity toolset with **79 tools** and **29 resources**.
+4. **Verify Connection**: The agent will automatically have access to the Unity toolset with **80 tools**, **42 resources**, and **8 prompts**.
 
 ## Example Prompts
 
@@ -43,9 +47,9 @@ You can ask Antigravity to perform high-level tasks:
 
 > "What's the current scene hierarchy?"
 
-## Available Tools (79)
+## Available Tools (80)
 
-The gateway exposes 79 tools. Many use an `action` parameter for consolidated operations.
+The gateway exposes 80 tools. Many use an `action` parameter for consolidated operations.
 
 ### Core Tools
 
@@ -82,7 +86,7 @@ The gateway exposes 79 tools. Many use an `action` parameter for consolidated op
 - **Build**: Build configuration and player builds
 - **Packages**: Package management
 
-## Available Resources (29)
+## Available Resources (42)
 
 Resources provide **read-only** context about the Unity project. The AI reads these automatically.
 

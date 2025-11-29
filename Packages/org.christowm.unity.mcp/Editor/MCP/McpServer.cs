@@ -86,6 +86,9 @@ namespace UnityMcp.Editor.MCP
             
             // Scripting Assistance Controller
             ScriptingController.Register();
+            
+            // Progress Tracking Controller
+            ProgressController.Register();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);

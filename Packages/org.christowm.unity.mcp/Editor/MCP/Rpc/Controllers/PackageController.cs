@@ -199,20 +199,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
         /// <summary>
         /// Searches for packages in the Unity registry.
+        /// Uses SearchAll and filters client-side for fuzzy matching.
         /// </summary>
         private static JObject SearchPackages(JObject p)
         {
-            string query = p["query"]?.ToString();
+            string query = p["query"]?.ToString()?.ToLowerInvariant();
             
-            if (string.IsNullOrEmpty(query))
-            {
-                // Search all packages
-                _searchRequest = Client.SearchAll();
-            }
-            else
-            {
-                _searchRequest = Client.Search(query);
-            }
+            // Always use SearchAll - Client.Search() only does exact name matching
+            _searchRequest = Client.SearchAll();
             
             while (!_searchRequest.IsCompleted)
             {
@@ -227,6 +221,17 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             var packages = new JArray();
             foreach (var package in _searchRequest.Result)
             {
+                // If query is provided, filter results
+                if (!string.IsNullOrEmpty(query))
+                {
+                    bool matches = 
+                        (package.name?.ToLowerInvariant().Contains(query) ?? false) ||
+                        (package.displayName?.ToLowerInvariant().Contains(query) ?? false) ||
+                        (package.description?.ToLowerInvariant().Contains(query) ?? false);
+                    
+                    if (!matches) continue;
+                }
+                
                 packages.Add(new JObject
                 {
                     ["name"] = package.name,
@@ -240,7 +245,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 ["packages"] = packages,
                 ["count"] = packages.Count,
-                ["query"] = query
+                ["query"] = query ?? ""
             };
         }
     }

@@ -30,7 +30,7 @@ const config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/your-org/unity-mcp/tree/main/Docs/',
+          editUrl: 'https://github.com/mitchchristow/unity-mcp/tree/main/Docs/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -52,7 +52,7 @@ const config = {
             label: 'Docs',
           },
           {
-            href: 'https://github.com/your-org/unity-mcp',
+            href: 'https://github.com/mitchchristow/unity-mcp',
             label: 'GitHub',
             position: 'right',
           },
@@ -79,7 +79,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/your-org/unity-mcp',
+                href: 'https://github.com/mitchchristow/unity-mcp',
               },
             ],
           },

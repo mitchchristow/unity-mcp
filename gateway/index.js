@@ -7,6 +7,8 @@ const {
   ListToolsRequestSchema,
   ListResourcesRequestSchema,
   ReadResourceRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
 } = require("@modelcontextprotocol/sdk/types.js");
 const axios = require("axios");
 const WebSocket = require("ws");
@@ -30,6 +32,7 @@ const server = new Server(
     capabilities: {
       tools: {},
       resources: {},
+      prompts: {},
     },
   }
 );
@@ -759,107 +762,38 @@ const TOOLS = [
   },
   // unity_list_ui_elements removed - use unity://ui/elements resource
   // === Build Tools (Phase 3) ===
-  // unity_get_build_settings removed - use unity://build/settings resource
+  // === Build Tools (Consolidated) ===
   {
-    name: "unity_set_build_target",
-    description: "Set the active build target",
+    name: "unity_build",
+    description: "Build pipeline operations: set_target, add_scene, remove_scene, get_scenes, build",
     inputSchema: {
       type: "object",
       properties: {
+        action: { type: "string", enum: ["set_target", "add_scene", "remove_scene", "get_scenes", "build"], description: "Build action" },
         target: { type: "string", description: "Build target (e.g., StandaloneWindows64, Android, iOS)" },
-        targetGroup: { type: "string", description: "Build target group (optional)" },
+        targetGroup: { type: "string", description: "Build target group (for set_target)" },
+        path: { type: "string", description: "Scene path (for add_scene/remove_scene)" },
+        index: { type: "integer", description: "Scene index (for remove_scene, alternative to path)" },
+        enabled: { type: "boolean", default: true, description: "Scene enabled (for add_scene)" },
+        locationPath: { type: "string", description: "Output path (for build)" },
+        development: { type: "boolean", default: false, description: "Development build (for build)" },
       },
-      required: ["target"],
+      required: ["action"],
     },
   },
+  // === Package Tools (Consolidated) ===
   {
-    name: "unity_add_scene_to_build",
-    description: "Add a scene to the build settings",
+    name: "unity_package",
+    description: "Package management: get_info, add, remove, search",
     inputSchema: {
       type: "object",
       properties: {
-        path: { type: "string", description: "Scene path (e.g., Assets/Scenes/Level1.unity)" },
-        enabled: { type: "boolean", default: true },
+        action: { type: "string", enum: ["get_info", "add", "remove", "search"], description: "Package action" },
+        name: { type: "string", description: "Package name (for get_info, remove)" },
+        packageId: { type: "string", description: "Package ID with optional version (for add, e.g., 'com.unity.inputsystem@1.0.0')" },
+        query: { type: "string", description: "Search query (for search, leave empty to list all)" },
       },
-      required: ["path"],
-    },
-  },
-  {
-    name: "unity_remove_scene_from_build",
-    description: "Remove a scene from the build settings",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string", description: "Scene path" },
-        index: { type: "integer", description: "Scene index (alternative to path)" },
-      },
-    },
-  },
-  {
-    name: "unity_get_scenes_in_build",
-    description: "Get all scenes in the build settings",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "unity_build_player",
-    description: "Build the player",
-    inputSchema: {
-      type: "object",
-      properties: {
-        locationPath: { type: "string", description: "Output path for the build" },
-        target: { type: "string", description: "Build target (optional, uses current if not specified)" },
-        development: { type: "boolean", default: false },
-      },
-      required: ["locationPath"],
-    },
-  },
-  // unity_get_build_target_list removed - use unity://build/targets resource
-  // === Package Tools (Phase 3) ===
-  // unity_list_packages removed - use unity://packages resource
-  {
-    name: "unity_get_package_info",
-    description: "Get detailed information about a specific package",
-    inputSchema: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "Package name (e.g., com.unity.inputsystem)" },
-      },
-      required: ["name"],
-    },
-  },
-  {
-    name: "unity_add_package",
-    description: "Add a package to the project",
-    inputSchema: {
-      type: "object",
-      properties: {
-        packageId: { type: "string", description: "Package ID (e.g., 'com.unity.inputsystem' or 'com.unity.inputsystem@1.0.0')" },
-      },
-      required: ["packageId"],
-    },
-  },
-  {
-    name: "unity_remove_package",
-    description: "Remove a package from the project",
-    inputSchema: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "Package name" },
-      },
-      required: ["name"],
-    },
-  },
-  {
-    name: "unity_search_packages",
-    description: "Search for packages in the Unity registry",
-    inputSchema: {
-      type: "object",
-      properties: {
-        query: { type: "string", description: "Search query (leave empty to list all)" },
-      },
+      required: ["action"],
     },
   },
   // === Terrain Tools (Phase 4) ===
@@ -1578,6 +1512,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       rpcParams.size = args.size;
       rpcParams.angle = args.angle;
     }
+  } else if (toolName === "unity_build") {
+    // Consolidated build tool
+    const actionMap = {
+      set_target: "unity.set_build_target",
+      add_scene: "unity.add_scene_to_build",
+      remove_scene: "unity.remove_scene_from_build",
+      get_scenes: "unity.get_scenes_in_build",
+      build: "unity.build_player"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid build action: ${args.action}`);
+    rpcParams = {};
+    if (args.action === "set_target") {
+      rpcParams.target = args.target;
+      rpcParams.targetGroup = args.targetGroup;
+    } else if (args.action === "add_scene") {
+      rpcParams.path = args.path;
+      rpcParams.enabled = args.enabled;
+    } else if (args.action === "remove_scene") {
+      rpcParams.path = args.path;
+      rpcParams.index = args.index;
+    } else if (args.action === "build") {
+      rpcParams.locationPath = args.locationPath;
+      rpcParams.target = args.target;
+      rpcParams.development = args.development;
+    }
+  } else if (toolName === "unity_package") {
+    // Consolidated package tool
+    const actionMap = {
+      get_info: "unity.get_package_info",
+      add: "unity.add_package",
+      remove: "unity.remove_package",
+      search: "unity.search_packages"
+    };
+    rpcMethod = actionMap[args.action];
+    if (!rpcMethod) throw new Error(`Invalid package action: ${args.action}`);
+    rpcParams = {};
+    if (args.action === "get_info" || args.action === "remove") {
+      rpcParams.name = args.name;
+    } else if (args.action === "add") {
+      rpcParams.packageId = args.packageId;
+    } else if (args.action === "search") {
+      rpcParams.query = args.query;
+    }
   } else {
     // Standard tool name to RPC method mapping
     rpcMethod = toolName.replace("unity_", "unity.");
@@ -1859,7 +1837,440 @@ const RESOURCES = [
     description: "List of common Unity component types by category",
     mimeType: "application/json",
   },
+  // Progress Tracking
+  {
+    uri: "unity://progress",
+    name: "Operation Progress",
+    description: "Progress of long-running operations (builds, etc.)",
+    mimeType: "application/json",
+  },
 ];
+
+// ============================================================================
+// PROMPTS - Pre-defined workflow templates for common Unity tasks
+// ============================================================================
+
+const PROMPTS = [
+  {
+    name: "create_2d_character",
+    description: "Create a complete 2D character with sprite, physics, and movement script",
+    arguments: [
+      { name: "characterName", description: "Name for the character GameObject", required: true },
+      { name: "spritePath", description: "Path to sprite asset (optional)", required: false },
+      { name: "includePhysics", description: "Add Rigidbody2D and Collider2D", required: false },
+    ],
+  },
+  {
+    name: "setup_turn_based_system",
+    description: "Create a turn-based game system with turn manager, unit base class, and action system",
+    arguments: [
+      { name: "namespace", description: "C# namespace for scripts (e.g., MyGame.TurnBased)", required: false },
+      { name: "maxUnitsPerSide", description: "Maximum units per team (default: 6)", required: false },
+    ],
+  },
+  {
+    name: "create_grid_map",
+    description: "Set up a grid-based map with tilemap, grid manager, and pathfinding support",
+    arguments: [
+      { name: "gridWidth", description: "Width of the grid in cells", required: true },
+      { name: "gridHeight", description: "Height of the grid in cells", required: true },
+      { name: "cellSize", description: "Size of each cell in units (default: 1)", required: false },
+      { name: "isHexGrid", description: "Use hexagonal grid instead of square", required: false },
+    ],
+  },
+  {
+    name: "create_ui_menu",
+    description: "Create a complete UI menu with canvas, buttons, and navigation",
+    arguments: [
+      { name: "menuType", description: "Type: main, pause, settings, inventory, or battle", required: true },
+      { name: "menuName", description: "Name for the menu GameObject", required: false },
+    ],
+  },
+  {
+    name: "setup_unit_stats",
+    description: "Create a ScriptableObject-based unit stats system for RPG/strategy games",
+    arguments: [
+      { name: "statNames", description: "Comma-separated stat names (e.g., health,attack,defense,speed)", required: false },
+    ],
+  },
+  {
+    name: "create_audio_manager",
+    description: "Set up an audio manager singleton with BGM and SFX support",
+    arguments: [
+      { name: "poolSize", description: "Number of audio sources in pool (default: 10)", required: false },
+    ],
+  },
+  {
+    name: "optimize_scene",
+    description: "Analyze current scene and provide optimization recommendations",
+    arguments: [],
+  },
+  {
+    name: "setup_save_system",
+    description: "Create a save/load system using JSON serialization",
+    arguments: [
+      { name: "saveDataClass", description: "Name for the save data class", required: false },
+    ],
+  },
+];
+
+// Generate prompt content based on template
+function generatePromptContent(promptName, args) {
+  switch (promptName) {
+    case "create_2d_character":
+      return {
+        description: `Create a 2D character named "${args.characterName || 'Player'}"`,
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Create a 2D character for my Unity game with the following specifications:
+
+**Character Name**: ${args.characterName || 'Player'}
+${args.spritePath ? `**Sprite**: ${args.spritePath}` : '**Sprite**: Create a placeholder sprite object'}
+**Physics**: ${args.includePhysics !== false ? 'Include Rigidbody2D (Dynamic) and BoxCollider2D' : 'No physics components'}
+
+Please:
+1. Create the GameObject with SpriteRenderer
+2. ${args.includePhysics !== false ? 'Add Rigidbody2D and appropriate 2D collider' : 'Skip physics setup'}
+3. Create a basic movement script (${args.characterName || 'Player'}Controller.cs) with:
+   - WASD/Arrow key movement
+   - Configurable movement speed
+   - Flip sprite based on direction
+4. Position at origin (0, 0, 0)
+
+Use the unity_create_object, unity_sprite, unity_physics_2d_body, and unity_create_script tools.`
+            }
+          }
+        ]
+      };
+
+    case "setup_turn_based_system":
+      return {
+        description: "Set up a complete turn-based game system",
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Create a turn-based combat/strategy system for my Unity game:
+
+${args.namespace ? `**Namespace**: ${args.namespace}` : '**Namespace**: Game.TurnBased'}
+**Max Units Per Side**: ${args.maxUnitsPerSide || 6}
+
+Please create the following scripts:
+
+1. **TurnManager.cs** (Singleton):
+   - Manages turn order and phases
+   - Events: OnTurnStart, OnTurnEnd, OnRoundStart, OnRoundEnd
+   - Methods: StartBattle(), EndTurn(), GetCurrentUnit()
+
+2. **Unit.cs** (Base class):
+   - Properties: Health, MaxHealth, Initiative, Team
+   - Methods: TakeDamage(), Heal(), Die()
+   - Virtual methods for AI/Player override
+
+3. **UnitAction.cs** (Abstract):
+   - Base class for all actions (Attack, Move, Skill)
+   - Properties: ActionCost, Range, TargetType
+   - Abstract Execute() method
+
+4. **BattleUI.cs**:
+   - Turn order display
+   - Current unit indicator
+   - Action buttons
+
+Use unity_create_script tool with appropriate templates. Create an empty "TurnBasedSystem" GameObject to hold the TurnManager.`
+            }
+          }
+        ]
+      };
+
+    case "create_grid_map":
+      return {
+        description: `Create a ${args.gridWidth}x${args.gridHeight} grid map`,
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Create a grid-based map system for my strategy game:
+
+**Grid Size**: ${args.gridWidth} x ${args.gridHeight} cells
+**Cell Size**: ${args.cellSize || 1} unit(s)
+**Grid Type**: ${args.isHexGrid ? 'Hexagonal' : 'Square/Rectangle'}
+
+Please:
+1. Create a Grid GameObject with Tilemap child using unity_tilemap tool
+2. Configure the grid layout (${args.isHexGrid ? 'Hexagon' : 'Rectangle'})
+
+3. Create **GridManager.cs** script with:
+   - Grid dimensions and cell size
+   - WorldToCell() and CellToWorld() helper methods
+   - GetNeighbors(cell) for pathfinding
+   - IsValidCell(cell) bounds checking
+
+4. Create **GridCell.cs** for cell data:
+   - Properties: IsWalkable, MovementCost, OccupyingUnit
+   - Visual state (normal, highlighted, selected)
+
+5. Create **GridVisualizer.cs** for:
+   - Highlighting valid move positions
+   - Showing attack range
+   - Path preview
+
+Use unity_tilemap for the tilemap setup and unity_create_script for the scripts.`
+            }
+          }
+        ]
+      };
+
+    case "create_ui_menu":
+      const menuTemplates = {
+        main: "Start Game, Options, Credits, Quit buttons with vertical layout",
+        pause: "Resume, Settings, Main Menu buttons with semi-transparent background overlay",
+        settings: "Volume sliders (Master, BGM, SFX), Resolution dropdown, Fullscreen toggle, Apply/Back buttons",
+        inventory: "Grid-based item slots, item details panel, equipment slots",
+        battle: "Unit info panel, action buttons, turn order display, end turn button"
+      };
+      return {
+        description: `Create a ${args.menuType} menu UI`,
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Create a ${args.menuType} menu for my Unity game:
+
+**Menu Type**: ${args.menuType}
+**Menu Name**: ${args.menuName || `${args.menuType.charAt(0).toUpperCase() + args.menuType.slice(1)}Menu`}
+**Template**: ${menuTemplates[args.menuType] || 'Custom menu layout'}
+
+Please:
+1. Create a Canvas (Screen Space - Overlay) using unity_create_canvas
+2. Create a Panel as background using unity_create_ui_element
+3. Add the UI elements appropriate for a ${args.menuType} menu:
+   ${menuTemplates[args.menuType] || 'Add appropriate buttons and elements'}
+
+4. Create **${args.menuName || args.menuType.charAt(0).toUpperCase() + args.menuType.slice(1) + 'Menu'}Controller.cs**:
+   - References to all UI elements
+   - Button click handlers
+   - Show/Hide methods with animation support
+   - ${args.menuType === 'pause' ? 'Time.timeScale management for pause' : ''}
+
+5. Style with a clean, modern look:
+   - Use consistent colors
+   - Add hover states for buttons
+   - Proper text sizing and fonts
+
+Use unity_create_canvas, unity_create_ui_element, unity_set_ui_text, unity_set_rect_transform tools.`
+            }
+          }
+        ]
+      };
+
+    case "setup_unit_stats":
+      const defaultStats = "health,attack,defense,speed,mana";
+      const stats = args.statNames || defaultStats;
+      return {
+        description: "Create a ScriptableObject-based stats system",
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Create a stats system for RPG/strategy units:
+
+**Stats**: ${stats}
+
+Please create:
+
+1. **UnitStats.cs** (ScriptableObject):
+   - [CreateAssetMenu] attribute for easy creation
+   - Properties for each stat: ${stats.split(',').map(s => s.trim()).join(', ')}
+   - Optional: stat growth rates for leveling
+   - Display name and description fields
+
+2. **StatModifier.cs** (Struct/Class):
+   - Modifier types: Flat, PercentAdd, PercentMult
+   - Source tracking for removal
+   - Priority/order for calculation
+
+3. **RuntimeStats.cs** (Component):
+   - Takes UnitStats as base
+   - Applies modifiers dynamically
+   - Properties: GetStat(statName), AddModifier(), RemoveModifier()
+   - Events: OnStatChanged
+
+4. **Example Usage**:
+   - Create a sample UnitStats asset
+   - Show how to apply buffs/debuffs
+
+Use unity_create_script with 'scriptableobject' and 'class' templates.`
+            }
+          }
+        ]
+      };
+
+    case "create_audio_manager":
+      return {
+        description: "Set up an audio management system",
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Create an audio manager singleton for my game:
+
+**Audio Source Pool Size**: ${args.poolSize || 10}
+
+Please create:
+
+1. **AudioManager.cs** (Singleton MonoBehaviour):
+   - Separate AudioSources for BGM and SFX
+   - Object pool of ${args.poolSize || 10} AudioSources for SFX
+   - Volume controls: MasterVolume, BGMVolume, SFXVolume
+   - Methods:
+     - PlayBGM(clip, fadeIn = true)
+     - StopBGM(fadeOut = true)
+     - PlaySFX(clip, volume = 1, pitch = 1)
+     - PlaySFXAtPoint(clip, position)
+   - Save/Load volume settings with PlayerPrefs
+
+2. **AudioLibrary.cs** (ScriptableObject):
+   - Dictionary/Array of named audio clips
+   - Categories: BGM, SFX_UI, SFX_Combat, SFX_Environment
+   - Easy lookup by name
+
+3. Create the AudioManager GameObject with:
+   - AudioManager component
+   - AudioSource for BGM (loop = true)
+   - Child object with pooled AudioSources for SFX
+
+Use unity_create_script (singleton template), unity_create_object, and unity_create_audio_source.`
+            }
+          }
+        ]
+      };
+
+    case "optimize_scene":
+      return {
+        description: "Analyze and optimize the current scene",
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Please analyze the current Unity scene and provide optimization recommendations.
+
+**Analysis Steps**:
+1. First, read the scene stats using unity://scene/stats resource
+2. Check render stats with unity://scene/render-stats
+3. Review memory usage with unity://scene/memory-stats
+4. Get the full analysis from unity://scene/analysis
+
+**Then evaluate**:
+- Total object count and hierarchy depth
+- Number of active lights and shadow casters
+- Draw calls and batching opportunities
+- Texture memory usage
+- Physics objects and collision complexity
+
+**Provide recommendations for**:
+- Objects that could be static batched
+- Lights that could be baked
+- Textures that could be compressed or atlased
+- Scripts that might cause performance issues
+- UI optimizations (canvas splitting, raycast targets)
+
+Please start by reading the scene analysis resources and then provide specific, actionable recommendations.`
+            }
+          }
+        ]
+      };
+
+    case "setup_save_system":
+      return {
+        description: "Create a save/load system",
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Create a save/load system using JSON serialization:
+
+**Save Data Class**: ${args.saveDataClass || 'GameSaveData'}
+
+Please create:
+
+1. **${args.saveDataClass || 'GameSaveData'}.cs** (Serializable class):
+   - Player data (position, stats, inventory)
+   - Game progress (level, unlocks, achievements)
+   - Settings (volume, graphics, controls)
+   - Timestamp and version for migration
+
+2. **SaveManager.cs** (Singleton):
+   - Save/Load to JSON file
+   - Multiple save slots support
+   - Auto-save functionality
+   - Methods:
+     - Save(slotIndex)
+     - Load(slotIndex)
+     - DeleteSave(slotIndex)
+     - GetSaveInfo(slotIndex) - returns metadata without full load
+     - HasSave(slotIndex)
+   - Use Application.persistentDataPath
+
+3. **ISaveable.cs** (Interface):
+   - For objects that need to save/restore state
+   - Methods: GetSaveData(), LoadSaveData()
+
+4. **SaveLoadUI.cs** (Optional):
+   - Save slot selection UI
+   - Confirmation dialogs
+   - Save metadata display (playtime, date, level)
+
+Use unity_create_script with appropriate templates.`
+            }
+          }
+        ]
+      };
+
+    default:
+      return {
+        description: "Unknown prompt",
+        messages: [
+          {
+            role: "user", 
+            content: {
+              type: "text",
+              text: `The prompt "${promptName}" was not found. Available prompts: ${PROMPTS.map(p => p.name).join(', ')}`
+            }
+          }
+        ]
+      };
+  }
+}
+
+// List Prompts Handler
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  return {
+    prompts: PROMPTS,
+  };
+});
+
+// Get Prompt Handler
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+  const { name, arguments: args = {} } = request.params;
+  
+  const prompt = PROMPTS.find(p => p.name === name);
+  if (!prompt) {
+    throw new Error(`Prompt not found: ${name}`);
+  }
+  
+  return generatePromptContent(name, args);
+});
 
 // List Resources Handler
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
@@ -2035,6 +2446,9 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
         break;
       case "unity://components/types":
         rpcMethod = "unity.list_component_types";
+        break;
+      case "unity://progress":
+        rpcMethod = "unity.get_all_progress";
         break;
       default:
         throw new Error(`Unknown resource: ${uri}`);

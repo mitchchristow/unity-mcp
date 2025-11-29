@@ -25,7 +25,8 @@ This project allows external AI agents and IDEs (like Cursor, VS Code, and Antig
 - **Build Pipeline**: Configure build settings and create builds.
 - **2D Game Development**: Sprites, tilemaps, 2D physics - ideal for strategy games.
 - **Scripting Assistance**: Create scripts from templates, monitor compilation, explore APIs.
-- **MCP Resources**: 41 resources expose project state for AI context.
+- **MCP Prompts**: 8 workflow templates for common tasks.
+- **MCP Resources**: 42 resources expose project state for AI context.
 - **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
 - **Secure IPC**: Named Pipes (Windows) and Unix Sockets (Mac/Linux) support.
 
@@ -50,9 +51,9 @@ The system consists of two components:
 └─────────────┘                └─────────────┘                └─────────────┘
 ```
 
-## Available Tools (87)
+## Available Tools (80)
 
-The server exposes 87 tools organized by category. Many tools use an `action` parameter for consolidated operations.
+The server exposes 80 tools organized by category. Many tools use an `action` parameter for consolidated operations.
 
 ### Core Tools
 
@@ -90,8 +91,8 @@ These tools use an `action` parameter to combine related operations:
 - **Particles**: Create and control particle systems
 - **Navigation**: NavMesh baking, agents, pathfinding
 - **Audio**: Audio sources and playback
-- **Build**: Build targets and configuration
-- **Packages**: Package management
+- **Build**: `unity_build` (set_target, add_scene, remove_scene, get_scenes, build)
+- **Packages**: `unity_package` (get_info, add, remove, search)
 - **Scripting**: Script creation, API exploration
 
 ## Available Resources (41)

@@ -4,6 +4,10 @@ sidebar_position: 3
 
 # VS Code Integration
 
+:::caution Under Construction
+VS Code integration is **experimental**. VS Code does not natively support MCP, and the provided task configuration and extension may require additional setup. Full functionality is not guaranteed.
+:::
+
 VS Code does not have native MCP support, but this project provides two options for integration.
 
 ## Option 1: Auto-Start Task (Recommended)
@@ -83,9 +87,9 @@ Refer to your AI extension's documentation for the correct configuration locatio
 
 When connected, you have access to:
 
-### Tools (79)
+### Tools (80)
 
-The gateway exposes 79 tools. Many use an `action` parameter for consolidated operations.
+The gateway exposes 80 tools. Many use an `action` parameter for consolidated operations.
 
 #### Core Tools
 
@@ -122,7 +126,7 @@ The gateway exposes 79 tools. Many use an `action` parameter for consolidated op
 - **Build**: `unity_set_build_target`, `unity_build_player`
 - **Packages**: `unity_add_package`, `unity_remove_package`
 
-### Resources (29)
+### Resources (42)
 
 Resources provide **read-only** data. The AI reads these automatically for context.
 

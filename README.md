@@ -2,68 +2,75 @@
 
 **Control the Unity Editor directly from your AI Assistant.**
 
-This project implements a **Model Context Protocol (MCP)** server that runs inside the Unity Editor. It allows external AI agents (like **Cursor**, **Antigravity**, or **VS Code**) to manipulate scenes, write scripts, and control play mode in real-time.
+This project implements a **Model Context Protocol (MCP)** server that runs inside the Unity Editor. It allows AI-powered IDEs like **Cursor** to manipulate scenes, write scripts, and control play mode through natural language — enabling true "vibe coding" for game development.
 
 ![Unity MCP Banner](https://placehold.co/600x200?text=Unity+MCP+Server)
 
-## Features
+---
 
-- **Scene Control**: Create, move, delete, and inspect GameObjects.
-- **Component System**: Add components and modify properties via reflection.
-- **Asset Management**: List and inspect project assets (materials, prefabs, scripts, etc.).
-- **Scripting**: Write and reload C# scripts on the fly.
-- **Play Mode**: Start, stop, and pause the game.
-- **Lighting & Cameras**: Create and configure lights, cameras, and ambient lighting.
-- **Physics**: Configure gravity, raycasting, and layer collisions.
-- **Animation & Audio**: Control animators, audio sources, and playback.
-- **UI System**: Create canvases and UI elements (buttons, text, images).
-- **Terrain**: Create and sculpt terrains with height manipulation.
-- **Particles**: Create and configure particle systems.
-- **Navigation**: Bake NavMesh, add agents, and calculate paths.
-- **Build Pipeline**: Configure build settings and build players.
-- **2D Game Development**: Sprites, tilemaps, 2D physics - perfect for strategy games.
-- **Scripting Assistance**: Create scripts from templates, monitor compilation, explore component APIs.
-- **Real-time Events**: Stream scene changes, selection, play mode, and console logs via WebSockets.
-- **MCP Resources**: 41 resources expose project state for AI context (including events, 2D, and scripting).
-- **Secure**: Supports Named Pipes (Windows) and Unix Sockets (Mac/Linux).
+## 📖 Table of Contents
 
-## Installation
+- [For Users: Quick Start](#-for-users-quick-start)
+- [For Developers: Contributing](#-for-developers-contributing)
+- [Features](#-features)
+- [Available Tools, Resources & Prompts](#-available-tools-resources--prompts)
+- [Architecture](#-architecture)
+- [Documentation](#-documentation)
+- [License](#-license)
 
-### Option 1: Install via Unity Package Manager (Recommended)
+---
 
-You can install this package directly from GitHub into your Unity project.
+## 🚀 For Users: Quick Start
 
-1.  Open your Unity Project (Unity 6+).
-2.  Go to **Window > Package Manager**.
-3.  Click the **+** icon in the top left.
-4.  Select **Add package from git URL...**.
-5.  Enter the following URL:
-    ```
-    https://github.com/yourusername/unity-mcp.git?path=/Packages/org.christowm.unity.mcp
-    ```
-    *(Replace `yourusername` with your actual GitHub username)*
+Want to use this MCP server to build Unity games with AI? Follow these steps:
 
-### Option 2: Local Development
+### Prerequisites
 
-1.  Clone this repository.
-2.  Open Unity Hub.
-3.  Click **Add** and select the cloned folder.
-4.  The project will open with the MCP server running automatically.
+- **Unity 6+** (6000.x)
+- **Node.js 18+**
+- **Cursor IDE** (recommended) or another MCP-compatible IDE
 
-## Connecting Your IDE
+### Step 1: Install the Unity Package
 
-This project includes a **Node.js gateway** (`gateway/`) that translates MCP protocol calls into Unity RPC commands. Most IDEs spawn this gateway automatically.
+**Option A: From GitHub (Recommended)**
 
-### Cursor
+1. Open your Unity project
+2. Go to **Window > Package Manager**
+3. Click **+** → **Add package from git URL...**
+4. Enter:
+   ```
+   https://github.com/mitchchristow/unity-mcp.git?path=/Packages/org.christowm.unity.mcp
+   ```
 
-The project includes a `.cursor/mcp.json` configuration file that automatically configures the MCP server.
+**Option B: Clone for Local Development**
 
-1.  Ensure Unity is open and the server is running (check the Console for `[MCP] HTTP Server started`).
-2.  Open the project folder in Cursor.
-3.  The MCP server will start automatically and provide **79 tools + 29 resources**.
+```bash
+git clone https://github.com/mitchchristow/unity-mcp.git
+cd unity-mcp
+```
+Then open the folder in Unity Hub.
 
-**Manual Configuration** (if needed):
-Create `.cursor/mcp.json` in your project root:
+### Step 2: Install Gateway Dependencies
+
+```bash
+cd gateway
+npm install
+```
+
+### Step 3: Connect Your IDE
+
+#### Cursor (✅ Fully Supported)
+
+Cursor is the recommended IDE with full MCP support.
+
+1. Open Unity and wait for `[MCP] HTTP Server started` in the Console
+2. Open the project folder in Cursor
+3. The MCP server starts automatically via `.cursor/mcp.json`
+4. Start chatting! Try: *"Create a red cube at position (0, 1, 0)"*
+
+**Manual Setup** (if auto-detection fails):
+
+Create `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
@@ -76,43 +83,184 @@ Create `.cursor/mcp.json` in your project root:
 }
 ```
 
-### Antigravity
+#### Antigravity (⚠️ Under Construction)
 
-Antigravity detects the `workspace.json` file in the project root.
+> **Note**: Antigravity integration is experimental and may not work correctly. Configuration files are provided but have not been fully tested.
 
-1.  Ensure Unity is open and the MCP server is running.
-2.  Open the project in Antigravity.
-3.  The agent will automatically have access to the Unity toolset.
+The `workspace.json` file in the project root provides basic configuration for Antigravity.
 
-### VS Code
+#### VS Code (⚠️ Under Construction)
 
-VS Code requires a task to start the gateway (no native MCP support).
+> **Note**: VS Code does not natively support MCP. The included task configuration and extension are experimental and may require additional setup.
 
-1.  Open the project in VS Code.
-2.  The included `.vscode/tasks.json` will auto-start the gateway on folder open.
-3.  Alternatively, use the included VS Code extension in `ide-integrations/vscode/`.
+A `.vscode/tasks.json` is provided to auto-start the gateway, but full integration requires an MCP-compatible VS Code extension.
 
-## Gateway Setup
+### Step 4: Start Building!
 
-Before first use, install the gateway dependencies:
+Once connected, you can use natural language to control Unity:
+
+- *"Create a 2D player character with WASD movement"*
+- *"Add a Rigidbody2D to the selected object"*
+- *"Set up a turn-based battle system"*
+- *"What objects are in my scene?"*
+
+---
+
+## 🛠 For Developers: Contributing
+
+Want to extend the MCP server, fix bugs, or add new features? This section is for you.
+
+### Development Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/mitchchristow/unity-mcp.git
+   cd unity-mcp
+   ```
+
+2. **Open in Unity**: Open the folder in Unity Hub (requires Unity 6+)
+
+3. **Install gateway dependencies**:
+   ```bash
+   cd gateway
+   npm install
+   ```
+
+4. **Project Structure**:
+   ```
+   unity-mcp/
+   ├── Packages/org.christowm.unity.mcp/   # Unity Editor package
+   │   └── Editor/
+   │       ├── MCP/                        # MCP server implementation
+   │       │   ├── Rpc/Controllers/        # RPC method handlers
+   │       │   ├── Events/                 # WebSocket event system
+   │       │   └── Progress/               # Progress tracking
+   │       ├── Networking/                 # HTTP & WebSocket servers
+   │       └── IPC/                        # Named Pipe server
+   ├── gateway/                            # Node.js MCP gateway
+   │   └── index.js                        # Tool/Resource/Prompt definitions
+   ├── Docs/                               # Documentation (Docusaurus)
+   ├── ide-integrations/                   # IDE-specific configs
+   └── TODO.md                             # Future improvements roadmap
+   ```
+
+### Adding New Features
+
+#### Adding a New Tool
+
+1. **Create/update a Controller** in `Packages/.../Rpc/Controllers/`:
+   ```csharp
+   public static class MyController
+   {
+       public static void Register()
+       {
+           JsonRpcDispatcher.RegisterMethod("unity.my_method", MyMethod);
+       }
+       
+       private static JObject MyMethod(JObject p)
+       {
+           // Implementation
+           return new JObject { ["ok"] = true };
+       }
+   }
+   ```
+
+2. **Register in `McpServer.cs`**:
+   ```csharp
+   MyController.Register();
+   ```
+
+3. **Add tool definition in `gateway/index.js`**:
+   ```javascript
+   {
+     name: "unity_my_tool",
+     description: "What this tool does",
+     inputSchema: {
+       type: "object",
+       properties: { /* ... */ },
+       required: ["param1"],
+     },
+   },
+   ```
+
+4. **Add handler** in the `CallToolRequestSchema` handler if needed.
+
+#### Adding a New Resource
+
+1. Add RPC method in Unity (similar to tools)
+2. Add resource definition to `RESOURCES` array in `gateway/index.js`
+3. Add URI-to-method mapping in `ReadResourceRequestSchema` handler
+
+#### Adding a New Prompt
+
+Add to the `PROMPTS` array and implement in `generatePromptContent()` function in `gateway/index.js`.
+
+### Testing
 
 ```bash
-cd gateway
-npm install
+# Test RPC endpoint
+curl -X POST http://localhost:17890/mcp/rpc \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"unity.get_project_info","params":{},"id":1}'
+
+# Test WebSocket
+wscat -c ws://localhost:17891/mcp/events
 ```
 
-The gateway can also be started manually:
-```bash
-npm start
-# or
-node index.js
-```
+### Key Files to Know
 
-## Available Tools (87)
+| File | Purpose |
+|------|---------|
+| `gateway/index.js` | MCP gateway - all tools, resources, prompts |
+| `McpServer.cs` | Unity-side server initialization |
+| `HttpServer.cs` | HTTP JSON-RPC handler |
+| `WebSocketServer.cs` | Real-time event streaming |
+| `JsonRpcDispatcher.cs` | Routes RPC calls to controllers |
 
-The MCP server exposes 87 tools organized by category. Many tools use an `action` parameter to consolidate related operations.
+### Pull Request Guidelines
 
-### Core Tools
+1. Create a feature branch: `feature/my-feature`
+2. Follow existing code style
+3. Update documentation if adding user-facing features
+4. Test with Cursor to verify MCP integration
+5. Update `TODO.md` if implementing a backlog item
+
+See [TODO.md](TODO.md) for the roadmap of planned improvements.
+
+---
+
+## ✨ Features
+
+| Category | Capabilities |
+|----------|--------------|
+| **Scene Control** | Create, move, delete, inspect GameObjects |
+| **Components** | Add/remove components, modify properties via reflection |
+| **Assets** | List and inspect materials, prefabs, scripts, textures |
+| **Scripting** | Create scripts from templates, monitor compilation |
+| **Play Mode** | Start, stop, pause the game |
+| **Lighting** | Create lights, configure ambient lighting |
+| **Cameras** | Create cameras, control Scene view |
+| **Physics** | Gravity, raycasting, collision layers (2D & 3D) |
+| **UI** | Create canvases, buttons, text, images |
+| **Terrain** | Create and sculpt terrains |
+| **Particles** | Create and configure particle systems |
+| **Navigation** | NavMesh baking, agents, pathfinding |
+| **Audio** | Audio sources, playback control |
+| **Build** | Configure and execute builds |
+| **2D Development** | Sprites, tilemaps, 2D physics |
+| **Prompts** | 8 workflow templates for common tasks |
+| **Events** | Real-time scene/selection/console streaming |
+
+---
+
+## 📦 Available Tools, Resources & Prompts
+
+### Tools (80)
+
+The server exposes **80 tools** organized by category. Many use an `action` parameter to consolidate related operations.
+
+<details>
+<summary><strong>Core Tools</strong></summary>
 
 | Tool | Description |
 |------|-------------|
@@ -121,162 +269,134 @@ The MCP server exposes 87 tools organized by category. Many tools use an `action
 | `unity_create_primitive` | Create a primitive (Cube, Sphere, etc.) |
 | `unity_delete_object` | Delete a GameObject |
 | `unity_set_transform` | Set position, rotation, and scale |
-| `unity_get_selection` | Get currently selected objects |
-| `unity_selection` | Selection actions: set, clear, select_by_name, focus |
-| `unity_find_objects` | Find objects by: name, tag, component, or layer |
+| `unity_selection` | Selection: set, clear, select_by_name, focus |
+| `unity_find_objects` | Find by: name, tag, component, or layer |
 
-### Materials & Prefabs
+</details>
 
-| Tool | Description |
-|------|-------------|
-| `unity_set_material` | Apply a material to an object |
-| `unity_create_material` | Create a new material asset |
-| `unity_set_material_property` | Set material properties (color, float) |
-| `unity_instantiate_prefab` | Instantiate a prefab from assets |
-| `unity_create_prefab` | Save a GameObject as a prefab |
+<details>
+<summary><strong>Consolidated Tools (action-based)</strong></summary>
 
-### Consolidated Tools (action-based)
+| Tool | Actions |
+|------|---------|
+| `unity_playmode` | play, stop, pause |
+| `unity_undo_action` | undo, redo, get_history, clear, begin_group, end_group |
+| `unity_component` | add, remove, list, get_properties |
+| `unity_file` | read, write, exists, list_dir, create_dir |
+| `unity_capture` | game, scene |
+| `unity_animator` | get_info, get_parameters, set_parameter, play_state |
+| `unity_build` | set_target, add_scene, remove_scene, get_scenes, build |
+| `unity_package` | get_info, add, remove, search |
+| `unity_window` | open, close, focus, get_info |
+| `unity_sprite` | create, set_sprite, set_property, get_info |
+| `unity_tilemap` | create, set_tile, get_tile, fill, clear_all, get_info |
 
-| Tool | Actions | Description |
-|------|---------|-------------|
-| `unity_playmode` | play, stop, pause | Control Unity play mode |
-| `unity_undo_action` | undo, redo, get_history, clear, begin_group, end_group | Undo/redo operations |
-| `unity_selection` | set, clear, select_by_name, focus | Selection management |
-| `unity_capture` | game, scene | Capture screenshots |
-| `unity_component` | add, remove, list, get_properties | Component management |
-| `unity_file` | read, write, exists, list_dir, create_dir | File operations |
-| `unity_animator` | get_info, get_parameters, set_parameter, play_state | Animation control |
-| `unity_window` | open, close, focus, get_info | Editor window management |
-| `unity_open_panel` | inspector, project_settings, preferences | Open editor panels |
+</details>
 
-### Additional Categories
+<details>
+<summary><strong>Additional Categories</strong></summary>
 
-- **Lighting**: `unity_create_light`, `unity_set_light_property`, `unity_get_lighting_settings`, `unity_set_ambient_light`
-- **Cameras**: `unity_create_camera`, `unity_set_camera_property`, `unity_get_camera_info`, `unity_get_scene_view_camera`, `unity_set_scene_view_camera`
-- **Physics**: `unity_set_gravity`, `unity_set_physics_property`, `unity_raycast`, `unity_get_layer_collision_matrix`, `unity_set_layer_collision`
-- **UI**: `unity_create_canvas`, `unity_create_ui_element`, `unity_set_ui_text`, `unity_set_ui_image`, `unity_set_rect_transform`, `unity_get_ui_info`
-- **Terrain**: `unity_create_terrain`, `unity_get_terrain_info`, `unity_set_terrain_size`, `unity_terrain_height`, `unity_set_terrain_layer`, `unity_flatten_terrain`
-- **Particles**: `unity_create_particle_system`, `unity_get_particle_system_info`, `unity_set_particle_module`, `unity_particle_playback`
-- **Navigation**: `unity_navmesh_build`, `unity_add_navmesh_agent`, `unity_set_navmesh_agent`, `unity_get_navmesh_agent_info`, `unity_add_navmesh_obstacle`, `unity_set_navmesh_destination`, `unity_calculate_path`
-- **Audio**: `unity_create_audio_source`, `unity_set_audio_source_property`, `unity_get_audio_source_info`, `unity_audio_playback`, `unity_set_audio_clip`
-- **Build**: `unity_set_build_target`, `unity_add_scene_to_build`, `unity_remove_scene_from_build`, `unity_get_scenes_in_build`, `unity_build_player`
-- **Packages**: `unity_get_package_info`, `unity_add_package`, `unity_remove_package`, `unity_search_packages`
-- **Scripting**: `unity_create_script`, `unity_get_component_api`
+- **Lighting**: create_light, set_light_property, get_lighting_settings, set_ambient_light
+- **Cameras**: create_camera, set_camera_property, get_camera_info, scene_view controls
+- **Physics**: set_gravity, set_physics_property, raycast, layer_collision
+- **UI**: create_canvas, create_ui_element, set_ui_text, set_ui_image, set_rect_transform
+- **Terrain**: create_terrain, set_terrain_size, terrain_height, flatten_terrain
+- **Particles**: create_particle_system, set_particle_module, particle_playback
+- **Navigation**: navmesh_build, add_navmesh_agent, set_navmesh_destination, calculate_path
+- **Audio**: create_audio_source, set_audio_source_property, audio_playback
+- **2D Physics**: physics_2d_body, physics_2d_query, set_physics_2d_property
+- **Scripting**: create_script, get_component_api
 
-## Available Resources (41)
+</details>
 
-MCP Resources provide **read-only** context about your Unity project. The AI automatically reads these for context without needing tool calls.
+### Resources (42)
 
-### Project & Scene
+Resources provide **read-only context** that the AI reads automatically.
 
-| Resource URI | Description |
-|--------------|-------------|
-| `unity://project/info` | Project version, platform, and play state |
-| `unity://scene/hierarchy` | Complete scene object tree |
-| `unity://scene/list` | List of loaded scenes |
-| `unity://scene/stats` | Scene statistics (object counts, etc.) |
-| `unity://scene/render-stats` | Rendering statistics |
-| `unity://scene/memory-stats` | Memory usage statistics |
-| `unity://scene/object-counts` | Object counts by type |
-| `unity://scene/asset-stats` | Asset statistics |
-| `unity://scene/analysis` | Scene optimization analysis |
-| `unity://selection` | Currently selected objects |
-| `unity://assets` | Project assets (materials, prefabs, scripts) |
-| `unity://console/logs` | Recent console log entries |
+<details>
+<summary><strong>All Resources</strong></summary>
 
-### Components & Objects
+| Category | Resources |
+|----------|-----------|
+| **Project** | `unity://project/info`, `unity://assets`, `unity://packages` |
+| **Scene** | `unity://scene/hierarchy`, `unity://scene/list`, `unity://scene/stats`, `unity://scene/analysis` |
+| **Selection** | `unity://selection`, `unity://console/logs` |
+| **Objects** | `unity://lights`, `unity://cameras`, `unity://terrains`, `unity://particles`, `unity://ui/elements` |
+| **Systems** | `unity://physics`, `unity://tags`, `unity://layers`, `unity://audio/settings` |
+| **Navigation** | `unity://navmesh/settings`, `unity://navmesh/agents` |
+| **Build** | `unity://build/settings`, `unity://build/targets` |
+| **Events** | `unity://events/recent`, `unity://events/types`, `unity://events/status` |
+| **2D** | `unity://sprites`, `unity://tilemaps`, `unity://tiles`, `unity://2d/physics` |
+| **Scripting** | `unity://scripts/errors`, `unity://scripts/warnings`, `unity://scripts/templates`, `unity://components/types` |
+| **Progress** | `unity://progress` |
 
-| Resource URI | Description |
-|--------------|-------------|
-| `unity://lights` | All lights in the scene |
-| `unity://cameras` | All cameras in the scene |
-| `unity://terrains` | All terrains in the scene |
-| `unity://particles` | All particle systems |
-| `unity://ui/elements` | All UI elements |
-| `unity://animations` | Animation clips in project |
+</details>
 
-### Systems
+### Prompts (8)
 
-| Resource URI | Description |
-|--------------|-------------|
-| `unity://physics` | Physics settings |
-| `unity://tags` | Available tags |
-| `unity://layers` | Available layers |
-| `unity://audio/settings` | Audio settings |
-| `unity://audio/clips` | Audio clips in project |
-| `unity://navmesh/settings` | NavMesh settings |
-| `unity://navmesh/agents` | NavMesh agents in scene |
-| `unity://packages` | Installed packages |
-| `unity://build/settings` | Build settings |
-| `unity://build/targets` | Available build targets |
-| `unity://editor/windows` | Open editor windows |
+Pre-defined workflow templates for complex tasks:
 
-### Real-time Events
+| Prompt | Description |
+|--------|-------------|
+| `create_2d_character` | 2D character with sprite, physics, movement script |
+| `setup_turn_based_system` | Turn manager, units, action system |
+| `create_grid_map` | Grid-based map with tilemap and pathfinding |
+| `create_ui_menu` | UI menu (main, pause, settings, inventory, battle) |
+| `setup_unit_stats` | ScriptableObject stats system for RPG/strategy |
+| `create_audio_manager` | Audio singleton with BGM/SFX pooling |
+| `optimize_scene` | Scene analysis and optimization recommendations |
+| `setup_save_system` | JSON-based save/load system |
 
-| Resource URI | Description |
-|--------------|-------------|
-| `unity://events/recent` | Recent events (selection, playmode, console, etc.) |
-| `unity://events/types` | Available event types and payloads |
-| `unity://events/status` | WebSocket connection status |
+---
 
-### 2D Game Development
-
-| Resource URI | Description |
-|--------------|-------------|
-| `unity://sprites` | Sprite assets in project |
-| `unity://tilemaps` | Tilemaps in scene |
-| `unity://tiles` | Tile assets in project |
-| `unity://2d/physics` | 2D physics settings |
-
-### Scripting Assistance
-
-| Resource URI | Description |
-|--------------|-------------|
-| `unity://scripts/errors` | Current compilation errors |
-| `unity://scripts/warnings` | Current compilation warnings |
-| `unity://scripts/templates` | Available script templates |
-| `unity://scripts/status` | Whether Unity is compiling |
-| `unity://components/types` | Component types by category |
-
-## Documentation
-
-Full documentation is available in the `Docs/` directory.
-
-- [**RPC API Reference**](Docs/docs/rpc/overview.md): List of all available commands.
-- [**2D Development**](Docs/docs/2d-development/overview.md): Guide to 2D game development support.
-- [**Scripting Assistance**](Docs/docs/scripting/overview.md): Script creation and API exploration.
-- [**Event System**](Docs/docs/events/overview.md): How to listen to real-time events.
-- [**IDE Configuration**](Docs/docs/ide-configuration/cursor.md): Setup guides for each IDE.
-- [**Contributing**](Docs/docs/development/contributing.md): How to build and test the server.
-
-## Architecture
-
-The system consists of two main components:
-
-### 1. Unity MCP Package (runs inside Unity Editor)
-- **HTTP Server** (`:17890`): Handles JSON-RPC commands.
-- **WebSocket Server** (`:17891`): Streams events.
-- **Named Pipe** (`\\.\pipe\unity-mcp`): Secure local IPC (Windows).
-
-### 2. Node.js Gateway (spawned by IDE)
-- Translates MCP protocol to Unity JSON-RPC.
-- Communicates via stdio with the IDE.
-- Forwards requests to Unity's HTTP endpoint.
+## 🏗 Architecture
 
 ```
 ┌─────────────┐     stdio      ┌─────────────┐     HTTP      ┌─────────────┐
 │   IDE/AI    │ ◄───────────► │   Gateway   │ ◄───────────► │    Unity    │
 │  (Cursor)   │     MCP        │  (Node.js)  │   JSON-RPC    │   Editor    │
 └─────────────┘                └─────────────┘                └─────────────┘
+                                     │
+                                     │ WebSocket
+                                     ▼
+                               Real-time Events
 ```
 
-## Performance
+### Components
 
-The server includes optimizations for responsive background execution:
+| Component | Port | Purpose |
+|-----------|------|---------|
+| **HTTP Server** | 17890 | JSON-RPC command handling |
+| **WebSocket Server** | 17891 | Real-time event streaming |
+| **Named Pipe** | `\\.\pipe\unity-mcp` | Secure local IPC (Windows) |
+| **Node.js Gateway** | stdio | MCP protocol translation |
+
+### Performance
+
 - Request queue with continuous processing via `EditorApplication.update`
-- Automatic editor wake-up using `RepaintAllViews()` when requests arrive
-- Typical response times: 30-175ms even with Unity in background
+- Automatic editor wake-up when Unity is in background
+- Typical response times: **30-175ms**
 
-## License
+---
 
-MIT
+## 📚 Documentation
+
+Full documentation is available in the `Docs/` directory:
+
+- [RPC API Reference](Docs/docs/rpc/overview.md)
+- [2D Development Guide](Docs/docs/2d-development/overview.md)
+- [Scripting Assistance](Docs/docs/scripting/overview.md)
+- [Event System](Docs/docs/events/overview.md)
+- [IDE Configuration](Docs/docs/ide-configuration/cursor.md)
+
+See also: [TODO.md](TODO.md) for planned improvements.
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+**Made with ❤️ for the Unity + AI community**
