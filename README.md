@@ -393,6 +393,16 @@ See also: [TODO.md](TODO.md) for planned improvements.
 
 ---
 
+## 🐛 Issues & Feature Requests
+
+- **Bug reports**: [Open an issue](https://github.com/mitchchristow/unity-mcp/issues) with steps to reproduce
+- **Feature requests**: [Open an issue](https://github.com/mitchchristow/unity-mcp/issues) and tag it with `enhancement`
+- **Questions**: Use [GitHub Discussions](https://github.com/mitchchristow/unity-mcp/discussions) or open an issue
+
+See [TODO.md](TODO.md) for the roadmap of planned features.
+
+---
+
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
