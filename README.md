@@ -4,7 +4,7 @@
 
 This project implements a **Model Context Protocol (MCP)** server that runs inside the Unity Editor. It allows AI-powered IDEs like **Cursor** to manipulate scenes, write scripts, and control play mode through natural language — enabling true "vibe coding" for game development.
 
-![Unity MCP Banner](assets/banner.png)
+![Unity MCP Banner](Assets/banner.png)
 
 ---
 
