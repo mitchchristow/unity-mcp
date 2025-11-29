@@ -25,7 +25,7 @@ The project includes configuration files that Antigravity automatically detects:
 
 3. **Open in Antigravity**: Open the project folder in Antigravity.
 
-4. **Verify Connection**: The agent will automatically have access to the Unity toolset with 10 tools and 6 resources.
+4. **Verify Connection**: The agent will automatically have access to the Unity toolset with **79 tools** and **29 resources**.
 
 ## Example Prompts
 
@@ -43,24 +43,50 @@ You can ask Antigravity to perform high-level tasks:
 
 > "What's the current scene hierarchy?"
 
-## Available Tools
+## Available Tools (79)
+
+The gateway exposes 79 tools. Many use an `action` parameter for consolidated operations.
+
+### Core Tools
 
 | Tool | Description |
 |------|-------------|
 | `unity_list_objects` | List all GameObjects in the scene |
 | `unity_create_object` | Create a new empty GameObject |
 | `unity_create_primitive` | Create a primitive (Cube, Sphere, etc.) |
+| `unity_delete_object` | Delete a GameObject |
 | `unity_set_transform` | Set position, rotation, and scale |
-| `unity_set_material` | Apply a material to an object |
-| `unity_create_material` | Create a new material asset |
-| `unity_set_material_property` | Set material properties |
-| `unity_instantiate_prefab` | Instantiate a prefab |
-| `unity_create_prefab` | Save a GameObject as a prefab |
 | `unity_get_selection` | Get currently selected objects |
 
-## Available Resources
+### Consolidated Tools (action-based)
 
-Resources provide read-only context about the Unity project:
+| Tool | Actions | Description |
+|------|---------|-------------|
+| `unity_playmode` | play, stop, pause | Control play mode |
+| `unity_undo_action` | undo, redo, get_history, clear | Undo/redo operations |
+| `unity_selection` | set, clear, select_by_name, focus | Selection management |
+| `unity_capture` | game, scene | Screenshot capture |
+| `unity_find_objects` | name, tag, component, layer | Find objects by criteria |
+
+### Additional Categories
+
+- **Materials & Prefabs**: Create materials, apply to objects, instantiate prefabs
+- **Lighting**: Create lights, configure ambient lighting
+- **Cameras**: Create and configure cameras
+- **Physics**: Configure gravity, raycasting, collisions
+- **UI**: Create canvases and UI elements
+- **Terrain**: Create and sculpt terrains
+- **Particles**: Create and control particle systems
+- **Navigation**: NavMesh baking, agents, pathfinding
+- **Audio**: Audio sources and playback
+- **Build**: Build configuration and player builds
+- **Packages**: Package management
+
+## Available Resources (29)
+
+Resources provide **read-only** context about the Unity project. The AI reads these automatically.
+
+### Core Resources
 
 | Resource URI | Description |
 |--------------|-------------|
@@ -70,6 +96,15 @@ Resources provide read-only context about the Unity project:
 | `unity://selection` | Currently selected objects with positions |
 | `unity://assets` | Project assets (materials, prefabs, scripts) |
 | `unity://console/logs` | Recent console log entries |
+
+### Additional Resources
+
+| Category | Resources |
+|----------|-----------|
+| Scene Analysis | `unity://scene/stats`, `unity://scene/render-stats`, `unity://scene/memory-stats`, `unity://scene/analysis` |
+| Objects | `unity://lights`, `unity://cameras`, `unity://terrains`, `unity://particles`, `unity://ui/elements` |
+| Systems | `unity://physics`, `unity://tags`, `unity://layers`, `unity://audio/settings`, `unity://navmesh/settings` |
+| Project | `unity://packages`, `unity://build/settings`, `unity://build/targets`, `unity://editor/windows` |
 
 ## Manual Configuration
 

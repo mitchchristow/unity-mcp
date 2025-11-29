@@ -83,22 +83,50 @@ Refer to your AI extension's documentation for the correct configuration locatio
 
 When connected, you have access to:
 
-### Tools (10)
+### Tools (79)
+
+The gateway exposes 79 tools. Many use an `action` parameter for consolidated operations.
+
+#### Core Tools
 
 | Tool | Description |
 |------|-------------|
 | `unity_list_objects` | List all GameObjects |
 | `unity_create_object` | Create empty GameObject |
 | `unity_create_primitive` | Create primitive shapes |
+| `unity_delete_object` | Delete a GameObject |
 | `unity_set_transform` | Modify position/rotation/scale |
-| `unity_set_material` | Apply materials |
-| `unity_create_material` | Create materials |
-| `unity_set_material_property` | Set material properties |
-| `unity_instantiate_prefab` | Instantiate prefabs |
-| `unity_create_prefab` | Save as prefab |
 | `unity_get_selection` | Get selected objects |
 
-### Resources (6)
+#### Consolidated Tools (action-based)
+
+| Tool | Actions | Description |
+|------|---------|-------------|
+| `unity_playmode` | play, stop, pause | Control play mode |
+| `unity_undo_action` | undo, redo, get_history, clear | Undo/redo operations |
+| `unity_selection` | set, clear, select_by_name, focus | Selection management |
+| `unity_capture` | game, scene | Screenshot capture |
+| `unity_find_objects` | name, tag, component, layer | Find objects |
+
+#### Additional Categories
+
+- **Materials & Prefabs**: `unity_set_material`, `unity_create_material`, `unity_instantiate_prefab`, `unity_create_prefab`
+- **Lighting**: `unity_create_light`, `unity_set_light_property`, `unity_set_ambient_light`
+- **Cameras**: `unity_create_camera`, `unity_set_camera_property`
+- **Physics**: `unity_set_gravity`, `unity_raycast`
+- **UI**: `unity_create_canvas`, `unity_create_ui_element`
+- **Terrain**: `unity_create_terrain`, `unity_terrain_height`
+- **Particles**: `unity_create_particle_system`, `unity_particle_playback`
+- **Navigation**: `unity_navmesh_build`, `unity_add_navmesh_agent`
+- **Audio**: `unity_create_audio_source`, `unity_audio_playback`
+- **Build**: `unity_set_build_target`, `unity_build_player`
+- **Packages**: `unity_add_package`, `unity_remove_package`
+
+### Resources (29)
+
+Resources provide **read-only** data. The AI reads these automatically for context.
+
+#### Core Resources
 
 | Resource | Description |
 |----------|-------------|
@@ -108,3 +136,12 @@ When connected, you have access to:
 | `unity://selection` | Current selection |
 | `unity://assets` | Project assets |
 | `unity://console/logs` | Console logs |
+
+#### Additional Resources
+
+| Category | Resources |
+|----------|-----------|
+| Scene Analysis | `unity://scene/stats`, `unity://scene/render-stats`, `unity://scene/memory-stats` |
+| Objects | `unity://lights`, `unity://cameras`, `unity://particles`, `unity://terrains` |
+| Systems | `unity://physics`, `unity://tags`, `unity://layers`, `unity://navmesh/settings` |
+| Project | `unity://packages`, `unity://build/settings`, `unity://editor/windows` |

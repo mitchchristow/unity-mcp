@@ -16,7 +16,14 @@ This project allows external AI agents and IDEs (like Cursor, VS Code, and Antig
 - **Asset Management**: List and inspect project assets (materials, prefabs, scripts, textures).
 - **Scripting**: Write and reload C# scripts on the fly.
 - **Playmode Control**: Start, stop, and pause the game.
-- **MCP Resources**: Expose project state as readable resources for AI context.
+- **Lighting & Cameras**: Create and configure lights, cameras, and ambient settings.
+- **Physics**: Configure gravity, raycasting, and collision layers.
+- **Animation & Audio**: Control animators, audio sources, and playback.
+- **UI System**: Create canvases and UI elements.
+- **Terrain & Particles**: Create terrains and particle systems.
+- **Navigation**: Bake NavMesh, configure agents, and calculate paths.
+- **Build Pipeline**: Configure build settings and create builds.
+- **MCP Resources**: 29 resources expose project state for AI context.
 - **Real-time Events**: Listen to console logs and scene changes via WebSockets.
 - **Secure IPC**: Named Pipes (Windows) and Unix Sockets (Mac/Linux) support.
 
@@ -41,22 +48,54 @@ The system consists of two components:
 └─────────────┘                └─────────────┘                └─────────────┘
 ```
 
-## Available Tools (10)
+## Available Tools (79)
+
+The server exposes 79 tools organized by category. Many tools use an `action` parameter for consolidated operations.
+
+### Core Tools
 
 | Tool | Description |
 |------|-------------|
 | `unity_list_objects` | List all GameObjects in the scene |
 | `unity_create_object` | Create a new empty GameObject |
 | `unity_create_primitive` | Create a primitive (Cube, Sphere, etc.) |
+| `unity_delete_object` | Delete a GameObject |
 | `unity_set_transform` | Set position, rotation, and scale |
-| `unity_set_material` | Apply a material to an object |
-| `unity_create_material` | Create a new material asset |
-| `unity_set_material_property` | Set material properties |
-| `unity_instantiate_prefab` | Instantiate a prefab |
-| `unity_create_prefab` | Save a GameObject as a prefab |
 | `unity_get_selection` | Get currently selected objects |
 
-## Available Resources (6)
+### Consolidated Tools
+
+These tools use an `action` parameter to combine related operations:
+
+| Tool | Actions | Description |
+|------|---------|-------------|
+| `unity_playmode` | play, stop, pause | Control play mode |
+| `unity_undo_action` | undo, redo, get_history, clear, begin_group, end_group | Undo/redo |
+| `unity_selection` | set, clear, select_by_name, focus | Selection management |
+| `unity_capture` | game, scene | Screenshot capture |
+| `unity_find_objects` | name, tag, component, layer | Find objects |
+| `unity_component` | add, remove, list, get_properties | Component management |
+| `unity_file` | read, write, exists, list_dir, create_dir | File operations |
+
+### Categories
+
+- **Materials & Prefabs**: Create and apply materials, instantiate prefabs
+- **Lighting**: Create lights, configure ambient lighting
+- **Cameras**: Create and configure cameras, scene view controls
+- **Physics**: Gravity, raycasting, layer collisions
+- **UI**: Canvases, buttons, text, images
+- **Terrain**: Create, sculpt, configure terrains
+- **Particles**: Create and control particle systems
+- **Navigation**: NavMesh baking, agents, pathfinding
+- **Audio**: Audio sources and playback
+- **Build**: Build targets and configuration
+- **Packages**: Package management
+
+## Available Resources (29)
+
+Resources provide **read-only** data. The AI reads these automatically for context instead of calling tools.
+
+### Core Resources
 
 | Resource URI | Description |
 |--------------|-------------|
@@ -66,6 +105,15 @@ The system consists of two components:
 | `unity://selection` | Currently selected objects |
 | `unity://assets` | Project assets |
 | `unity://console/logs` | Recent console log entries |
+
+### Additional Resources
+
+| Category | Resources |
+|----------|-----------|
+| Scene Analysis | `unity://scene/stats`, `unity://scene/render-stats`, `unity://scene/memory-stats`, `unity://scene/analysis` |
+| Objects | `unity://lights`, `unity://cameras`, `unity://terrains`, `unity://particles`, `unity://ui/elements` |
+| Systems | `unity://physics`, `unity://tags`, `unity://layers`, `unity://audio/settings`, `unity://navmesh/settings` |
+| Project | `unity://packages`, `unity://build/settings`, `unity://build/targets`, `unity://editor/windows` |
 
 ## Architecture
 
