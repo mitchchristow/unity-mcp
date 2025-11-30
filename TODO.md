@@ -4,27 +4,7 @@ This document tracks potential enhancements for future development.
 
 ## 🚀 Planned (In Progress)
 
-### MCP Prompts
-Pre-defined prompt templates that guide the AI through complex multi-step workflows.
-
-**Status**: Implementing
-
-**Examples**:
-- "Create 2D Character" - Sprite, physics, movement script
-- "Setup Turn-Based Battle" - Units, turns, actions
-- "Create UI Menu" - Canvas, buttons, navigation
-- "Setup Grid Movement" - For strategy games
-
-### Progress Notifications
-Real-time progress updates for long-running operations.
-
-**Status**: Implementing
-
-**Use Cases**:
-- Build progress
-- NavMesh baking
-- Large asset imports
-- Package installation
+_No items currently in progress._
 
 ---
 
@@ -154,13 +134,33 @@ Add optional authentication for remote access scenarios.
 ## ✅ Completed
 
 - [x] Core Tools (80 tools)
-- [x] MCP Resources (41 resources)
+- [x] MCP Resources (42 resources)
 - [x] Real-time Events via WebSocket
 - [x] 2D Game Development Support
 - [x] Scripting Assistance
 - [x] Tool consolidation (under 80 limit)
 - [x] Background execution optimization
 - [x] WebSocket server (raw TCP implementation)
+- [x] **MCP Prompts** (8 workflow templates)
+  - Pre-defined prompt templates that guide the AI through complex multi-step workflows
+  - Implemented prompts:
+    - `create_2d_character` - Sprite, physics, movement script
+    - `setup_turn_based_system` - Units, turns, actions
+    - `create_grid_map` - Grid-based map with tilemap and pathfinding
+    - `create_ui_menu` - Canvas, buttons, navigation
+    - `setup_unit_stats` - ScriptableObject-based stats system
+    - `create_audio_manager` - Singleton audio manager
+    - `optimize_scene` - Scene analysis and optimization recommendations
+    - `setup_save_system` - JSON-based save/load system
+  - Full implementation in `gateway/index.js` with `generatePromptContent()` function
+  - Registered with `ListPromptsRequestSchema` and `GetPromptRequestSchema` handlers
+- [x] **Progress Notifications** (Real-time operation tracking)
+  - Real-time progress updates for long-running operations via WebSocket events
+  - `ProgressTracker.cs` - Tracks operation progress with start/update/complete/fail lifecycle
+  - `ProgressController.cs` - RPC endpoints for querying progress (`unity.get_progress`, `unity.get_all_progress`)
+  - `unity://progress` resource - Access current progress state
+  - WebSocket `operation.progress` events broadcast automatically
+  - Use cases: Build progress, NavMesh baking, large asset imports, package installation
 
 ---
 
