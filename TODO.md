@@ -161,6 +161,10 @@ Add optional authentication for remote access scenarios.
   - `unity://progress` resource - Access current progress state
   - WebSocket `operation.progress` events broadcast automatically
   - Use cases: Build progress, NavMesh baking, large asset imports, package installation
+- [x] **VS Code Integration**
+  - Added workspace configuration (`.vscode/mcp.json`)
+  - Added integration guide (`ide-integrations/vscode/README.md`)
+  - Verified compatibility with GitHub Copilot extension
 
 ---
 

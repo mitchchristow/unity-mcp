@@ -106,11 +106,31 @@ Create `.cursor/mcp.json`:
 
 See [Antigravity Integration Guide](Docs/docs/ide-configuration/antigravity.md) for detailed instructions.
 
-#### VS Code (⚠️ Under Construction)
+#### VS Code (✅ Supported via Copilot)
 
-> **Note**: VS Code does not natively support MCP. The included task configuration and extension are experimental and may require additional setup.
+VS Code supports MCP servers through the **GitHub Copilot** extension (and others).
 
-A `.vscode/tasks.json` is provided to auto-start the gateway, but full integration requires an MCP-compatible VS Code extension.
+**Automatic Setup:**
+This repository includes a `.vscode/mcp.json` file. If you open this folder in VS Code with the GitHub Copilot extension installed, the Unity MCP server should be automatically detected.
+
+**Manual Setup:**
+If you are adding the Unity MCP server to a different workspace:
+
+1. Create a `.vscode/mcp.json` file in your project root.
+2. Add the configuration:
+   ```json
+   {
+     "servers": {
+       "unity": {
+         "command": "node",
+         "args": ["/path/to/unity-mcp/gateway/index.js"],
+         "type": "stdio"
+       }
+     }
+   }
+   ```
+
+See [VS Code Integration Guide](ide-integrations/vscode/README.md) for more details.
 
 ### Step 4: Start Building!
 

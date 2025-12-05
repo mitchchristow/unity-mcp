@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "unity": {
+      "command": "node",
+      "args": ["${workspaceFolder}/gateway/index.js"],
+      "type": "stdio"
+    }
+  }
+}
