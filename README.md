@@ -106,9 +106,9 @@ Create `.cursor/mcp.json`:
 
 See [Antigravity Integration Guide](Docs/docs/ide-configuration/antigravity.md) for detailed instructions.
 
-#### VS Code (✅ Supported via Copilot)
+#### VS Code (✅ Supported via Kilo and Copilot)
 
-VS Code supports MCP servers through the **GitHub Copilot** extension (and others).
+VS Code supports MCP servers through the **Kilo** and **GitHub Copilot** extension (and others).
 
 **Automatic Setup:**
 This repository includes a `.vscode/mcp.json` file. If you open this folder in VS Code with the GitHub Copilot extension installed, the Unity MCP server should be automatically detected.
