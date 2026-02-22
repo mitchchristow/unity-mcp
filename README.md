@@ -28,7 +28,7 @@ Want to use this MCP server to build Unity games with AI? Follow these steps:
 
 - **Unity 6+** (6000.x)
 - **Node.js 18+**
-- **Cursor IDE** (recommended) or another MCP-compatible IDE
+- **Cursor IDE** (recommended), **VS Code with Claude Code**, or another MCP-compatible IDE
 
 ### Step 1: Install the Unity Package
 
@@ -106,14 +106,14 @@ Create `.cursor/mcp.json`:
 
 See [Antigravity Integration Guide](Docs/docs/ide-configuration/antigravity.md) for detailed instructions.
 
-#### VS Code (✅ Supported via Kilo and Copilot)
+#### VS Code (✅ Supported via Kilo, Copilot, and Claude Code)
 
-VS Code supports MCP servers through the **Kilo** and **GitHub Copilot** extension (and others).
+VS Code supports MCP servers through the **Kilo**, **GitHub Copilot**, and **Claude Code** extensions (and others).
 
 **Automatic Setup:**
-This repository includes a `.vscode/mcp.json` file. If you open this folder in VS Code with the GitHub Copilot extension installed, the Unity MCP server should be automatically detected.
+This repository includes a `.vscode/mcp.json` file. If you open this folder in VS Code with the GitHub Copilot or Kilo extension installed, the Unity MCP server should be automatically detected.
 
-**Manual Setup:**
+**Manual Setup (Kilo / GitHub Copilot):**
 If you are adding the Unity MCP server to a different workspace:
 
 1. Create a `.vscode/mcp.json` file in your project root.
@@ -129,6 +129,22 @@ If you are adding the Unity MCP server to a different workspace:
      }
    }
    ```
+
+**Claude Code Setup:**
+This repository includes a `.mcp.json` file for Claude Code support. If you have the **Claude Code** extension installed in VS Code, the Unity MCP server will be automatically detected when you open this project.
+
+For manual setup in a different workspace, create a `.mcp.json` file in your project root:
+```json
+{
+  "mcpServers": {
+    "unity": {
+      "command": "node",
+      "args": ["./gateway/index.js"],
+      "cwd": "${workspaceFolder}"
+    }
+  }
+}
+```
 
 See [VS Code Integration Guide](ide-integrations/vscode/README.md) for more details.
 
@@ -288,6 +304,7 @@ See [TODO.md](TODO.md) for the roadmap of planned improvements.
 | **Audio** | Audio sources, playback control |
 | **Build** | Configure and execute builds |
 | **2D Development** | Sprites, tilemaps, 2D physics |
+| **Batch Operations** | Execute multiple tools in one call with result chaining and single undo |
 | **Prompts** | 8 workflow templates for common tasks |
 | **Events** | Real-time scene/selection/console streaming |
 

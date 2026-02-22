@@ -10,31 +10,6 @@ _No items currently in progress._
 
 ## 📋 Backlog
 
-### Batch Operations
-**Priority**: Medium  
-**Effort**: Medium
-
-Allow multiple operations in a single call to reduce round-trips.
-
-```javascript
-// Example: Create multiple objects in one call
-{
-  "action": "batch",
-  "operations": [
-    { "tool": "unity_create_primitive", "args": { "type": "Cube", "name": "Wall1" } },
-    { "tool": "unity_create_primitive", "args": { "type": "Cube", "name": "Wall2" } },
-    { "tool": "unity_set_transform", "args": { "id": "$0", "position": { "x": 0 } } }
-  ]
-}
-```
-
-**Benefits**:
-- Faster bulk operations
-- Atomic transactions (all succeed or all fail)
-- Reference previous results with `$0`, `$1`, etc.
-
----
-
 ### Resource Subscriptions
 **Priority**: Medium  
 **Effort**: High
@@ -165,6 +140,12 @@ Add optional authentication for remote access scenarios.
   - Added workspace configuration (`.vscode/mcp.json`)
   - Added integration guide (`ide-integrations/vscode/README.md`)
   - Verified compatibility with GitHub Copilot extension
+- [x] **Batch Operations** (`unity_batch` tool)
+  - Execute multiple tool calls in a single MCP request
+  - Result interpolation: `$0`, `$1`, etc. reference prior results (e.g., `"id": "$0"` resolves to the `id` of the first result)
+  - Entire batch wrapped in a single Unity undo group (one Ctrl+Z reverts all)
+  - `stopOnError` flag (default: true) controls whether to halt or continue on failure
+  - Implemented entirely in `gateway/index.js` — no C# changes required
 
 ---
 
@@ -194,6 +175,27 @@ Add optional authentication for remote access scenarios.
 ### Collaboration Features
 - Lock objects being edited
 - Change notifications to team members
+
+### Dry Run Mode for Batch
+- Add a `dryRun: true` flag to `unity_batch`
+- Validates all operations (tool names, interpolation references, argument shapes) without executing
+- Helps the AI verify a complex batch before committing
+- Builds directly on existing batch infrastructure
+
+### Operation Audit Log
+- Log all AI tool calls (tool name, args, result, timestamp) to a resource
+- Expose via `unity://operations/history` resource
+- Useful for debugging, reviewing changes, and providing context to future AI sessions
+
+### Scene Snapshot & Restore
+- Save a lightweight snapshot of the current scene state (hierarchy, transforms, components)
+- Restore to a snapshot if things go wrong
+- More granular than Unity's full scene save — focused on what the AI cares about
+
+### Conditional Batch Operations
+- Add an optional `condition` field to batch operations
+- Execute operations conditionally based on previous results
+- Makes batches more resilient without needing multiple round trips
 
 ---
 
