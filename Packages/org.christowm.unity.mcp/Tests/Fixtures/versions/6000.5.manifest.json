@@ -1,0 +1,4 @@
+{
+  "description": "Optional RPC tests specific to Unity 6000.5.x (EntityId wire format). Delete with Tests/Versions/6000.5/ when superseded.",
+  "entries": []
+}

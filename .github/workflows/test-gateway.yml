@@ -1,0 +1,28 @@
+name: Gateway Tests
+
+on:
+  push:
+    paths:
+      - "gateway/**"
+      - "scripts/test/run-gateway.ps1"
+      - ".github/workflows/test-gateway.yml"
+  pull_request:
+    paths:
+      - "gateway/**"
+      - "scripts/test/run-gateway.ps1"
+      - ".github/workflows/test-gateway.yml"
+
+jobs:
+  gateway:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install gateway dependencies
+        working-directory: gateway
+        run: npm install
+      - name: Run gateway unit tests
+        working-directory: gateway
+        run: npm test

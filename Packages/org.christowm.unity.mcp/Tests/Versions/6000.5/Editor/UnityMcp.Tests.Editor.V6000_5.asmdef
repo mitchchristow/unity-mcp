@@ -1,10 +1,11 @@
 {
-    "name": "UnityMcp.Tests.Editor",
-    "rootNamespace": "UnityMcp.Tests.Editor",
+    "name": "UnityMcp.Tests.Editor.V6000_5",
+    "rootNamespace": "UnityMcp.Tests.Editor.V6000_5",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "UnityMcp.Editor"
+        "UnityMcp.Editor",
+        "UnityMcp.Tests.Editor.Shared"
     ],
     "includePlatforms": [
         "Editor"
@@ -18,7 +19,9 @@
     ],
     "autoReferenced": false,
     "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
+        "UNITY_INCLUDE_TESTS",
+        "UNITY_6000_5_OR_NEWER",
+        "!UNITY_6000_6_OR_NEWER"
     ],
     "versionDefines": [],
     "noEngineReferences": false

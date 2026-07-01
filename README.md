@@ -279,6 +279,21 @@ Add to the `PROMPTS` array and implement in `generatePromptContent()` function i
 
 ### Testing
 
+Tests are organized for **pruning by Unity editor line**. See `Packages/org.christowm.unity.mcp/Tests/README.md`.
+
+**Gateway unit tests** (no Unity required):
+
+```powershell
+.\scripts\test\run-gateway.ps1
+```
+
+**Unity EditMode tests** (auto-detects version-specific assembly from `ProjectVersion.txt`):
+
+```powershell
+.\scripts\test\run-unity.ps1
+.\scripts\test\run-unity.ps1 -UnityLine 6000.5 -ProjectPath worktrees\unity-6500
+```
+
 **Quick RPC check** (Unity open, MCP server running):
 
 ```bash
@@ -300,7 +315,7 @@ curl -X POST http://localhost:17890/mcp/rpc \
 
 **Operation audit log:** Read the `unity://operations/history` resource to review recent MCP tool calls recorded by the gateway (tool name, args, success/error, duration).
 
-**EditMode tests:** Window → General → Test Runner → EditMode (4 tests in the package).
+**EditMode tests:** Window → General → Test Runner → EditMode, or use `scripts/test/run-unity.ps1`.
 
 ```bash
 # WebSocket events

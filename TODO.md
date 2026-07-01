@@ -4,7 +4,12 @@ This document tracks potential enhancements for future development.
 
 ## 🚀 Planned (In Progress)
 
-_No items currently in progress._
+### Automated Test Suite (Phase 0 complete)
+- Version-prunable layout under `Packages/.../Tests/` (`Shared/`, `Versions/6000.x/`)
+- `RpcTestHarness`, manifest fixtures, gateway `batchUtils` unit tests
+- `scripts/test/run-unity.ps1`, `run-gateway.ps1`, `scaffold-unity-version.ps1`
+- CI skeleton: `.github/workflows/test-gateway.yml`, `test-unity-matrix.yml`
+- **Next (Phase 1):** Expand manifest-driven RPC coverage, full gateway contract tests
 
 ---
 

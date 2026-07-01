@@ -2,7 +2,6 @@
 using UnityEditor;
 using UnityEngine;
 using UnityMcp.Editor.Networking;
-using UnityMcp.Editor.MCP.Rpc.Controllers;
 using UnityMcp.Editor.MCP.Events;
 
 namespace UnityMcp.Editor.MCP
@@ -35,60 +34,7 @@ namespace UnityMcp.Editor.MCP
             // Ensure Unity runs in background to keep server responsive
             Application.runInBackground = true;
 
-            // Register Controllers
-            ConsoleController.Register();
-            SceneController.Register();
-            HierarchyController.Register();
-            ComponentController.Register();
-            PlaymodeController.Register();
-            ScriptController.Register();
-            PrefabController.Register();
-            ShaderController.Register();
-            EditorStateController.Register();
-            AssetController.Register();
-            
-            // Phase 1 Controllers
-            MenuController.Register();
-            SearchController.Register();
-            FileController.Register();
-            ScreenshotController.Register();
-            SelectionController.Register();
-            ComponentInspectorController.Register();
-            
-            // Phase 2 Controllers
-            LightingController.Register();
-            CameraController.Register();
-            PhysicsController.Register();
-            TagLayerController.Register();
-            UndoController.Register();
-            
-            // Phase 3 Controllers
-            AnimationController.Register();
-            AudioController.Register();
-            UIController.Register();
-            BuildController.Register();
-            PackageController.Register();
-            
-            // Phase 4 Controllers
-            TerrainController.Register();
-            ParticleController.Register();
-            NavMeshController.Register();
-            EditorWindowController.Register();
-            SceneStatsController.Register();
-            
-            // Event Controller (for event history access)
-            EventController.Register();
-            
-            // 2D Game Development Controllers
-            Sprite2DController.Register();
-            TilemapController.Register();
-            Physics2DController.Register();
-            
-            // Scripting Assistance Controller
-            ScriptingController.Register();
-            
-            // Progress Tracking Controller
-            ProgressController.Register();
+            McpControllerRegistry.RegisterAll();
 
             // Start HTTP Server
             _httpServer = new HttpServer(17890);

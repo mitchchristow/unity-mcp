@@ -1,0 +1,20 @@
+{
+  "description": "RPC integration tests run on every supported Unity editor line.",
+  "entries": [
+    {
+      "id": "hierarchy_create_object",
+      "method": "unity.create_object",
+      "params": { "name": "__mcp_test_object" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById"
+    },
+    {
+      "id": "smoke_blue_sphere",
+      "method": "unity.create_primitive",
+      "params": { "type": "Sphere", "name": "__mcp_smoke_sphere" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById",
+      "tags": ["smoke"]
+    }
+  ]
+}

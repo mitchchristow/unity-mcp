@@ -1,0 +1,14 @@
+using NUnit.Framework;
+using UnityMcp.Tests.Editor.Shared;
+
+namespace UnityMcp.Tests.Editor.VXXXX_Y
+{
+    public class VersionLineSmokeTests : EditorTestBase
+    {
+        [Test]
+        public void VersionLine_IsDiscoverable()
+        {
+            Assert.Pass("Replace with version-specific smoke tests.");
+        }
+    }
+}

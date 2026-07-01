@@ -1,0 +1,28 @@
+{
+    "name": "UnityMcp.Tests.Editor.VXXXX_Y",
+    "rootNamespace": "UnityMcp.Tests.Editor.VXXXX_Y",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "UnityMcp.Editor",
+        "UnityMcp.Tests.Editor.Shared"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "UNITY_6000_6_OR_NEWER",
+        "!UNITY_6000_7_OR_NEWER"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

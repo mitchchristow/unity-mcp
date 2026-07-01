@@ -1,0 +1,4 @@
+{
+  "description": "Optional RPC tests specific to Unity 6000.3.x LTS. Delete with Tests/Versions/6000.3/ when dropping 6.3 support.",
+  "entries": []
+}

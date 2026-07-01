@@ -1,0 +1,36 @@
+name: Unity EditMode Matrix
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "Packages/org.christowm.unity.mcp/**"
+      - "scripts/test/run-unity.ps1"
+      - ".github/workflows/test-unity-matrix.yml"
+
+jobs:
+  unity-editmode:
+    name: Unity ${{ matrix.unityLine }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - unityLine: "6000.2"
+            projectPath: worktrees/unity-620
+          - unityLine: "6000.3"
+            projectPath: worktrees/unity-630-lts
+          - unityLine: "6000.5"
+            projectPath: worktrees/unity-6500
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run EditMode tests
+        shell: pwsh
+        env:
+          UNITY_EDITOR_PATH: ${{ secrets.UNITY_EDITOR_PATH }}
+        run: |
+          if (-not $env:UNITY_EDITOR_PATH) {
+            Write-Warning "UNITY_EDITOR_PATH secret not set — skipping matrix job on hosted runner."
+            exit 0
+          }
+          ./scripts/test/run-unity.ps1 -UnityLine "${{ matrix.unityLine }}" -ProjectPath "${{ matrix.projectPath }}"
