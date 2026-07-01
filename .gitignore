@@ -75,6 +75,9 @@ Docs/build/
 ide-integrations/vscode/extension/out/
 ide-integrations/vscode/extension/node_modules/
 
+# Linked git worktrees (Unity version test copies)
+/worktrees/
+
 # Local/Temporary Files
 archive/
 DemoScene/
