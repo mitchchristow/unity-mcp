@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityMcp.Editor.Networking;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Events
 {
@@ -20,7 +21,7 @@ namespace UnityMcp.Editor.MCP.Events
         private static WebSocketServer _wsServer;
         private static bool _isInitialized;
         private static bool _wasCompiling;
-        private static HashSet<int> _trackedObjects = new HashSet<int>();
+        private static HashSet<ulong> _trackedObjects = new HashSet<ulong>();
         private static PlayModeStateChange _lastPlayModeState;
         
         // Event history for the resource endpoint
@@ -173,7 +174,7 @@ namespace UnityMcp.Editor.MCP.Events
                 {
                     selectionData.Add(new
                     {
-                        id = go.GetInstanceID(),
+                        id = McpObjectReference.ToWireValue(go),
                         name = go.name,
                         path = GetGameObjectPath(go)
                     });
@@ -245,12 +246,12 @@ namespace UnityMcp.Editor.MCP.Events
         private static void OnHierarchyChanged()
         {
             // Detect created and deleted objects by comparing with tracked set
-            var currentObjects = new HashSet<int>();
+            var currentObjects = new HashSet<ulong>();
             var allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             foreach (var go in allObjects)
             {
-                currentObjects.Add(go.GetInstanceID());
+                currentObjects.Add(McpObjectReference.GetWireKey(go));
             }
 
             // Find new objects (created)
@@ -258,15 +259,15 @@ namespace UnityMcp.Editor.MCP.Events
             {
                 if (!_trackedObjects.Contains(id))
                 {
-                    var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+                    var go = McpObjectReference.ToObject(id) as GameObject;
                     if (go != null)
                     {
                         BroadcastEvent("scene.object_created", new
                         {
-                            id = id,
+                            id = McpObjectReference.WireKeyToWireValue(id),
                             name = go.name,
                             path = GetGameObjectPath(go),
-                            parentId = go.transform.parent?.gameObject.GetInstanceID()
+                            parentId = McpObjectReference.ToWireValue(go.transform.parent?.gameObject)
                         });
                     }
                 }
@@ -279,7 +280,7 @@ namespace UnityMcp.Editor.MCP.Events
                 {
                     BroadcastEvent("scene.object_deleted", new
                     {
-                        id = id
+                        id = McpObjectReference.WireKeyToWireValue(id)
                     });
                 }
             }
@@ -352,7 +353,7 @@ namespace UnityMcp.Editor.MCP.Events
 
             foreach (var go in allObjects)
             {
-                _trackedObjects.Add(go.GetInstanceID());
+                _trackedObjects.Add(McpObjectReference.GetWireKey(go));
             }
         }
 

@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -43,26 +44,25 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             if (p["parent"] != null)
             {
-                int parentId = p["parent"].Value<int>();
-                var parent = EditorUtility.InstanceIDToObject(parentId) as GameObject;
+                var parent = McpObjectReference.ToGameObject(p["parent"]) as GameObject;
                 if (parent != null)
                 {
                     instance.transform.SetParent(parent.transform);
                 }
             }
 
-            return new JObject { ["id"] = instance.GetInstanceID() };
+            return new JObject { ["id"] = McpObjectReference.ToJToken(instance) };
         }
 
         private static JObject CreatePrefab(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string path = p["path"]?.ToString();
             
             if (string.IsNullOrEmpty(path)) throw new System.Exception("Path is required");
             if (!path.EndsWith(".prefab")) path += ".prefab";
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null) throw new System.Exception("Object not found");
 
             // Ensure directory exists

@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using System.Reflection;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -123,7 +124,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["ok"] = true,
-                ["windowId"] = window.GetInstanceID(),
+                ["windowId"] = McpObjectReference.ToJToken(window),
                 ["title"] = window.titleContent.text
             };
         }
@@ -133,14 +134,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject CloseWindow(JObject p)
         {
-            int? windowId = p["id"]?.Value<int>();
+            var windowIdToken = p["id"];
             string windowType = p["type"]?.ToString();
 
             EditorWindow window = null;
 
-            if (windowId.HasValue)
+            if (windowIdToken != null)
             {
-                window = EditorUtility.InstanceIDToObject(windowId.Value) as EditorWindow;
+                window = McpObjectReference.ToObject(windowIdToken) as EditorWindow;
             }
             else if (!string.IsNullOrEmpty(windowType))
             {
@@ -175,7 +176,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
                 result.Add(new JObject
                 {
-                    ["id"] = window.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(window),
                     ["type"] = window.GetType().Name,
                     ["title"] = window.titleContent.text,
                     ["position"] = new JObject
@@ -202,14 +203,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject FocusWindow(JObject p)
         {
-            int? windowId = p["id"]?.Value<int>();
+            var windowIdToken = p["id"];
             string windowType = p["type"]?.ToString();
 
             EditorWindow window = null;
 
-            if (windowId.HasValue)
+            if (windowIdToken != null)
             {
-                window = EditorUtility.InstanceIDToObject(windowId.Value) as EditorWindow;
+                window = McpObjectReference.ToObject(windowIdToken) as EditorWindow;
             }
             else if (!string.IsNullOrEmpty(windowType))
             {
@@ -236,15 +237,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetWindowInfo(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var window = EditorUtility.InstanceIDToObject(id) as EditorWindow;
+            var window = McpObjectReference.ToObject(p["id"]) as EditorWindow;
             if (window == null)
                 throw new System.Exception("Window not found");
 
             return new JObject
             {
-                ["id"] = window.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(window),
                 ["type"] = window.GetType().FullName,
                 ["title"] = window.titleContent.text,
                 ["position"] = new JObject
@@ -265,8 +264,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject OpenInspector(JObject p)
         {
-            int? objectId = p["objectId"]?.Value<int>();
-
+            var objectIdToken = p["objectId"];
             var inspectorType = System.Type.GetType("UnityEditor.InspectorWindow,UnityEditor");
             if (inspectorType == null)
                 throw new System.Exception("Could not find Inspector window type");
@@ -276,9 +274,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             window.Focus();
 
             // Select the object if ID provided
-            if (objectId.HasValue)
+            if (objectIdToken != null)
             {
-                var obj = EditorUtility.InstanceIDToObject(objectId.Value);
+                var obj = McpObjectReference.ToObject(objectIdToken);
                 if (obj != null)
                 {
                     Selection.activeObject = obj;
@@ -288,7 +286,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["ok"] = true,
-                ["windowId"] = window.GetInstanceID()
+                ["windowId"] = McpObjectReference.ToJToken(window)
             };
         }
 

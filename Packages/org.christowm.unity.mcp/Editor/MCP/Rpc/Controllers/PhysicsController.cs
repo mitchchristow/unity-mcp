@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -159,7 +160,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                     ["distance"] = hitInfo.distance,
                     ["gameObject"] = new JObject
                     {
-                        ["id"] = hitInfo.collider.gameObject.GetInstanceID(),
+                        ["id"] = McpObjectReference.ToJToken(hitInfo.collider.gameObject),
                         ["name"] = hitInfo.collider.gameObject.name
                     },
                     ["collider"] = hitInfo.collider.GetType().Name

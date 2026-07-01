@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -137,7 +138,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                     ["point"] = new JObject { ["x"] = hit.point.x, ["y"] = hit.point.y },
                     ["normal"] = new JObject { ["x"] = hit.normal.x, ["y"] = hit.normal.y },
                     ["distance"] = hit.distance,
-                    ["objectId"] = hit.collider.gameObject.GetInstanceID(),
+                    ["objectId"] = McpObjectReference.ToJToken(hit.collider.gameObject),
                     ["objectName"] = hit.collider.gameObject.name,
                     ["colliderType"] = hit.collider.GetType().Name
                 };
@@ -169,7 +170,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 results.Add(new JObject
                 {
-                    ["objectId"] = collider.gameObject.GetInstanceID(),
+                    ["objectId"] = McpObjectReference.ToJToken(collider.gameObject),
                     ["objectName"] = collider.gameObject.name,
                     ["colliderType"] = collider.GetType().Name,
                     ["position"] = new JObject
@@ -214,7 +215,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 results.Add(new JObject
                 {
-                    ["objectId"] = collider.gameObject.GetInstanceID(),
+                    ["objectId"] = McpObjectReference.ToJToken(collider.gameObject),
                     ["objectName"] = collider.gameObject.name,
                     ["colliderType"] = collider.GetType().Name,
                     ["position"] = new JObject

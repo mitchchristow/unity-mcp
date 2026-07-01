@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using UnityMcp.Editor.MCP.Rpc.Controllers;
 using UnityEngine;
 using UnityEditor;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Tests.Editor
 {
@@ -17,10 +18,7 @@ namespace UnityMcp.Tests.Editor
 
             // Execute
             var result = (JObject)method.Invoke(null, new object[] { paramsObj });
-            int id = result["id"].Value<int>();
-
-            // Verify
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(result["id"]);
             Assert.IsNotNull(go);
             Assert.AreEqual("TestObject", go.name);
 

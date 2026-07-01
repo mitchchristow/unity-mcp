@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -69,13 +70,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetObjectTag(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string tag = p["tag"]?.ToString();
 
             if (string.IsNullOrEmpty(tag))
                 throw new System.Exception("Tag is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -109,14 +110,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetObjectLayer(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             var layerParam = p["layer"];
             bool includeChildren = p["includeChildren"]?.Value<bool>() ?? false;
 
             if (layerParam == null)
                 throw new System.Exception("Layer is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 

@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -31,7 +32,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             AssetDatabase.CreateAsset(material, path);
             AssetDatabase.SaveAssets();
 
-            return new JObject { ["path"] = path, ["id"] = material.GetInstanceID() };
+            return new JObject { ["path"] = path, ["id"] = McpObjectReference.ToJToken(material) };
         }
 
         private static JObject SetMaterialProperty(JObject p)

@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -22,7 +23,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 list.Add(new JObject
                 {
-                    ["id"] = go.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(go),
                     ["name"] = go.name,
                     ["position"] = new JObject 
                     { 

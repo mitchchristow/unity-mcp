@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -59,7 +60,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = terrainGO.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(terrainGO),
                 ["name"] = terrainGO.name,
                 ["dataPath"] = assetPath,
                 ["size"] = new JObject
@@ -76,9 +77,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetTerrainInfo(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -91,7 +90,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["name"] = go.name,
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["position"] = new JObject
                 {
                     ["x"] = go.transform.position.x,
@@ -117,9 +116,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetTerrainSize(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -153,13 +150,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetTerrainHeight(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             float x = p["x"]?.Value<float>() ?? 0;
             float z = p["z"]?.Value<float>() ?? 0;
             float height = p["height"]?.Value<float>() ?? 0;
             int radius = p["radius"]?.Value<int>() ?? 1;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -213,11 +210,11 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetTerrainHeight(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             float x = p["x"]?.Value<float>() ?? 0;
             float z = p["z"]?.Value<float>() ?? 0;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -252,7 +249,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 result.Add(new JObject
                 {
-                    ["id"] = terrain.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(terrain.gameObject),
                     ["name"] = terrain.gameObject.name,
                     ["position"] = new JObject
                     {
@@ -281,11 +278,11 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetTerrainLayer(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             int layerIndex = p["layerIndex"]?.Value<int>() ?? 0;
             string texturePath = p["texturePath"]?.ToString();
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -342,10 +339,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject FlattenTerrain(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             float height = p["height"]?.Value<float>() ?? 0;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 

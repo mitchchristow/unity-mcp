@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -88,8 +89,8 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = go.GetInstanceID(),
-                ["lightId"] = light.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
+                ["lightId"] = McpObjectReference.ToJToken(light),
                 ["type"] = lightType.ToString()
             };
         }
@@ -99,9 +100,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetLightProperty(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -282,7 +281,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 result.Add(new JObject
                 {
-                    ["id"] = light.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(light.gameObject),
                     ["name"] = light.gameObject.name,
                     ["type"] = light.type.ToString(),
                     ["intensity"] = light.intensity,

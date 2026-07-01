@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor.AI;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -76,9 +77,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject AddNavMeshAgent(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -89,7 +88,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 {
                     ["ok"] = true,
                     ["alreadyExists"] = true,
-                    ["agentId"] = existingAgent.GetInstanceID()
+                    ["agentId"] = McpObjectReference.ToJToken(existingAgent)
                 };
             }
 
@@ -112,7 +111,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["ok"] = true,
-                ["agentId"] = agent.GetInstanceID()
+                ["agentId"] = McpObjectReference.ToJToken(agent)
             };
         }
 
@@ -121,9 +120,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetNavMeshAgent(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -162,9 +159,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetNavMeshAgentInfo(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -175,7 +170,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["name"] = go.name,
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["speed"] = agent.speed,
                 ["angularSpeed"] = agent.angularSpeed,
                 ["acceleration"] = agent.acceleration,
@@ -208,9 +203,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject AddNavMeshObstacle(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -247,7 +240,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["ok"] = true,
-                ["obstacleId"] = obstacle.GetInstanceID()
+                ["obstacleId"] = McpObjectReference.ToJToken(obstacle)
             };
         }
 
@@ -256,9 +249,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetNavMeshDestination(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -307,7 +298,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 result.Add(new JObject
                 {
-                    ["id"] = agent.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(agent.gameObject),
                     ["name"] = agent.gameObject.name,
                     ["speed"] = agent.speed,
                     ["isOnNavMesh"] = agent.isOnNavMesh,

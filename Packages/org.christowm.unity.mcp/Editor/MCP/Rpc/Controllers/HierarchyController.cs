@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -34,7 +35,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         {
             var obj = new JObject
             {
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name,
                 ["children"] = new JArray()
             };
@@ -54,8 +55,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             
             if (p["parentId"] != null)
             {
-                int parentId = p["parentId"].Value<int>();
-                var parentGo = EditorUtility.InstanceIDToObject(parentId) as GameObject;
+                var parentGo = McpObjectReference.ToGameObject(p["parentId"]) as GameObject;
                 if (parentGo != null)
                 {
                     go.transform.SetParent(parentGo.transform);
@@ -63,7 +63,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             }
 
             Undo.RegisterCreatedObjectUndo(go, "Create Object via MCP");
-            return new JObject { ["id"] = go.GetInstanceID() };
+            return new JObject { ["id"] = McpObjectReference.ToJToken(go) };
         }
 
         private static JObject CreatePrimitive(JObject p)
@@ -80,8 +80,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             
             if (p["parentId"] != null)
             {
-                int parentId = p["parentId"].Value<int>();
-                var parentGo = EditorUtility.InstanceIDToObject(parentId) as GameObject;
+                var parentGo = McpObjectReference.ToGameObject(p["parentId"]) as GameObject;
                 if (parentGo != null)
                 {
                     go.transform.SetParent(parentGo.transform);
@@ -89,13 +88,12 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             }
 
             Undo.RegisterCreatedObjectUndo(go, "Create Primitive via MCP");
-            return new JObject { ["id"] = go.GetInstanceID() };
+            return new JObject { ["id"] = McpObjectReference.ToJToken(go) };
         }
 
         private static JObject DeleteObject(JObject p)
         {
-            int id = p["id"].Value<int>();
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go != null)
             {
                 Undo.DestroyObjectImmediate(go);
@@ -106,8 +104,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
         private static JObject SetTransform(JObject p)
         {
-            int id = p["id"].Value<int>();
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null) throw new System.Exception("Object not found");
 
             Undo.RecordObject(go.transform, "Set Transform via MCP");
@@ -144,8 +141,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
         private static JObject GetTransform(JObject p)
         {
-            int id = p["id"].Value<int>();
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null) throw new System.Exception("Object not found");
 
             return new JObject

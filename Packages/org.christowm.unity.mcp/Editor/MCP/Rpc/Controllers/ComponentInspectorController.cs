@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -26,9 +27,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetComponents(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -42,7 +41,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 {
                     ["type"] = comp.GetType().Name,
                     ["fullType"] = comp.GetType().FullName,
-                    ["id"] = comp.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(comp),
                     ["enabled"] = IsComponentEnabled(comp)
                 });
             }
@@ -60,13 +59,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetComponentProperties(JObject p)
         {
-            int objectId = p["id"].Value<int>();
+            var objectIdToken = p["id"];
             string componentName = p["component"]?.ToString();
             
             if (string.IsNullOrEmpty(componentName))
                 throw new System.Exception("Component name is required");
 
-            var go = EditorUtility.InstanceIDToObject(objectId) as GameObject;
+            var go = McpObjectReference.ToObject(objectIdToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -111,13 +110,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject RemoveComponent(JObject p)
         {
-            int objectId = p["id"].Value<int>();
+            var objectIdToken = p["id"];
             string componentName = p["component"]?.ToString();
             
             if (string.IsNullOrEmpty(componentName))
                 throw new System.Exception("Component name is required");
 
-            var go = EditorUtility.InstanceIDToObject(objectId) as GameObject;
+            var go = McpObjectReference.ToObject(objectIdToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -143,10 +142,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetObjectDetails(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             bool includeChildren = p["includeChildren"]?.Value<bool>() ?? false;
             
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -176,7 +175,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 var compInfo = new JObject
                 {
                     ["type"] = comp.GetType().Name,
-                    ["id"] = comp.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(comp),
                     ["enabled"] = IsComponentEnabled(comp)
                 };
 
@@ -228,7 +227,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name,
                 ["tag"] = go.tag,
                 ["layer"] = go.layer,
