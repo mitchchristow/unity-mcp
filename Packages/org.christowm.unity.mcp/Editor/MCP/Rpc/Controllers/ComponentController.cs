@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Reflection;
 using System;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -18,10 +19,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
         private static JObject AddComponent(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string typeName = p["type"].ToString();
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null) throw new Exception("Object not found");
 
             // Try to find the type
@@ -30,17 +31,17 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             if (type == null) throw new Exception($"Type '{typeName}' not found");
 
             var component = Undo.AddComponent(go, type);
-            return new JObject { ["componentId"] = component.GetInstanceID() };
+            return new JObject { ["componentId"] = McpObjectReference.ToJToken(component) };
         }
 
         private static JObject SetProperty(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string componentName = p["component"].ToString();
             string fieldName = p["field"].ToString();
             var valueToken = p["value"];
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null) throw new Exception("Object not found");
 
             var component = go.GetComponent(componentName);
@@ -83,8 +84,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
         private static JObject SetMaterialColor(JObject p)
         {
-            int id = p["id"].Value<int>();
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null) throw new Exception("Object not found");
 
             var renderer = go.GetComponent<Renderer>();
@@ -123,12 +123,12 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
         private static JObject SetMaterial(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string path = p["path"]?.ToString();
             
             if (string.IsNullOrEmpty(path)) throw new Exception("Path is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null) throw new Exception("Object not found");
 
             var renderer = go.GetComponent<Renderer>();

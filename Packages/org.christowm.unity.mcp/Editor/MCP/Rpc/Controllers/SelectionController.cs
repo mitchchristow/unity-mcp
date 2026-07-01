@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -38,13 +39,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 foreach (var id in idsToken)
                 {
-                    var obj = EditorUtility.InstanceIDToObject(id.Value<int>());
+                    var obj = McpObjectReference.ToObject(id);
                     if (obj != null) objects.Add(obj);
                 }
             }
             else
             {
-                var obj = EditorUtility.InstanceIDToObject(idsToken.Value<int>());
+                var obj = McpObjectReference.ToObject(idsToken);
                 if (obj != null) objects.Add(obj);
             }
 
@@ -72,14 +73,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 foreach (var id in idsToken)
                 {
-                    var obj = EditorUtility.InstanceIDToObject(id.Value<int>());
+                    var obj = McpObjectReference.ToObject(id);
                     if (obj != null && !currentSelection.Contains(obj))
                         currentSelection.Add(obj);
                 }
             }
             else
             {
-                var obj = EditorUtility.InstanceIDToObject(idsToken.Value<int>());
+                var obj = McpObjectReference.ToObject(idsToken);
                 if (obj != null && !currentSelection.Contains(obj))
                     currentSelection.Add(obj);
             }
@@ -102,22 +103,22 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             if (idsToken == null)
                 throw new System.Exception("Object IDs are required");
 
-            var idsToRemove = new HashSet<int>();
+            var idsToRemove = new HashSet<ulong>();
             
             if (idsToken.Type == JTokenType.Array)
             {
                 foreach (var id in idsToken)
                 {
-                    idsToRemove.Add(id.Value<int>());
+                    idsToRemove.Add(McpObjectReference.GetWireKey(McpObjectReference.ToObject(id)));
                 }
             }
             else
             {
-                idsToRemove.Add(idsToken.Value<int>());
+                idsToRemove.Add(McpObjectReference.GetWireKey(McpObjectReference.ToObject(idsToken)));
             }
 
             var newSelection = Selection.objects
-                .Where(obj => !idsToRemove.Contains(obj.GetInstanceID()))
+                .Where(obj => !idsToRemove.Contains(McpObjectReference.GetWireKey(obj)))
                 .ToArray();
 
             Selection.objects = newSelection;

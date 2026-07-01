@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -44,7 +45,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             // Set parent if provided
             if (p["parentId"] != null)
             {
-                var parent = EditorUtility.InstanceIDToObject(p["parentId"].Value<int>()) as GameObject;
+                var parent = McpObjectReference.ToObject(p["parentId"]) as GameObject;
                 if (parent != null)
                 {
                     go.transform.SetParent(parent.transform, true);
@@ -79,7 +80,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name
             };
         }
@@ -89,9 +90,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetParticleSystemInfo(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -106,7 +105,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["name"] = go.name,
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["isPlaying"] = ps.isPlaying,
                 ["isPaused"] = ps.isPaused,
                 ["isStopped"] = ps.isStopped,
@@ -142,9 +141,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetParticleMain(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -192,9 +189,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetParticleEmission(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -221,9 +216,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetParticleShape(JObject p)
         {
-            int id = p["id"].Value<int>();
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -259,10 +252,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject PlayParticleSystem(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             bool withChildren = p["withChildren"]?.Value<bool>() ?? true;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -284,11 +277,11 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject StopParticleSystem(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             bool withChildren = p["withChildren"]?.Value<bool>() ?? true;
             bool clear = p["clear"]?.Value<bool>() ?? false;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -313,7 +306,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 result.Add(new JObject
                 {
-                    ["id"] = ps.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(ps.gameObject),
                     ["name"] = ps.gameObject.name,
                     ["isPlaying"] = ps.isPlaying,
                     ["particleCount"] = ps.particleCount,

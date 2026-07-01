@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -25,9 +26,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetAnimatorInfo(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -69,13 +68,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetAnimatorParameter(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string paramName = p["name"]?.ToString();
             
             if (string.IsNullOrEmpty(paramName))
                 throw new System.Exception("Parameter name is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -113,9 +112,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetAnimatorParameters(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -169,7 +166,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject PlayAnimatorState(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string stateName = p["stateName"]?.ToString();
             int layer = p["layer"]?.Value<int>() ?? 0;
             float normalizedTime = p["normalizedTime"]?.Value<float>() ?? 0f;
@@ -177,7 +174,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             if (string.IsNullOrEmpty(stateName))
                 throw new System.Exception("State name is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 

@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -51,9 +52,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 var bounds = tm.cellBounds;
                 result.Add(new JObject
                 {
-                    ["id"] = tm.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(tm.gameObject),
                     ["name"] = tm.gameObject.name,
-                    ["gridId"] = tm.layoutGrid?.gameObject.GetInstanceID(),
+                    ["gridId"] = McpObjectReference.ToJToken(tm.layoutGrid?.gameObject),
                     ["cellSize"] = new JObject
                     {
                         ["x"] = tm.cellSize.x,
@@ -140,8 +141,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         {
             string name = p["name"]?.Value<string>() ?? "Tilemap";
             bool createGrid = p["createGrid"]?.Value<bool>() ?? true;
-            int? parentId = p["parentId"]?.Value<int>();
-
+            var parentIdToken = p["parentId"];
             GameObject gridGo = null;
             Grid grid = null;
 
@@ -175,9 +175,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 }
 
                 // Set parent if specified
-                if (parentId.HasValue)
+                if (parentIdToken != null)
                 {
-                    var parent = EditorUtility.InstanceIDToObject(parentId.Value) as GameObject;
+                    var parent = McpObjectReference.ToGameObject(parentIdToken) as GameObject;
                     if (parent != null)
                     {
                         gridGo.transform.SetParent(parent.transform);
@@ -186,9 +186,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
                 Undo.RegisterCreatedObjectUndo(gridGo, "Create Grid");
             }
-            else if (parentId.HasValue)
+            else if (parentIdToken != null)
             {
-                gridGo = EditorUtility.InstanceIDToObject(parentId.Value) as GameObject;
+                gridGo = McpObjectReference.ToGameObject(parentIdToken) as GameObject;
                 grid = gridGo?.GetComponentInParent<Grid>();
             }
 
@@ -213,9 +213,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["tilemapId"] = tilemapGo.GetInstanceID(),
+                ["tilemapId"] = McpObjectReference.ToJToken(tilemapGo),
                 ["tilemapName"] = tilemapGo.name,
-                ["gridId"] = gridGo?.GetInstanceID(),
+                ["gridId"] = McpObjectReference.ToJToken(gridGo),
                 ["gridName"] = gridGo?.name
             };
         }
@@ -225,11 +225,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetTilemapInfo(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var idToken = p["id"];
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -241,7 +240,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = id,
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name,
                 ["tileCount"] = GetTileCount(tilemap),
                 ["cellSize"] = new JObject
@@ -267,7 +266,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 },
                 ["grid"] = grid != null ? new JObject
                 {
-                    ["id"] = grid.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(grid.gameObject),
                     ["name"] = grid.gameObject.name,
                     ["cellLayout"] = grid.cellLayout.ToString(),
                     ["cellSize"] = new JObject
@@ -291,12 +290,12 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetTile(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             string tilePath = p["tilePath"]?.Value<string>() ?? throw new System.ArgumentException("tilePath is required");
             
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -328,14 +327,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetTile(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             int x = p["x"]?.Value<int>() ?? 0;
             int y = p["y"]?.Value<int>() ?? 0;
             int z = p["z"]?.Value<int>() ?? 0;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -368,14 +367,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ClearTile(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             int x = p["x"]?.Value<int>() ?? 0;
             int y = p["y"]?.Value<int>() ?? 0;
             int z = p["z"]?.Value<int>() ?? 0;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -398,12 +397,12 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject FillTiles(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             string tilePath = p["tilePath"]?.Value<string>() ?? throw new System.ArgumentException("tilePath is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -444,12 +443,12 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject BoxFillTiles(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             string tilePath = p["tilePath"]?.Value<string>() ?? throw new System.ArgumentException("tilePath is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -486,11 +485,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ClearAllTiles(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var idToken = p["id"];
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)
@@ -513,14 +511,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject CellToWorld(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             int x = p["x"]?.Value<int>() ?? 0;
             int y = p["y"]?.Value<int>() ?? 0;
             int z = p["z"]?.Value<int>() ?? 0;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             var grid = tilemap?.layoutGrid ?? go.GetComponent<Grid>();
@@ -542,14 +540,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject WorldToCell(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             float x = p["x"]?.Value<float>() ?? 0;
             float y = p["y"]?.Value<float>() ?? 0;
             float z = p["z"]?.Value<float>() ?? 0;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             var grid = tilemap?.layoutGrid ?? go.GetComponent<Grid>();
@@ -571,16 +569,16 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetTilesInBounds(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             int startX = p["startX"]?.Value<int>() ?? 0;
             int startY = p["startY"]?.Value<int>() ?? 0;
             int endX = p["endX"]?.Value<int>() ?? 10;
             int endY = p["endY"]?.Value<int>() ?? 10;
             int z = p["z"]?.Value<int>() ?? 0;
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var tilemap = go.GetComponent<Tilemap>();
             if (tilemap == null)

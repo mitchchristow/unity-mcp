@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -84,8 +85,8 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = go.GetInstanceID(),
-                ["cameraId"] = camera.GetInstanceID()
+                ["id"] = McpObjectReference.ToJToken(go),
+                ["cameraId"] = McpObjectReference.ToJToken(camera)
             };
         }
 
@@ -94,9 +95,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetCameraProperty(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -177,9 +176,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetCameraInfo(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -189,7 +186,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name,
                 ["fieldOfView"] = camera.fieldOfView,
                 ["orthographic"] = camera.orthographic,
@@ -229,7 +226,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 result.Add(new JObject
                 {
-                    ["id"] = camera.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(camera.gameObject),
                     ["name"] = camera.gameObject.name,
                     ["fieldOfView"] = camera.fieldOfView,
                     ["orthographic"] = camera.orthographic,

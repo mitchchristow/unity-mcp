@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -61,8 +62,8 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = canvasGO.GetInstanceID(),
-                ["canvasId"] = canvas.GetInstanceID()
+                ["id"] = McpObjectReference.ToJToken(canvasGO),
+                ["canvasId"] = McpObjectReference.ToJToken(canvas)
             };
         }
 
@@ -72,7 +73,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         private static JObject CreateUIElement(JObject p)
         {
             string elementType = p["type"]?.ToString();
-            int parentId = p["parentId"]?.Value<int>() ?? 0;
+            var parentIdToken = p["parentId"];
             string name = p["name"]?.ToString();
             
             if (string.IsNullOrEmpty(elementType))
@@ -80,9 +81,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             // Find parent (should be a Canvas or UI element)
             Transform parent = null;
-            if (parentId != 0)
+            if (parentIdToken != null)
             {
-                var parentGO = EditorUtility.InstanceIDToObject(parentId) as GameObject;
+                var parentGO = McpObjectReference.ToObject(parentIdToken) as GameObject;
                 if (parentGO != null)
                 {
                     parent = parentGO.transform;
@@ -97,7 +98,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 {
                     // Create a canvas first
                     var createResult = CreateCanvas(new JObject());
-                    var canvasGO = EditorUtility.InstanceIDToObject(createResult["id"].Value<int>()) as GameObject;
+                    var canvasGO = McpObjectReference.ToObject(createResult["id"]) as GameObject;
                     parent = canvasGO.transform;
                 }
                 else
@@ -167,7 +168,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = element.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(element),
                 ["type"] = elementType,
                 ["name"] = element.name
             };
@@ -316,10 +317,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetUIText(JObject p)
         {
-            int id = p["id"].Value<int>();
+            var idToken = p["id"];
             string text = p["text"]?.ToString();
             
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -358,9 +359,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetUIImage(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -402,9 +401,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetRectTransform(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
@@ -462,16 +459,14 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetUIInfo(JObject p)
         {
-            int id = p["id"].Value<int>();
-            
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToGameObject(p["id"]) as GameObject;
             if (go == null)
                 throw new System.Exception("GameObject not found");
 
             var result = new JObject
             {
                 ["name"] = go.name,
-                ["id"] = go.GetInstanceID()
+                ["id"] = McpObjectReference.ToJToken(go)
             };
 
             var rect = go.GetComponent<RectTransform>();
@@ -524,7 +519,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 var canvasInfo = new JObject
                 {
-                    ["id"] = canvas.gameObject.GetInstanceID(),
+                    ["id"] = McpObjectReference.ToJToken(canvas.gameObject),
                     ["name"] = canvas.gameObject.name,
                     ["renderMode"] = canvas.renderMode.ToString(),
                     ["children"] = new JArray()
@@ -549,7 +544,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         {
             var info = new JObject
             {
-                ["id"] = parent.gameObject.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(parent.gameObject),
                 ["name"] = parent.gameObject.name
             };
 

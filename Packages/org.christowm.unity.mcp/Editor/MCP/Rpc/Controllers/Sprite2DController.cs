@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -137,8 +138,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         {
             string name = p["name"]?.Value<string>() ?? "New Sprite";
             string spritePath = p["spritePath"]?.Value<string>();
-            int? parentId = p["parentId"]?.Value<int>();
-
+            var parentIdToken = p["parentId"];
             var go = new GameObject(name);
             var sr = go.AddComponent<SpriteRenderer>();
 
@@ -153,9 +153,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             }
 
             // Set parent if specified
-            if (parentId.HasValue)
+            if (parentIdToken != null)
             {
-                var parent = EditorUtility.InstanceIDToObject(parentId.Value) as GameObject;
+                var parent = McpObjectReference.ToGameObject(parentIdToken) as GameObject;
                 if (parent != null)
                 {
                     go.transform.SetParent(parent.transform);
@@ -197,7 +197,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name,
                 ["hasSprite"] = sr.sprite != null
             };
@@ -208,12 +208,12 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetSprite(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             string spritePath = p["spritePath"]?.Value<string>() ?? throw new System.ArgumentException("spritePath is required");
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var sr = go.GetComponent<SpriteRenderer>();
             if (sr == null)
@@ -238,11 +238,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetSpriteRendererProperty(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var idToken = p["id"];
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var sr = go.GetComponent<SpriteRenderer>();
             if (sr == null)
@@ -296,11 +295,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetSpriteRendererInfo(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var idToken = p["id"];
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var sr = go.GetComponent<SpriteRenderer>();
             if (sr == null)
@@ -308,7 +306,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             return new JObject
             {
-                ["id"] = id,
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name,
                 ["sprite"] = sr.sprite?.name,
                 ["spritePath"] = sr.sprite != null ? AssetDatabase.GetAssetPath(sr.sprite) : null,
@@ -339,12 +337,12 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject Add2DCollider(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             string type = p["type"]?.Value<string>() ?? "Box";
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             Collider2D collider = type.ToLower() switch
             {
@@ -402,7 +400,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             {
                 ["ok"] = true,
                 ["colliderType"] = type,
-                ["componentId"] = collider.GetInstanceID()
+                ["componentId"] = McpObjectReference.ToJToken(collider)
             };
         }
 
@@ -411,11 +409,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject AddRigidbody2D(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var idToken = p["id"];
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var rb = go.AddComponent<Rigidbody2D>();
             Undo.RegisterCreatedObjectUndo(rb, "Add Rigidbody2D");
@@ -441,7 +438,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             return new JObject
             {
                 ["ok"] = true,
-                ["componentId"] = rb.GetInstanceID()
+                ["componentId"] = McpObjectReference.ToJToken(rb)
             };
         }
 
@@ -450,11 +447,10 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetRigidbody2DProperty(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
-
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var idToken = p["id"];
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var rb = go.GetComponent<Rigidbody2D>();
             if (rb == null)
@@ -490,13 +486,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject SetSortingLayer(JObject p)
         {
-            int id = p["id"]?.Value<int>() ?? throw new System.ArgumentException("id is required");
+            var idToken = p["id"];
             string layerName = p["layerName"]?.Value<string>();
             int? order = p["order"]?.Value<int>();
 
-            var go = EditorUtility.InstanceIDToObject(id) as GameObject;
+            var go = McpObjectReference.ToObject(idToken) as GameObject;
             if (go == null)
-                throw new System.ArgumentException($"GameObject not found: {id}");
+                throw new System.ArgumentException($"GameObject not found: {idToken}");
 
             var renderer = go.GetComponent<Renderer>();
             if (renderer == null)

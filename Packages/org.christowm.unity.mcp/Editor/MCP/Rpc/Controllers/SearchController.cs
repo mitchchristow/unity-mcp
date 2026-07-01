@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityMcp.Editor.MCP;
 
 namespace UnityMcp.Editor.MCP.Rpc.Controllers
 {
@@ -119,13 +120,13 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             }
 
             var components = Object.FindObjectsByType(componentType, includeInactive ? FindObjectsInactive.Include : FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            var addedObjects = new HashSet<int>();
+            var addedObjects = new HashSet<ulong>();
             
             foreach (var comp in components)
             {
                 if (comp is Component c)
                 {
-                    int id = c.gameObject.GetInstanceID();
+                    ulong id = McpObjectReference.GetWireKey(c.gameObject);
                     if (!addedObjects.Contains(id))
                     {
                         addedObjects.Add(id);
@@ -293,7 +294,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         {
             return new JObject
             {
-                ["id"] = go.GetInstanceID(),
+                ["id"] = McpObjectReference.ToJToken(go),
                 ["name"] = go.name,
                 ["tag"] = go.tag,
                 ["layer"] = go.layer,
