@@ -8,6 +8,31 @@ _No items currently in progress._
 
 ---
 
+## Unity 6.5 Opportunities
+
+APIs and workflows worth exploring now that Unity 6.5+ Entity IDs are supported:
+
+### Build Profile API (`BuildController`)
+- Unity 6.5 exposes richer Build Profile APIs for multi-target workflows
+- Could add `unity_build_profile` actions: list profiles, switch active profile, read profile settings
+- Reduces manual Editor navigation for CI and multi-platform setups
+
+### Project-local Editor logs (`ConsoleController`)
+- `Application.consoleLogPath` points at the project-local Editor log on newer Unity versions
+- Read/filter that file for errors outside the in-memory console buffer
+- Useful for post-compile diagnostics and long-running import/build failures
+
+### Hierarchy window APIs (`Unity.Hierarchy`)
+- Unity 6.5 Hierarchy window APIs for expanded/collapsed state and selection context
+- Could enrich `unity://scene/hierarchy` or add `unity://hierarchy/state` resource
+- Enables AI to reason about what the user is looking at in the Hierarchy
+
+### MCP schema: large object IDs
+- Tool schemas still declare `id` as `integer`; Unity 6.5 wire IDs can exceed `Int32`
+- Update gateway JSON schemas to `number` or `oneOf` integer/number for 6.5 compatibility
+
+---
+
 ## 📋 Backlog
 
 ### Resource Subscriptions
@@ -109,7 +134,7 @@ Add optional authentication for remote access scenarios.
 ## ✅ Completed
 
 - [x] Core Tools (80 tools)
-- [x] MCP Resources (42 resources)
+- [x] MCP Resources (43 resources)
 - [x] Real-time Events via WebSocket
 - [x] 2D Game Development Support
 - [x] Scripting Assistance
@@ -146,6 +171,18 @@ Add optional authentication for remote access scenarios.
   - Entire batch wrapped in a single Unity undo group (one Ctrl+Z reverts all)
   - `stopOnError` flag (default: true) controls whether to halt or continue on failure
   - Implemented entirely in `gateway/index.js` — no C# changes required
+- [x] **Console warning cleanup** (v1.3.1)
+  - Removed obsolete `FindObjectsSortMode` arguments across controllers
+  - Replaced `FindFirstObjectByType` with `FindAnyObjectByType` in `UIController`
+  - Isolated legacy `InstanceIDToObject` and `autoSyncTransforms` usage behind pragma-wrapped helpers
+- [x] **Batch dry-run mode** (`unity_batch` + `dryRun: true`)
+  - Validates tool names, `$N` interpolation, and RPC mapping without calling Unity
+  - Skips undo group open/close on dry run
+  - Gateway-only; no C# changes required
+- [x] **Operation Audit Log** (`unity://operations/history`)
+  - Gateway-side ring buffer of recent MCP tool calls and Unity RPC invocations
+  - Records tool name, args, RPC method, success/error, duration, and timestamp
+  - Accessible via MCP resource without Unity round-trip
 
 ---
 
@@ -175,17 +212,6 @@ Add optional authentication for remote access scenarios.
 ### Collaboration Features
 - Lock objects being edited
 - Change notifications to team members
-
-### Dry Run Mode for Batch
-- Add a `dryRun: true` flag to `unity_batch`
-- Validates all operations (tool names, interpolation references, argument shapes) without executing
-- Helps the AI verify a complex batch before committing
-- Builds directly on existing batch infrastructure
-
-### Operation Audit Log
-- Log all AI tool calls (tool name, args, result, timestamp) to a resource
-- Expose via `unity://operations/history` resource
-- Useful for debugging, reviewing changes, and providing context to future AI sessions
 
 ### Scene Snapshot & Restore
 - Save a lightweight snapshot of the current scene state (hierarchy, transforms, components)

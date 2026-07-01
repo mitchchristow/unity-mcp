@@ -22,6 +22,36 @@ const MAX_EVENT_BUFFER = 100;
 const eventBuffer = [];
 let wsConnected = false;
 
+// Operation audit log (gateway-side MCP tool/RPC history)
+const MAX_OPERATION_LOG = 100;
+const operationLog = [];
+
+function summarizeForAudit(value) {
+  if (value == null) return value;
+  try {
+    const text = JSON.stringify(value);
+    if (text.length <= 2000) return value;
+    return { _truncated: true, preview: text.slice(0, 2000) };
+  } catch {
+    return String(value);
+  }
+}
+
+function recordOperation(entry) {
+  operationLog.push({
+    timestamp: new Date().toISOString(),
+    ...entry,
+  });
+  if (operationLog.length > MAX_OPERATION_LOG) {
+    operationLog.shift();
+  }
+}
+
+function getOperationHistory(limit = 50) {
+  const n = Math.max(1, Math.min(limit, operationLog.length));
+  return operationLog.slice(-n);
+}
+
 // Initialize MCP Server
 const server = new Server(
   {
@@ -38,7 +68,8 @@ const server = new Server(
 );
 
 // Helper to call Unity RPC
-async function callUnity(method, params) {
+async function callUnity(method, params, auditContext = null) {
+  const startedAt = Date.now();
   try {
     const response = await axios.post(UNITY_RPC_URL, {
       jsonrpc: "2.0",
@@ -51,8 +82,29 @@ async function callUnity(method, params) {
       throw new Error(response.data.error.message || "Unknown Unity Error");
     }
 
-    return response.data.result;
+    const result = response.data.result;
+    if (auditContext) {
+      recordOperation({
+        ...auditContext,
+        rpcMethod: method,
+        rpcParams: summarizeForAudit(params),
+        success: true,
+        durationMs: Date.now() - startedAt,
+        result: summarizeForAudit(result),
+      });
+    }
+    return result;
   } catch (error) {
+    if (auditContext) {
+      recordOperation({
+        ...auditContext,
+        rpcMethod: method,
+        rpcParams: summarizeForAudit(params),
+        success: false,
+        durationMs: Date.now() - startedAt,
+        error: error.message,
+      });
+    }
     if (error.code === "ECONNREFUSED") {
       throw new Error("Unity Editor is not running or MCP server is not started.");
     }
@@ -1590,6 +1642,10 @@ const TOOLS = [
           type: "boolean",
           description: "Stop on first error (default: true). Set to false to continue and collect all errors.",
         },
+        dryRun: {
+          type: "boolean",
+          description: "Validate tool names, argument interpolation, and RPC mapping without calling Unity or opening an undo group.",
+        },
         operations: {
           type: "array",
           minItems: 1,
@@ -1615,6 +1671,14 @@ const TOOLS = [
   },
 ];
 
+const TOOL_NAMES = new Set(TOOLS.map((tool) => tool.name));
+
+function assertKnownTool(toolName) {
+  if (!TOOL_NAMES.has(toolName)) {
+    throw new Error(`Unknown tool: ${toolName}`);
+  }
+}
+
 // List Tools Handler
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -1630,6 +1694,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (toolName === "unity_batch") {
     const operations = args.operations || [];
     const stopOnError = args.stopOnError !== false;
+    const dryRun = args.dryRun === true;
     const groupName = args.groupName || "Batch Operation";
 
     if (operations.length === 0) {
@@ -1645,10 +1710,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
     }
 
-    try {
-      await callUnity("unity.begin_undo_group", { name: groupName });
-    } catch (e) {
-      return { content: [{ type: "text", text: `Error: Failed to open undo group: ${e.message}` }], isError: true };
+    if (!dryRun) {
+      try {
+        await callUnity("unity.begin_undo_group", { name: groupName });
+      } catch (e) {
+        return { content: [{ type: "text", text: `Error: Failed to open undo group: ${e.message}` }], isError: true };
+      }
     }
 
     const results = [];
@@ -1665,23 +1732,64 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         opResults.push({ index: i, tool: op.tool, success: false, error: `Interpolation error: ${e.message}` });
         results.push(null);
         batchHadError = true;
+        recordOperation({
+          tool: op.tool,
+          batch: true,
+          batchIndex: i,
+          dryRun,
+          success: false,
+          args: summarizeForAudit(op.args || {}),
+          error: `Interpolation error: ${e.message}`,
+        });
         if (stopOnError) break;
         continue;
       }
 
       let method, rpcParams;
       try {
+        assertKnownTool(op.tool);
         ({ method, rpcParams } = resolveToolCall(op.tool, interpolatedArgs));
       } catch (e) {
         opResults.push({ index: i, tool: op.tool, success: false, error: `Tool resolution error: ${e.message}` });
         results.push(null);
         batchHadError = true;
+        recordOperation({
+          tool: op.tool,
+          batch: true,
+          batchIndex: i,
+          dryRun,
+          success: false,
+          args: summarizeForAudit(interpolatedArgs),
+          error: e.message,
+        });
         if (stopOnError) break;
         continue;
       }
 
+      if (dryRun) {
+        const dryResult = { dryRun: true, rpcMethod: method, rpcParams: summarizeForAudit(rpcParams) };
+        results.push(dryResult);
+        opResults.push({ index: i, tool: op.tool, success: true, dryRun: true, ...dryResult });
+        recordOperation({
+          tool: op.tool,
+          batch: true,
+          batchIndex: i,
+          dryRun: true,
+          success: true,
+          args: summarizeForAudit(interpolatedArgs),
+          rpcMethod: method,
+          rpcParams: summarizeForAudit(rpcParams),
+        });
+        continue;
+      }
+
       try {
-        const result = await callUnity(method, rpcParams);
+        const result = await callUnity(method, rpcParams, {
+          tool: op.tool,
+          batch: true,
+          batchIndex: i,
+          args: summarizeForAudit(interpolatedArgs),
+        });
         results.push(result);
         opResults.push({ index: i, tool: op.tool, success: true, result });
       } catch (e) {
@@ -1692,14 +1800,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
     }
 
-    try {
-      await callUnity("unity.end_undo_group", {});
-    } catch (e) {
-      opResults.push({ index: -1, tool: "_undo_group_close", success: false, error: `Warning: Failed to close undo group: ${e.message}` });
+    if (!dryRun) {
+      try {
+        await callUnity("unity.end_undo_group", {});
+      } catch (e) {
+        opResults.push({ index: -1, tool: "_undo_group_close", success: false, error: `Warning: Failed to close undo group: ${e.message}` });
+      }
     }
 
     return {
-      content: [{ type: "text", text: JSON.stringify({ success: !batchHadError, operationsRun: opResults.length, results: opResults }, null, 2) }],
+      content: [{ type: "text", text: JSON.stringify({ success: !batchHadError, dryRun, operationsRun: opResults.length, results: opResults }, null, 2) }],
       isError: batchHadError,
     };
   }
@@ -1707,7 +1817,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { method, rpcParams } = resolveToolCall(toolName, args);
 
   try {
-    const result = await callUnity(method, rpcParams);
+    const result = await callUnity(method, rpcParams, {
+      tool: toolName,
+      args: summarizeForAudit(args),
+    });
     return {
       content: [
         {
@@ -1987,6 +2100,12 @@ const RESOURCES = [
     uri: "unity://progress",
     name: "Operation Progress",
     description: "Progress of long-running operations (builds, etc.)",
+    mimeType: "application/json",
+  },
+  {
+    uri: "unity://operations/history",
+    name: "Operation Audit Log",
+    description: "Recent MCP tool calls and Unity RPC invocations recorded by the gateway",
     mimeType: "application/json",
   },
 ];
@@ -2595,6 +2714,20 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       case "unity://progress":
         rpcMethod = "unity.get_all_progress";
         break;
+      case "unity://operations/history":
+        return {
+          contents: [
+            {
+              uri: uri,
+              mimeType: "application/json",
+              text: JSON.stringify({
+                operations: getOperationHistory(50),
+                count: operationLog.length,
+                maxBuffer: MAX_OPERATION_LOG,
+              }, null, 2),
+            },
+          ],
+        };
       default:
         throw new Error(`Unknown resource: ${uri}`);
     }

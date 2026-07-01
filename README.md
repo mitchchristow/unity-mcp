@@ -296,6 +296,10 @@ curl -X POST http://localhost:17890/mcp/rpc \
 5. `unity.set_material` — apply material to the sphere
 6. `unity.get_object_details` — confirm transform and material
 
+**Batch dry-run:** Call the `unity_batch` tool with `"dryRun": true` to validate tool names and `$N` interpolation without modifying the scene.
+
+**Operation audit log:** Read the `unity://operations/history` resource to review recent MCP tool calls recorded by the gateway (tool name, args, success/error, duration).
+
 **EditMode tests:** Window → General → Test Runner → EditMode (4 tests in the package).
 
 ```bash
@@ -344,7 +348,8 @@ See [TODO.md](TODO.md) for the roadmap of planned improvements.
 | **Audio** | Audio sources, playback control |
 | **Build** | Configure and execute builds |
 | **2D Development** | Sprites, tilemaps, 2D physics |
-| **Batch Operations** | Execute multiple tools in one call with result chaining and single undo |
+| **Batch Operations** | Execute multiple tools in one call with result chaining, single undo, and optional dry-run validation |
+| **Operation Audit Log** | Gateway records recent MCP tool calls; inspect via `unity://operations/history` |
 | **Prompts** | 8 workflow templates for common tasks |
 | **Events** | Real-time scene/selection/console streaming |
 
@@ -387,6 +392,28 @@ The server exposes **80 tools** organized by category. Many use an `action` para
 | `unity_window` | open, close, focus, get_info |
 | `unity_sprite` | create, set_sprite, set_property, get_info |
 | `unity_tilemap` | create, set_tile, get_tile, fill, clear_all, get_info |
+| `unity_batch` | Run multiple tools sequentially in one undo group; supports `$0` result chaining and `dryRun: true` validation |
+
+</details>
+
+<details>
+<summary><strong>Batch Operations (`unity_batch`)</strong></summary>
+
+Run several tool calls in one MCP request. The entire batch is wrapped in a single Unity undo group (one Ctrl+Z reverts all).
+
+**Result chaining:** Use `$0`, `$1`, etc. in later `args` to reference prior results (e.g. `"id": "$0.id"`).
+
+**Dry-run validation:** Set `"dryRun": true` to validate tool names, interpolation, and RPC mapping **without** calling Unity or opening an undo group. Useful for checking a complex workflow before executing it.
+
+```json
+{
+  "dryRun": true,
+  "operations": [
+    { "tool": "unity_create_primitive", "args": { "type": "Cube", "name": "TestCube" } },
+    { "tool": "unity_set_transform", "args": { "id": "$0.id", "position": { "x": 0, "y": 1, "z": 0 } } }
+  ]
+}
+```
 
 </details>
 
@@ -406,7 +433,7 @@ The server exposes **80 tools** organized by category. Many use an `action` para
 
 </details>
 
-### Resources (42)
+### Resources (43)
 
 Resources provide **read-only context** that the AI reads automatically.
 
@@ -426,6 +453,7 @@ Resources provide **read-only context** that the AI reads automatically.
 | **2D** | `unity://sprites`, `unity://tilemaps`, `unity://tiles`, `unity://2d/physics` |
 | **Scripting** | `unity://scripts/errors`, `unity://scripts/warnings`, `unity://scripts/templates`, `unity://components/types` |
 | **Progress** | `unity://progress` |
+| **Gateway** | `unity://operations/history` — recent MCP tool calls (tool, args, RPC method, success/error, duration) |
 
 </details>
 
