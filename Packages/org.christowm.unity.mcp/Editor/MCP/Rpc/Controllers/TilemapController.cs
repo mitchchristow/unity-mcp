@@ -44,7 +44,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListTilemaps(JObject p)
         {
-            var tilemaps = Object.FindObjectsByType<Tilemap>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var tilemaps = Object.FindObjectsByType<Tilemap>(FindObjectsInactive.Include);
             var result = new JArray();
 
             foreach (var tm in tilemaps)

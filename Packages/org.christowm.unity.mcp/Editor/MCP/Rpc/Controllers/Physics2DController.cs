@@ -55,7 +55,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 ["queriesStartInColliders"] = Physics2D.queriesStartInColliders,
                 ["callbacksOnDisable"] = Physics2D.callbacksOnDisable,
                 ["reuseCollisionCallbacks"] = Physics2D.reuseCollisionCallbacks,
-                ["autoSyncTransforms"] = Physics2D.autoSyncTransforms,
+                ["autoSyncTransforms"] = GetAutoSyncTransforms(),
                 ["simulationMode"] = Physics2D.simulationMode.ToString()
             };
         }
@@ -102,7 +102,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             if (p["reuseCollisionCallbacks"] != null) 
                 Physics2D.reuseCollisionCallbacks = p["reuseCollisionCallbacks"].Value<bool>();
             if (p["autoSyncTransforms"] != null) 
-                Physics2D.autoSyncTransforms = p["autoSyncTransforms"].Value<bool>();
+                SetAutoSyncTransforms(p["autoSyncTransforms"].Value<bool>());
 
             return new JObject
             {
@@ -319,6 +319,20 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 ["layer2"] = LayerMask.LayerToName(layer2),
                 ["ignore"] = ignore
             };
+        }
+
+        private static bool GetAutoSyncTransforms()
+        {
+#pragma warning disable CS0618
+            return Physics2D.autoSyncTransforms;
+#pragma warning restore CS0618
+        }
+
+        private static void SetAutoSyncTransforms(bool value)
+        {
+#pragma warning disable CS0618
+            Physics2D.autoSyncTransforms = value;
+#pragma warning restore CS0618
         }
     }
 }

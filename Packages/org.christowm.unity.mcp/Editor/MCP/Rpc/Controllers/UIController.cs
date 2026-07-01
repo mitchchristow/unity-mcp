@@ -50,7 +50,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             canvasGO.AddComponent<GraphicRaycaster>();
             
             // Create EventSystem if none exists
-            if (Object.FindFirstObjectByType<EventSystem>() == null)
+            if (Object.FindAnyObjectByType<EventSystem>() == null)
             {
                 var eventSystemGO = new GameObject("EventSystem");
                 eventSystemGO.AddComponent<EventSystem>();
@@ -93,7 +93,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             // If no parent specified, find or create a Canvas
             if (parent == null)
             {
-                var canvas = Object.FindFirstObjectByType<Canvas>();
+                var canvas = Object.FindAnyObjectByType<Canvas>();
                 if (canvas == null)
                 {
                     // Create a canvas first
@@ -512,7 +512,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListUIElements(JObject p)
         {
-            var canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include);
             var result = new JArray();
 
             foreach (var canvas in canvases)

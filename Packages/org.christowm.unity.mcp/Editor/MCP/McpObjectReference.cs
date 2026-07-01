@@ -56,7 +56,7 @@ namespace UnityMcp.Editor.MCP
 #if UNITY_6000_5_OR_NEWER
             return FromWireKey(ParseWireUlong(token));
 #else
-            return EditorUtility.InstanceIDToObject(token.Value<int>());
+            return LegacyInstanceIdToObject(token.Value<int>());
 #endif
         }
 
@@ -65,7 +65,7 @@ namespace UnityMcp.Editor.MCP
 #if UNITY_6000_5_OR_NEWER
             return FromWireKey(unchecked((ulong)(uint)instanceId));
 #else
-            return EditorUtility.InstanceIDToObject(instanceId);
+            return LegacyInstanceIdToObject(instanceId);
 #endif
         }
 
@@ -100,9 +100,18 @@ namespace UnityMcp.Editor.MCP
 #if UNITY_6000_5_OR_NEWER
             return EditorUtility.EntityIdToObject(EntityId.FromULong(wireKey));
 #else
-            return EditorUtility.InstanceIDToObject(unchecked((int)(uint)wireKey));
+            return LegacyInstanceIdToObject(unchecked((int)(uint)wireKey));
 #endif
         }
+
+#if !UNITY_6000_5_OR_NEWER
+        private static Object LegacyInstanceIdToObject(int instanceId)
+        {
+#pragma warning disable CS0618
+            return EditorUtility.InstanceIDToObject(instanceId);
+#pragma warning restore CS0618
+        }
+#endif
 
 #if UNITY_6000_5_OR_NEWER
         private static ulong ParseWireUlong(JToken token)

@@ -247,7 +247,7 @@ namespace UnityMcp.Editor.MCP.Events
         {
             // Detect created and deleted objects by comparing with tracked set
             var currentObjects = new HashSet<ulong>();
-            var allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include);
 
             foreach (var go in allObjects)
             {
@@ -349,7 +349,7 @@ namespace UnityMcp.Editor.MCP.Events
         private static void RefreshTrackedObjects()
         {
             _trackedObjects.Clear();
-            var allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include);
 
             foreach (var go in allObjects)
             {

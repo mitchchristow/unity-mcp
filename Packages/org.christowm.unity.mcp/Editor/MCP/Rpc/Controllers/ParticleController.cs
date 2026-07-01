@@ -299,7 +299,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListParticleSystems(JObject p)
         {
-            var systems = Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var systems = Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include);
             var result = new JArray();
 
             foreach (var ps in systems)

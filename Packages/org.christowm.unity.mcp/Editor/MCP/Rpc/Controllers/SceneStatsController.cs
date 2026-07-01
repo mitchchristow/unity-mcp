@@ -123,9 +123,9 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject GetRenderStats(JObject p)
         {
-            var cameras = Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            var lights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            var renderers = Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var cameras = Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude);
+            var lights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude);
+            var renderers = Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude);
 
             int visibleRenderers = renderers.Count(r => r.isVisible);
             int shadowCastingLights = lights.Count(l => l.shadows != LightShadows.None);
@@ -197,22 +197,22 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             var counts = new JObject();
 
             // Count common component types
-            counts["Transform"] = Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["MeshRenderer"] = Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["SkinnedMeshRenderer"] = Object.FindObjectsByType<SkinnedMeshRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["MeshFilter"] = Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["BoxCollider"] = Object.FindObjectsByType<BoxCollider>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["SphereCollider"] = Object.FindObjectsByType<SphereCollider>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["CapsuleCollider"] = Object.FindObjectsByType<CapsuleCollider>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["MeshCollider"] = Object.FindObjectsByType<MeshCollider>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["Rigidbody"] = Object.FindObjectsByType<Rigidbody>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["Light"] = Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["Camera"] = Object.FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["AudioSource"] = Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["ParticleSystem"] = Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["Canvas"] = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["Animator"] = Object.FindObjectsByType<Animator>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-            counts["NavMeshAgent"] = Object.FindObjectsByType<UnityEngine.AI.NavMeshAgent>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
+            counts["Transform"] = Object.FindObjectsByType<Transform>(FindObjectsInactive.Include).Length;
+            counts["MeshRenderer"] = Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include).Length;
+            counts["SkinnedMeshRenderer"] = Object.FindObjectsByType<SkinnedMeshRenderer>(FindObjectsInactive.Include).Length;
+            counts["MeshFilter"] = Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include).Length;
+            counts["BoxCollider"] = Object.FindObjectsByType<BoxCollider>(FindObjectsInactive.Include).Length;
+            counts["SphereCollider"] = Object.FindObjectsByType<SphereCollider>(FindObjectsInactive.Include).Length;
+            counts["CapsuleCollider"] = Object.FindObjectsByType<CapsuleCollider>(FindObjectsInactive.Include).Length;
+            counts["MeshCollider"] = Object.FindObjectsByType<MeshCollider>(FindObjectsInactive.Include).Length;
+            counts["Rigidbody"] = Object.FindObjectsByType<Rigidbody>(FindObjectsInactive.Include).Length;
+            counts["Light"] = Object.FindObjectsByType<Light>(FindObjectsInactive.Include).Length;
+            counts["Camera"] = Object.FindObjectsByType<Camera>(FindObjectsInactive.Include).Length;
+            counts["AudioSource"] = Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include).Length;
+            counts["ParticleSystem"] = Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include).Length;
+            counts["Canvas"] = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include).Length;
+            counts["Animator"] = Object.FindObjectsByType<Animator>(FindObjectsInactive.Include).Length;
+            counts["NavMeshAgent"] = Object.FindObjectsByType<UnityEngine.AI.NavMeshAgent>(FindObjectsInactive.Include).Length;
 
             return new JObject
             {
@@ -286,7 +286,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             if (meshColliderCount > 50)
                 warnings.Add($"Many MeshColliders ({meshColliderCount}) - consider using primitive colliders");
 
-            var realtimeLights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+            var realtimeLights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude)
                 .Where(l => l.lightmapBakeType == LightmapBakeType.Realtime).Count();
             if (realtimeLights > 4)
                 warnings.Add($"Many realtime lights ({realtimeLights}) may impact performance");
@@ -304,7 +304,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             if (totalTriangles > 500000)
                 suggestions.Add("Consider using LOD (Level of Detail) for distant objects");
             
-            if (Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Length > 1)
+            if (Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude).Length > 1)
                 suggestions.Add("Multiple cameras active - ensure this is intentional");
 
             var staticObjects = rootObjects.SelectMany(r => r.GetComponentsInChildren<Transform>())

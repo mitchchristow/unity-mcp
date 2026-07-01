@@ -41,7 +41,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 ["queriesHitTriggers"] = Physics.queriesHitTriggers,
                 ["queriesHitBackfaces"] = Physics.queriesHitBackfaces,
                 ["autoSimulation"] = Physics.simulationMode.ToString(),
-                ["autoSyncTransforms"] = Physics.autoSyncTransforms
+                ["autoSyncTransforms"] = GetAutoSyncTransforms()
             };
         }
 
@@ -112,7 +112,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
 
             if (p["autoSyncTransforms"] != null)
             {
-                Physics.autoSyncTransforms = p["autoSyncTransforms"].Value<bool>();
+                SetAutoSyncTransforms(p["autoSyncTransforms"].Value<bool>());
             }
 
             return new JObject { ["ok"] = true };
@@ -237,6 +237,20 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                     throw new System.Exception($"Layer '{layerName}' not found");
                 return layer;
             }
+        }
+
+        private static bool GetAutoSyncTransforms()
+        {
+#pragma warning disable CS0618
+            return Physics.autoSyncTransforms;
+#pragma warning restore CS0618
+        }
+
+        private static void SetAutoSyncTransforms(bool value)
+        {
+#pragma warning disable CS0618
+            Physics.autoSyncTransforms = value;
+#pragma warning restore CS0618
         }
     }
 }
