@@ -12,6 +12,7 @@ This project implements a **Model Context Protocol (MCP)** server that runs insi
 
 - [For Users: Quick Start](#-for-users-quick-start)
 - [For Developers: Contributing](#-for-developers-contributing)
+  - [Supported Unity Versions & Worktrees](#supported-unity-versions--worktrees)
 - [Features](#-features)
 - [Available Tools, Resources & Prompts](#-available-tools-resources--prompts)
 - [Architecture](#-architecture)
@@ -26,9 +27,9 @@ Want to use this MCP server to build Unity games with AI? Follow these steps:
 
 ### Prerequisites
 
-- **Unity 6+** (6000.x)
+- **Unity 6.2, 6.3 LTS, or 6.5** (see [supported versions](#supported-unity-versions--worktrees) below)
 - **Node.js 18+**
-- **Cursor IDE** (recommended), **VS Code with Claude Code**, or another MCP-compatible IDE
+- **Antigravity**, **Cursor IDE**, **VS Code with Claude Code**, or another MCP-compatible IDE
 
 ### Step 1: Install the Unity Package
 
@@ -171,7 +172,7 @@ Want to extend the MCP server, fix bugs, or add new features? This section is fo
    cd unity-mcp
    ```
 
-2. **Open in Unity**: Open the folder in Unity Hub (requires Unity 6+)
+2. **Open in Unity**: Open the repo root (or a [version worktree](#supported-unity-versions--worktrees)) in Unity Hub.
 
 3. **Install gateway dependencies**:
    ```bash
@@ -186,6 +187,7 @@ Want to extend the MCP server, fix bugs, or add new features? This section is fo
    │   └── Editor/
    │       ├── MCP/                        # MCP server implementation
    │       │   ├── Rpc/Controllers/        # RPC method handlers
+   │       │   ├── McpObjectReference.cs   # Unity 6.2–6.5 object ID bridge
    │       │   ├── Events/                 # WebSocket event system
    │       │   └── Progress/               # Progress tracking
    │       ├── Networking/                 # HTTP & WebSocket servers
@@ -199,6 +201,30 @@ Want to extend the MCP server, fix bugs, or add new features? This section is fo
    │   └── vscode/                         # VS Code extension (WIP)
    └── TODO.md                             # Future improvements roadmap
    ```
+
+### Supported Unity Versions & Worktrees
+
+This project is tested on three Unity 6 editor lines. **Use a separate project folder for each version** so `ProjectSettings/` and `Library/` are not overwritten when switching editors.
+
+| Unity | Hub version (example) | Local worktree folder | Git branch |
+|-------|------------------------|------------------------|------------|
+| **6.2** | `6000.2.x` | `worktrees/unity-620` | `worktree/unity-620` |
+| **6.3 LTS** | `6000.3.x` | `worktrees/unity-630-lts` | `worktree/unity-630-lts` |
+| **6.5** | `6000.5.x` | `worktrees/unity-6500` | `worktree/unity-6500` |
+
+The repo root (`unity-mcp/`) stays on `main` for git work and general development. Version worktrees are **local-only** (`/worktrees/` is in `.gitignore`).
+
+**Create worktrees** (from repo root, after clone):
+
+```bash
+git worktree add -B worktree/unity-620      worktrees/unity-620      main
+git worktree add -B worktree/unity-630-lts  worktrees/unity-630-lts  main
+git worktree add -B worktree/unity-6500     worktrees/unity-6500     main
+```
+
+Open each folder in Unity Hub with the matching editor. Expect Unity to upgrade that copy's `ProjectVersion.txt` on first launch — that is normal and stays local to that worktree.
+
+**Object IDs:** Unity 6.5 returns large `ulong` Entity IDs on the wire; 6.2/6.3 use `int` Instance IDs. Package code routes both through `McpObjectReference` (`#if UNITY_6000_5_OR_NEWER`).
 
 ### Adding New Features
 
@@ -253,13 +279,27 @@ Add to the `PROMPTS` array and implement in `generatePromptContent()` function i
 
 ### Testing
 
+**Quick RPC check** (Unity open, MCP server running):
+
 ```bash
-# Test RPC endpoint
 curl -X POST http://localhost:17890/mcp/rpc \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"unity.get_project_info","params":{},"id":1}'
+```
 
-# Test WebSocket
+**Smoke test** (validates primitive → transform → material on any supported Unity version):
+
+1. `unity.create_primitive` — `Sphere`, name e.g. `SmokeSphere`
+2. `unity.set_transform` — position `(0,0,0)`, scale `(5,5,5)`
+3. `unity.create_material` — e.g. `SmokeMaterial` (Standard shader)
+4. `unity.set_material_property` — set `_Color` (e.g. red or yellow)
+5. `unity.set_material` — apply material to the sphere
+6. `unity.get_object_details` — confirm transform and material
+
+**EditMode tests:** Window → General → Test Runner → EditMode (4 tests in the package).
+
+```bash
+# WebSocket events
 wscat -c ws://localhost:17891/mcp/events
 ```
 
