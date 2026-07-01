@@ -9,7 +9,13 @@
       "cleanup": "destroyById"
     },
     {
-      "id": "smoke_blue_sphere",
+      "id": "project_get_info",
+      "method": "unity.get_project_info",
+      "params": {},
+      "expect": { "hasKeys": ["productName", "unityVersion"] }
+    },
+    {
+      "id": "smoke_create_sphere",
       "method": "unity.create_primitive",
       "params": { "type": "Sphere", "name": "__mcp_smoke_sphere" },
       "expect": { "hasKeys": ["id"] },

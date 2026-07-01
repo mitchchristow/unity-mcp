@@ -1,0 +1,28 @@
+{
+  "unity_playmode": { "action": "stop" },
+  "unity_undo_action": { "action": "get_history" },
+  "unity_selection": { "action": "clear" },
+  "unity_capture": { "view": "scene" },
+  "unity_audio_playback": { "action": "stop", "id": 0 },
+  "unity_particle_playback": { "action": "stop", "id": 0 },
+  "unity_window": { "action": "get_info", "type": "Scene" },
+  "unity_find_objects": { "by": "name", "name": "__mcp_test__" },
+  "unity_terrain_height": { "action": "get", "id": 0, "x": 0, "z": 0 },
+  "unity_navmesh_build": { "action": "clear" },
+  "unity_animator": { "action": "get_info", "id": 0 },
+  "unity_set_particle_module": { "module": "main", "id": 0 },
+  "unity_open_panel": { "panel": "preferences" },
+  "unity_component": { "action": "list", "id": 0 },
+  "unity_file": { "action": "exists", "path": "Assets" },
+  "unity_sprite": { "action": "get_info", "id": 0 },
+  "unity_tilemap": { "action": "get_info", "id": 0 },
+  "unity_physics_2d_body": { "action": "set_rigidbody", "id": 0 },
+  "unity_physics_2d_query": {
+    "query": "raycast",
+    "origin": { "x": 0, "y": 0 },
+    "direction": { "x": 1, "y": 0 },
+    "distance": 1
+  },
+  "unity_build": { "action": "get_scenes" },
+  "unity_package": { "action": "search", "query": "test" }
+}

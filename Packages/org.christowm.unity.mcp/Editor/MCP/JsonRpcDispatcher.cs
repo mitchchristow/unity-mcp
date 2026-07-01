@@ -21,6 +21,11 @@ namespace UnityMcp.Editor.MCP
             _methods[name] = handler;
         }
 
+        public static IReadOnlyCollection<string> GetRegisteredMethodNames()
+        {
+            return _methods.Keys;
+        }
+
         public static string Handle(string requestBody)
         {
             RpcRequest request = null;

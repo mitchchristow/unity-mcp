@@ -4,12 +4,13 @@ This document tracks potential enhancements for future development.
 
 ## 🚀 Planned (In Progress)
 
-### Automated Test Suite (Phase 0 complete)
+### Automated Test Suite (Phase 0 complete, Phase 1 in progress)
 - Version-prunable layout under `Packages/.../Tests/` (`Shared/`, `Versions/6000.x/`)
-- `RpcTestHarness`, manifest fixtures, gateway `batchUtils` unit tests
+- `RpcTestHarness`, manifest fixtures, gateway `batchUtils` + `toolResolver` contract tests
+- Blue sphere smoke test, RPC registration contract tests, expanded shared manifest
 - `scripts/test/run-unity.ps1`, `run-gateway.ps1`, `scaffold-unity-version.ps1`
 - CI skeleton: `.github/workflows/test-gateway.yml`, `test-unity-matrix.yml`
-- **Next (Phase 1):** Expand manifest-driven RPC coverage, full gateway contract tests
+- **Next (Phase 2):** Full manifest coverage per controller, PlayMode subset
 
 ---
 
