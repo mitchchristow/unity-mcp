@@ -14,9 +14,10 @@ Tests/
 ├── Fixtures/
 │   ├── rpc-manifest.shared.json
 │   ├── rpc-manifest.readonly.json   # ~38 read-only RPC smoke tests
-│   ├── rpc-manifest.mutating.json   # ordered mutating scenarios with $entryId refs
+│   ├── rpc-manifest.mutating.json   # ordered core mutating scenarios with $entryId refs
+│   ├── mutating/                    # per-controller mutating manifests (prunable by tag)
 │   └── versions/        # Per-line manifest overlays
-├── Playmode/Shared/     # Cross-version PlayMode (future)
+├── Playmode/Shared/     # Cross-version PlayMode smoke tests
 └── _template/           # Scaffold for new Unity lines
 ```
 

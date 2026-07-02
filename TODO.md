@@ -8,8 +8,9 @@ This document tracks potential enhancements for future development.
 - **Phase 0 (done):** Version-prunable layout, RpcTestHarness, scripts, CI skeleton
 - **Phase 1 (done):** Blue sphere smoke, manifest runner, gateway toolResolver contract tests
 - **Phase 2 (done):** Full gateway↔Unity RPC parity map, read-only manifest (~38 RPCs), sync script
-- **Phase 3 (in progress):** Mutating manifest entries with ordered references (`$entryId.field`) for transform/component/material/undo
-- **Next (Phase 4):** Expand per-controller mutating scenarios + PlayMode subset
+- **Phase 3 (done):** Mutating manifest entries with ordered references (`$entryId.field`) for transform/component/material/undo
+- **Phase 4 (done):** Per-controller mutating manifests (`Fixtures/mutating/`), expanded core flow, PlayMode smoke (`unity.play`/`unity.stop`)
+- **Next (Phase 5):** CI matrix on worktrees, E2E MCP smoke, expand manifest toward full RPC coverage
 
 ---
 

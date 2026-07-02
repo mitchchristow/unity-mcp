@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace UnityMcp.Tests.Editor.Shared
 {
@@ -65,28 +64,14 @@ namespace UnityMcp.Tests.Editor.Shared
     [Test]
     public void MutatingManifestEntries_ExecuteInOrder_WithReferences()
     {
-      var context = new Dictionary<string, JObject>();
-      var entries = RpcManifestLoader.GetRunnableEntries(
-        RpcManifestLoader.LoadMutatingManifest(),
-        tagFilter: "mutating");
+      RpcManifestRunner.RunManifest(RpcManifestLoader.LoadMutatingManifest());
+    }
 
-      foreach (var entry in entries)
-      {
-        JObject result = null;
-        var entryId = entry["id"]?.ToString();
-        try
-        {
-          result = RpcManifestRunner.ExecuteEntry(entry, context);
-          RpcManifestRunner.AssertExpectations(entry, result);
-          if (!string.IsNullOrEmpty(entryId))
-            context[entryId] = result;
-        }
-        finally
-        {
-          if (result != null)
-            RpcManifestRunner.CleanupEntry(entry, result);
-        }
-      }
+    [Test]
+    public void PerControllerMutatingManifestFiles_ExecuteInOrder_WithReferences()
+    {
+      foreach (var manifest in RpcManifestLoader.LoadPerControllerMutatingManifests())
+        RpcManifestRunner.RunManifest(manifest);
     }
 
     [Test]

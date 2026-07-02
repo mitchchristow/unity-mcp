@@ -1,0 +1,37 @@
+{
+  "description": "Hierarchy parent/child create, transform read, and delete.",
+  "entries": [
+    {
+      "id": "create_hierarchy_parent",
+      "method": "unity.create_object",
+      "params": { "name": "__mcp_hierarchy_parent" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById",
+      "tags": ["mutating", "hierarchy"]
+    },
+    {
+      "id": "create_hierarchy_child",
+      "method": "unity.create_object",
+      "params": {
+        "name": "__mcp_hierarchy_child",
+        "parentId": "$create_hierarchy_parent.id"
+      },
+      "expect": { "hasKeys": ["id"] },
+      "tags": ["mutating", "hierarchy"]
+    },
+    {
+      "id": "get_hierarchy_child_transform",
+      "method": "unity.get_transform",
+      "params": { "id": "$create_hierarchy_child.id" },
+      "expect": { "hasKeys": ["position", "rotation", "scale"] },
+      "tags": ["mutating", "hierarchy"]
+    },
+    {
+      "id": "delete_hierarchy_child",
+      "method": "unity.delete_object",
+      "params": { "id": "$create_hierarchy_child.id" },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "hierarchy"]
+    }
+  ]
+}

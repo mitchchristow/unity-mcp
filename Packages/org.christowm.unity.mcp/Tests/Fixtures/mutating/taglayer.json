@@ -1,0 +1,33 @@
+{
+  "description": "Tag and layer assignment on a GameObject.",
+  "entries": [
+    {
+      "id": "create_taglayer_target",
+      "method": "unity.create_primitive",
+      "params": { "type": "Sphere", "name": "__mcp_taglayer_sphere" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById",
+      "tags": ["mutating", "taglayer"]
+    },
+    {
+      "id": "set_object_tag_player",
+      "method": "unity.set_object_tag",
+      "params": {
+        "id": "$create_taglayer_target.id",
+        "tag": "Player"
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "taglayer"]
+    },
+    {
+      "id": "set_object_layer_default",
+      "method": "unity.set_object_layer",
+      "params": {
+        "id": "$create_taglayer_target.id",
+        "layer": "Default"
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "taglayer"]
+    }
+  ]
+}

@@ -59,6 +59,37 @@
       "tags": ["mutating", "component"]
     },
     {
+      "id": "get_mutating_transform",
+      "method": "unity.get_transform",
+      "params": { "id": "$create_mutating_sphere.id" },
+      "expect": { "hasKeys": ["position", "rotation", "scale"] },
+      "tags": ["mutating", "transform"]
+    },
+    {
+      "id": "get_mutating_components",
+      "method": "unity.get_components",
+      "params": { "id": "$create_mutating_sphere.id" },
+      "expect": { "hasKeys": ["components"] },
+      "tags": ["mutating", "component"]
+    },
+    {
+      "id": "get_mutating_object_details",
+      "method": "unity.get_object_details",
+      "params": { "id": "$create_mutating_sphere.id" },
+      "expect": { "hasKeys": ["name", "components"] },
+      "tags": ["mutating", "component"]
+    },
+    {
+      "id": "remove_mutating_rigidbody",
+      "method": "unity.remove_component",
+      "params": {
+        "id": "$create_mutating_sphere.id",
+        "component": "Rigidbody"
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "component"]
+    },
+    {
       "id": "undo_group_begin",
       "method": "unity.begin_undo_group",
       "params": { "name": "MCP Mutating Manifest" },

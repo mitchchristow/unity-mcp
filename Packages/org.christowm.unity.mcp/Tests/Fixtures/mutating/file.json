@@ -1,0 +1,37 @@
+{
+  "description": "File write, exists check, read, and delete.",
+  "entries": [
+    {
+      "id": "write_temp_file",
+      "method": "unity.write_file",
+      "params": {
+        "path": "Assets/__mcp_test_temp.txt",
+        "content": "unity-mcp mutating manifest"
+      },
+      "expect": { "hasKeys": ["ok", "path"] },
+      "cleanup": "deleteFileByPath",
+      "tags": ["mutating", "file"]
+    },
+    {
+      "id": "file_exists_temp",
+      "method": "unity.file_exists",
+      "params": { "path": "$write_temp_file.path" },
+      "expect": { "hasKeys": ["exists"] },
+      "tags": ["mutating", "file"]
+    },
+    {
+      "id": "read_temp_file",
+      "method": "unity.read_file",
+      "params": { "path": "$write_temp_file.path" },
+      "expect": { "hasKeys": ["content"] },
+      "tags": ["mutating", "file"]
+    },
+    {
+      "id": "delete_temp_file",
+      "method": "unity.delete_file",
+      "params": { "path": "$write_temp_file.path" },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "file"]
+    }
+  ]
+}

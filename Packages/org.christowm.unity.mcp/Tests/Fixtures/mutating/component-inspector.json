@@ -1,0 +1,43 @@
+{
+  "description": "Component inspector add, read properties, and remove.",
+  "entries": [
+    {
+      "id": "create_component_inspector_target",
+      "method": "unity.create_primitive",
+      "params": { "type": "Cube", "name": "__mcp_component_inspector_cube" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById",
+      "tags": ["mutating", "component"]
+    },
+    {
+      "id": "add_box_collider",
+      "method": "unity.add_component",
+      "params": {
+        "id": "$create_component_inspector_target.id",
+        "type": "BoxCollider"
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "component"]
+    },
+    {
+      "id": "get_box_collider_properties",
+      "method": "unity.get_component_properties",
+      "params": {
+        "id": "$create_component_inspector_target.id",
+        "component": "BoxCollider"
+      },
+      "expect": { "hasKeys": ["properties"] },
+      "tags": ["mutating", "component"]
+    },
+    {
+      "id": "remove_box_collider",
+      "method": "unity.remove_component",
+      "params": {
+        "id": "$create_component_inspector_target.id",
+        "component": "BoxCollider"
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "component"]
+    }
+  ]
+}

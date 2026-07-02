@@ -31,10 +31,40 @@ namespace UnityMcp.Tests.Editor.Shared
             Object.DestroyImmediate(go);
           break;
         case "deleteAssetByPath":
-          var path = result["path"]?.ToString();
-          if (!string.IsNullOrEmpty(path) && AssetDatabase.LoadAssetAtPath<Object>(path) != null)
-            AssetDatabase.DeleteAsset(path);
+          var assetPath = result["path"]?.ToString();
+          if (!string.IsNullOrEmpty(assetPath) && AssetDatabase.LoadAssetAtPath<Object>(assetPath) != null)
+            AssetDatabase.DeleteAsset(assetPath);
           break;
+        case "deleteFileByPath":
+          var filePath = result["path"]?.ToString() ?? entry["params"]?["path"]?.ToString();
+          if (!string.IsNullOrEmpty(filePath) && filePath.StartsWith("Assets"))
+            AssetDatabase.DeleteAsset(filePath);
+          break;
+      }
+    }
+
+    public static void RunManifest(JObject manifest, string tagFilter = "mutating")
+    {
+      var context = new Dictionary<string, JObject>();
+      var pendingCleanup = new List<(JToken entry, JObject result)>();
+
+      foreach (var entry in RpcManifestLoader.GetRunnableEntries(manifest, tagFilter: tagFilter))
+      {
+        var result = ExecuteEntry(entry, context);
+        AssertExpectations(entry, result);
+
+        var entryId = entry["id"]?.ToString();
+        if (!string.IsNullOrEmpty(entryId))
+          context[entryId] = result;
+
+        if (result != null && !string.IsNullOrEmpty(entry["cleanup"]?.ToString()))
+          pendingCleanup.Add((entry, result));
+      }
+
+      for (int i = pendingCleanup.Count - 1; i >= 0; i--)
+      {
+        var (entry, result) = pendingCleanup[i];
+        CleanupEntry(entry, result);
       }
     }
 

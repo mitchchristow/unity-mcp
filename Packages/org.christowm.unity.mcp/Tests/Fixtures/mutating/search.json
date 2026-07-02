@@ -1,0 +1,20 @@
+{
+  "description": "Search objects by name pattern.",
+  "entries": [
+    {
+      "id": "create_search_target",
+      "method": "unity.create_primitive",
+      "params": { "type": "Cylinder", "name": "__mcp_search_cylinder" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById",
+      "tags": ["mutating", "search"]
+    },
+    {
+      "id": "find_search_target",
+      "method": "unity.find_objects_by_name",
+      "params": { "name": "__mcp_search_cylinder" },
+      "expect": { "hasKeys": ["objects", "count"] },
+      "tags": ["mutating", "search"]
+    }
+  ]
+}

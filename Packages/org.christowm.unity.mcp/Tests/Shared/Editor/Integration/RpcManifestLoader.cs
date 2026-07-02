@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -26,6 +27,23 @@ namespace UnityMcp.Tests.Editor.Shared
 
     public static JObject LoadReadOnlyManifest() => LoadManifest("rpc-manifest.readonly.json");
     public static JObject LoadMutatingManifest() => LoadManifest("rpc-manifest.mutating.json");
+
+    public static IEnumerable<JObject> LoadAllMutatingManifests()
+    {
+      yield return LoadMutatingManifest();
+      foreach (var manifest in LoadPerControllerMutatingManifests())
+        yield return manifest;
+    }
+
+    public static IEnumerable<JObject> LoadPerControllerMutatingManifests()
+    {
+      var mutatingDir = Path.Combine(FixturesRoot, "mutating");
+      if (!Directory.Exists(mutatingDir))
+        yield break;
+
+      foreach (var file in Directory.GetFiles(mutatingDir, "*.json").OrderBy(Path.GetFileName))
+        yield return JObject.Parse(File.ReadAllText(file));
+    }
 
     public static JObject LoadVersionManifest(string unityLine)
     {

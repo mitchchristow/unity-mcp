@@ -1,0 +1,41 @@
+{
+  "description": "Selection clear, select-by-name, and set-selection.",
+  "entries": [
+    {
+      "id": "create_selection_target",
+      "method": "unity.create_primitive",
+      "params": { "type": "Capsule", "name": "__mcp_selection_capsule" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById",
+      "tags": ["mutating", "selection"]
+    },
+    {
+      "id": "clear_selection_before",
+      "method": "unity.clear_selection",
+      "params": {},
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "selection"]
+    },
+    {
+      "id": "select_by_name",
+      "method": "unity.select_by_name",
+      "params": { "name": "__mcp_selection_capsule" },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "selection"]
+    },
+    {
+      "id": "set_selection_by_id",
+      "method": "unity.set_selection",
+      "params": { "ids": ["$create_selection_target.id"] },
+      "expect": { "hasKeys": ["selectedCount"] },
+      "tags": ["mutating", "selection"]
+    },
+    {
+      "id": "clear_selection_after",
+      "method": "unity.clear_selection",
+      "params": {},
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "selection"]
+    }
+  ]
+}
