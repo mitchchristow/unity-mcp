@@ -10,7 +10,8 @@ This document tracks potential enhancements for future development.
 - **Phase 2 (done):** Full gateway↔Unity RPC parity map, read-only manifest (~38 RPCs), sync script
 - **Phase 3 (done):** Mutating manifest entries with ordered references (`$entryId.field`) for transform/component/material/undo
 - **Phase 4 (done):** Per-controller mutating manifests (`Fixtures/mutating/`), expanded core flow, PlayMode smoke (`unity.play`/`unity.stop`)
-- **Next (Phase 5):** CI matrix on worktrees, E2E MCP smoke, expand manifest toward full RPC coverage
+- **Phase 5 (done):** Local-first test runners (per-line Unity resolution, PlayMode), HTTP E2E smoke, expanded read-only manifest (~55 RPCs), optional `workflow_dispatch` CI
+- **Next:** Expand manifest toward full RPC coverage, open PR to `main`, optional self-hosted runner for push-triggered CI
 
 ---
 

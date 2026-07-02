@@ -1,0 +1,22 @@
+name: Unity E2E Smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  unity-e2e:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install gateway dependencies
+        working-directory: gateway
+        run: npm install
+
+      - name: Run HTTP E2E smoke (Unity must already be open)
+        shell: pwsh
+        run: ./scripts/test/run-e2e.ps1

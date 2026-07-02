@@ -216,6 +216,12 @@ The repo root (`unity-mcp/`) stays on `main` for git work and general developmen
 
 **Create worktrees** (from repo root, after clone):
 
+```powershell
+.\scripts\test\setup-worktrees.ps1
+```
+
+Or manually:
+
 ```bash
 git worktree add -B worktree/unity-620      worktrees/unity-620      main
 git worktree add -B worktree/unity-630-lts  worktrees/unity-630-lts  main
@@ -279,7 +285,7 @@ Add to the `PROMPTS` array and implement in `generatePromptContent()` function i
 
 ### Testing
 
-Tests are organized for **pruning by Unity editor line**. See `Packages/org.christowm.unity.mcp/Tests/README.md`.
+Tests are organized for **pruning by Unity editor line**. See `Packages/org.christowm.unity.mcp/Tests/README.md` for the full layout.
 
 **Gateway unit tests** (no Unity required):
 
@@ -288,11 +294,26 @@ Tests are organized for **pruning by Unity editor line**. See `Packages/org.chri
 cd gateway; npm run sync:contract   # regenerate gateway-rpc-map.json after tool changes
 ```
 
-**Unity EditMode tests** (auto-detects version-specific assembly from `ProjectVersion.txt`):
+**Unity tests** — `run-unity.ps1` resolves the correct Hub editor per `-UnityLine`:
 
 ```powershell
+# EditMode (auto-detect version assembly from project)
 .\scripts\test\run-unity.ps1
-.\scripts\test\run-unity.ps1 -UnityLine 6000.5 -ProjectPath worktrees\unity-6500
+
+# Pin Unity 6.5 editor + run EditMode and PlayMode
+.\scripts\test\run-unity.ps1 -UnityLine 6000.5 -TestPlatform both
+
+# Optional version worktree
+.\scripts\test\run-unity.ps1 -UnityLine 6000.3 -ProjectPath worktrees\unity-630-lts
+```
+
+Set `UNITY_EDITOR_6000_2`, `UNITY_EDITOR_6000_3`, or `UNITY_EDITOR_6000_5` to override Hub auto-detection.
+
+**HTTP E2E smoke** (Unity Editor open, MCP server listening on port 17890):
+
+```powershell
+.\scripts\test\run-e2e.ps1
+# or: cd gateway; npm run test:e2e
 ```
 
 **Quick RPC check** (Unity open, MCP server running):

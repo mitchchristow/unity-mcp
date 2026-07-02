@@ -27,7 +27,7 @@ namespace UnityMcp.Tests.Editor.Shared
       var manifest = RpcManifestLoader.LoadReadOnlyManifest();
       var entries = manifest["entries"] as Newtonsoft.Json.Linq.JArray;
       Assert.IsNotNull(entries);
-      Assert.GreaterOrEqual(entries.Count, 30);
+      Assert.GreaterOrEqual(entries.Count, 50);
     }
 
     [Test]

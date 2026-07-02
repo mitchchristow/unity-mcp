@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "node --test tests/shared/unit/*.test.js tests/shared/contract/*.test.js",
+    "test:e2e": "node --test tests/e2e/*.test.js",
     "sync:contract": "node ../scripts/test/sync-gateway-rpc-map.js"
   },
   "keywords": [],

@@ -39,6 +39,22 @@
     { "id": "readonly_list_component_types", "method": "unity.list_component_types", "params": {}, "tags": ["readonly"] },
     { "id": "readonly_get_event_types", "method": "unity.get_event_types", "params": {}, "tags": ["readonly"] },
     { "id": "readonly_file_exists", "method": "unity.file_exists", "params": { "path": "Assets" }, "tags": ["readonly"] },
-    { "id": "readonly_list_directory", "method": "unity.list_directory", "params": { "path": "Assets" }, "tags": ["readonly"] }
+    { "id": "readonly_list_directory", "method": "unity.list_directory", "params": { "path": "Assets" }, "tags": ["readonly"] },
+    { "id": "readonly_get_project_info", "method": "unity.get_project_info", "params": {}, "expect": { "hasKeys": ["unityVersion", "projectPath"] }, "tags": ["readonly"] },
+    { "id": "readonly_get_recent_events", "method": "unity.get_recent_events", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_get_render_stats", "method": "unity.get_render_stats", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_get_object_counts", "method": "unity.get_object_counts", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_get_progress", "method": "unity.get_progress", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_get_scenes_in_build", "method": "unity.get_scenes_in_build", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_list_audio_clips", "method": "unity.list_audio_clips", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_get_audio_settings", "method": "unity.get_audio_settings", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_list_animation_clips", "method": "unity.list_animation_clips", "params": {}, "tags": ["readonly"] },
+    { "id": "readonly_get_package_info_ugui", "method": "unity.get_package_info", "params": { "name": "com.unity.ugui" }, "tags": ["readonly"] },
+    { "id": "readonly_search_packages", "method": "unity.search_packages", "params": { "query": "test" }, "tags": ["readonly"] },
+    { "id": "readonly_search_assets", "method": "unity.search_assets", "params": { "query": "t:Script", "limit": 5 }, "tags": ["readonly"] },
+    { "id": "readonly_find_objects_by_name", "method": "unity.find_objects_by_name", "params": { "name": "__mcp_readonly_missing__" }, "tags": ["readonly"] },
+    { "id": "readonly_find_objects_by_tag", "method": "unity.find_objects_by_tag", "params": { "tag": "Untagged" }, "tags": ["readonly"] },
+    { "id": "readonly_find_objects_by_component", "method": "unity.find_objects_by_component", "params": { "component": "Transform" }, "tags": ["readonly"] },
+    { "id": "readonly_find_objects_by_layer", "method": "unity.find_objects_by_layer", "params": { "layer": "Default" }, "tags": ["readonly"] }
   ]
 }
