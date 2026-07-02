@@ -22,17 +22,5 @@ namespace UnityMcp.Tests.Editor.Shared
       Assert.Contains("unity.set_material", methods.ToList());
       Assert.Contains("unity.get_object_details", methods.ToList());
     }
-
-    [Test]
-    public void GatewayToolNames_MapToRegisteredRpcMethods()
-    {
-      var registered = new System.Collections.Generic.HashSet<string>(
-        JsonRpcDispatcher.GetRegisteredMethodNames());
-
-      foreach (var rpc in GatewayToolRpcMap.CoreToolRpcMethods)
-      {
-        Assert.IsTrue(registered.Contains(rpc), $"Unity missing RPC handler: {rpc}");
-      }
-    }
   }
 }

@@ -13,6 +13,7 @@ Tests/
 │   └── 6000.5/          # Unity 6.5 only (EntityId wire format)
 ├── Fixtures/
 │   ├── rpc-manifest.shared.json
+│   ├── rpc-manifest.readonly.json   # ~38 read-only RPC smoke tests
 │   └── versions/        # Per-line manifest overlays
 ├── Playmode/Shared/     # Cross-version PlayMode (future)
 └── _template/           # Scaffold for new Unity lines

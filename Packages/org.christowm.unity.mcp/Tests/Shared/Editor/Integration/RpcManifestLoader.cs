@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace UnityMcp.Tests.Editor.Shared
 {
-  /// <summary>
-  /// Loads RPC manifest JSON from Tests/Fixtures.
-  /// </summary>
   public static class RpcManifestLoader
   {
     public static string FixturesRoot =>
@@ -19,8 +16,15 @@ namespace UnityMcp.Tests.Editor.Shared
         "Tests",
         "Fixtures"));
 
-    public static JObject LoadSharedManifest() =>
-      JObject.Parse(File.ReadAllText(Path.Combine(FixturesRoot, "rpc-manifest.shared.json")));
+    public static string GatewayFixturesRoot =>
+      Path.GetFullPath(Path.Combine(Application.dataPath, "..", "gateway", "tests", "fixtures"));
+
+    public static JObject LoadManifest(string fileName) =>
+      JObject.Parse(File.ReadAllText(Path.Combine(FixturesRoot, fileName)));
+
+    public static JObject LoadSharedManifest() => LoadManifest("rpc-manifest.shared.json");
+
+    public static JObject LoadReadOnlyManifest() => LoadManifest("rpc-manifest.readonly.json");
 
     public static JObject LoadVersionManifest(string unityLine)
     {
@@ -30,7 +34,13 @@ namespace UnityMcp.Tests.Editor.Shared
         : new JObject { ["entries"] = new JArray() };
     }
 
-    public static IEnumerable<JToken> GetRunnableEntries(JObject manifest, bool smokeOnly = false)
+    public static IEnumerable<JObject> LoadAllSharedManifests()
+    {
+      yield return LoadSharedManifest();
+      yield return LoadReadOnlyManifest();
+    }
+
+    public static IEnumerable<JToken> GetRunnableEntries(JObject manifest, bool smokeOnly = false, string tagFilter = null)
     {
       var entries = manifest["entries"] as JArray;
       if (entries == null)
@@ -45,10 +55,26 @@ namespace UnityMcp.Tests.Editor.Shared
             continue;
         }
 
+        if (!string.IsNullOrEmpty(tagFilter))
+        {
+          var tags = entry["tags"] as JArray;
+          if (tags == null || !tags.ToString().Contains(tagFilter))
+            continue;
+        }
+
         if (entry["skip"]?.Value<bool>() == true)
           continue;
 
         yield return entry;
+      }
+    }
+
+    public static IEnumerable<JToken> GetAllSharedRunnableEntries(bool smokeOnly = false, string tagFilter = null)
+    {
+      foreach (var manifest in LoadAllSharedManifests())
+      {
+        foreach (var entry in GetRunnableEntries(manifest, smokeOnly, tagFilter))
+          yield return entry;
       }
     }
   }

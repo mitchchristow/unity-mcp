@@ -1,0 +1,556 @@
+{
+  "generatedAt": "2026-07-02T05:52:20.177Z",
+  "toolCount": 81,
+  "mappedToolCount": 80,
+  "rpcMethodCount": 80,
+  "entries": [
+    {
+      "tool": "unity_list_objects",
+      "method": "unity.list_objects",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_object",
+      "method": "unity.create_object",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_primitive",
+      "method": "unity.create_primitive",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_transform",
+      "method": "unity.set_transform",
+      "args": {}
+    },
+    {
+      "tool": "unity_delete_object",
+      "method": "unity.delete_object",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_material",
+      "method": "unity.set_material",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_material",
+      "method": "unity.create_material",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_material_property",
+      "method": "unity.set_material_property",
+      "args": {}
+    },
+    {
+      "tool": "unity_instantiate_prefab",
+      "method": "unity.instantiate_prefab",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_prefab",
+      "method": "unity.create_prefab",
+      "args": {}
+    },
+    {
+      "tool": "unity_selection",
+      "method": "unity.clear_selection",
+      "args": {
+        "action": "clear"
+      }
+    },
+    {
+      "tool": "unity_execute_menu",
+      "method": "unity.execute_menu",
+      "args": {}
+    },
+    {
+      "tool": "unity_find_objects",
+      "method": "unity.find_objects_by_name",
+      "args": {
+        "by": "name",
+        "name": "__mcp_test__"
+      }
+    },
+    {
+      "tool": "unity_search_assets",
+      "method": "unity.search_assets",
+      "args": {}
+    },
+    {
+      "tool": "unity_component",
+      "method": "unity.get_components",
+      "args": {
+        "action": "list",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_get_object_details",
+      "method": "unity.get_object_details",
+      "args": {}
+    },
+    {
+      "tool": "unity_file",
+      "method": "unity.file_exists",
+      "args": {
+        "action": "exists",
+        "path": "Assets"
+      }
+    },
+    {
+      "tool": "unity_capture",
+      "method": "unity.capture_scene_view",
+      "args": {
+        "view": "scene"
+      }
+    },
+    {
+      "tool": "unity_playmode",
+      "method": "unity.stop",
+      "args": {
+        "action": "stop"
+      }
+    },
+    {
+      "tool": "unity_create_light",
+      "method": "unity.create_light",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_light_property",
+      "method": "unity.set_light_property",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_lighting_settings",
+      "method": "unity.get_lighting_settings",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_ambient_light",
+      "method": "unity.set_ambient_light",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_camera",
+      "method": "unity.create_camera",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_camera_property",
+      "method": "unity.set_camera_property",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_camera_info",
+      "method": "unity.get_camera_info",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_scene_view_camera",
+      "method": "unity.get_scene_view_camera",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_scene_view_camera",
+      "method": "unity.set_scene_view_camera",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_gravity",
+      "method": "unity.set_gravity",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_physics_property",
+      "method": "unity.set_physics_property",
+      "args": {}
+    },
+    {
+      "tool": "unity_raycast",
+      "method": "unity.raycast",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_layer_collision_matrix",
+      "method": "unity.get_layer_collision_matrix",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_layer_collision",
+      "method": "unity.set_layer_collision",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_object_tag",
+      "method": "unity.set_object_tag",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_object_layer",
+      "method": "unity.set_object_layer",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_tag",
+      "method": "unity.create_tag",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_sorting_layers",
+      "method": "unity.get_sorting_layers",
+      "args": {}
+    },
+    {
+      "tool": "unity_undo_action",
+      "method": "unity.get_undo_history",
+      "args": {
+        "action": "get_history"
+      }
+    },
+    {
+      "tool": "unity_animator",
+      "method": "unity.get_animator_info",
+      "args": {
+        "action": "get_info",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_get_animation_clip_info",
+      "method": "unity.get_animation_clip_info",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_audio_source",
+      "method": "unity.create_audio_source",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_audio_source_property",
+      "method": "unity.set_audio_source_property",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_audio_source_info",
+      "method": "unity.get_audio_source_info",
+      "args": {}
+    },
+    {
+      "tool": "unity_audio_playback",
+      "method": "unity.stop_audio",
+      "args": {
+        "action": "stop",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_set_audio_clip",
+      "method": "unity.set_audio_clip",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_canvas",
+      "method": "unity.create_canvas",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_ui_element",
+      "method": "unity.create_ui_element",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_ui_text",
+      "method": "unity.set_ui_text",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_ui_image",
+      "method": "unity.set_ui_image",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_rect_transform",
+      "method": "unity.set_rect_transform",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_ui_info",
+      "method": "unity.get_ui_info",
+      "args": {}
+    },
+    {
+      "tool": "unity_build",
+      "method": "unity.get_scenes_in_build",
+      "args": {
+        "action": "get_scenes"
+      }
+    },
+    {
+      "tool": "unity_package",
+      "method": "unity.search_packages",
+      "args": {
+        "action": "search",
+        "query": "test"
+      }
+    },
+    {
+      "tool": "unity_create_terrain",
+      "method": "unity.create_terrain",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_terrain_info",
+      "method": "unity.get_terrain_info",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_terrain_size",
+      "method": "unity.set_terrain_size",
+      "args": {}
+    },
+    {
+      "tool": "unity_terrain_height",
+      "method": "unity.get_terrain_height",
+      "args": {
+        "action": "get",
+        "id": 0,
+        "x": 0,
+        "z": 0
+      }
+    },
+    {
+      "tool": "unity_set_terrain_layer",
+      "method": "unity.set_terrain_layer",
+      "args": {}
+    },
+    {
+      "tool": "unity_flatten_terrain",
+      "method": "unity.flatten_terrain",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_particle_system",
+      "method": "unity.create_particle_system",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_particle_system_info",
+      "method": "unity.get_particle_system_info",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_particle_module",
+      "method": "unity.set_particle_main",
+      "args": {
+        "module": "main",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_particle_playback",
+      "method": "unity.stop_particle_system",
+      "args": {
+        "action": "stop",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_navmesh_build",
+      "method": "unity.clear_navmesh",
+      "args": {
+        "action": "clear"
+      }
+    },
+    {
+      "tool": "unity_add_navmesh_agent",
+      "method": "unity.add_navmesh_agent",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_navmesh_agent",
+      "method": "unity.set_navmesh_agent",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_navmesh_agent_info",
+      "method": "unity.get_navmesh_agent_info",
+      "args": {}
+    },
+    {
+      "tool": "unity_add_navmesh_obstacle",
+      "method": "unity.add_navmesh_obstacle",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_navmesh_destination",
+      "method": "unity.set_navmesh_destination",
+      "args": {}
+    },
+    {
+      "tool": "unity_calculate_path",
+      "method": "unity.calculate_path",
+      "args": {}
+    },
+    {
+      "tool": "unity_window",
+      "method": "unity.get_window_info",
+      "args": {
+        "action": "get_info",
+        "type": "Scene"
+      }
+    },
+    {
+      "tool": "unity_open_panel",
+      "method": "unity.open_preferences",
+      "args": {
+        "panel": "preferences"
+      }
+    },
+    {
+      "tool": "unity_sprite",
+      "method": "unity.get_sprite_renderer_info",
+      "args": {
+        "action": "get_info",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_tilemap",
+      "method": "unity.get_tilemap_info",
+      "args": {
+        "action": "get_info",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_physics_2d_body",
+      "method": "unity.set_rigidbody_2d_property",
+      "args": {
+        "action": "set_rigidbody",
+        "id": 0
+      }
+    },
+    {
+      "tool": "unity_physics_2d_query",
+      "method": "unity.raycast_2d",
+      "args": {
+        "query": "raycast",
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "direction": {
+          "x": 1,
+          "y": 0
+        },
+        "distance": 1
+      }
+    },
+    {
+      "tool": "unity_set_physics_2d_property",
+      "method": "unity.set_physics_2d_property",
+      "args": {}
+    },
+    {
+      "tool": "unity_set_sorting_layer",
+      "method": "unity.set_sorting_layer",
+      "args": {}
+    },
+    {
+      "tool": "unity_create_script",
+      "method": "unity.create_script",
+      "args": {}
+    },
+    {
+      "tool": "unity_get_component_api",
+      "method": "unity.get_component_api",
+      "args": {}
+    }
+  ],
+  "rpcMethods": [
+    "unity.add_navmesh_agent",
+    "unity.add_navmesh_obstacle",
+    "unity.calculate_path",
+    "unity.capture_scene_view",
+    "unity.clear_navmesh",
+    "unity.clear_selection",
+    "unity.create_audio_source",
+    "unity.create_camera",
+    "unity.create_canvas",
+    "unity.create_light",
+    "unity.create_material",
+    "unity.create_object",
+    "unity.create_particle_system",
+    "unity.create_prefab",
+    "unity.create_primitive",
+    "unity.create_script",
+    "unity.create_tag",
+    "unity.create_terrain",
+    "unity.create_ui_element",
+    "unity.delete_object",
+    "unity.execute_menu",
+    "unity.file_exists",
+    "unity.find_objects_by_name",
+    "unity.flatten_terrain",
+    "unity.get_animation_clip_info",
+    "unity.get_animator_info",
+    "unity.get_audio_source_info",
+    "unity.get_camera_info",
+    "unity.get_component_api",
+    "unity.get_components",
+    "unity.get_layer_collision_matrix",
+    "unity.get_lighting_settings",
+    "unity.get_navmesh_agent_info",
+    "unity.get_object_details",
+    "unity.get_particle_system_info",
+    "unity.get_scene_view_camera",
+    "unity.get_scenes_in_build",
+    "unity.get_sorting_layers",
+    "unity.get_sprite_renderer_info",
+    "unity.get_terrain_height",
+    "unity.get_terrain_info",
+    "unity.get_tilemap_info",
+    "unity.get_ui_info",
+    "unity.get_undo_history",
+    "unity.get_window_info",
+    "unity.instantiate_prefab",
+    "unity.list_objects",
+    "unity.open_preferences",
+    "unity.raycast",
+    "unity.raycast_2d",
+    "unity.search_assets",
+    "unity.search_packages",
+    "unity.set_ambient_light",
+    "unity.set_audio_clip",
+    "unity.set_audio_source_property",
+    "unity.set_camera_property",
+    "unity.set_gravity",
+    "unity.set_layer_collision",
+    "unity.set_light_property",
+    "unity.set_material",
+    "unity.set_material_property",
+    "unity.set_navmesh_agent",
+    "unity.set_navmesh_destination",
+    "unity.set_object_layer",
+    "unity.set_object_tag",
+    "unity.set_particle_main",
+    "unity.set_physics_2d_property",
+    "unity.set_physics_property",
+    "unity.set_rect_transform",
+    "unity.set_rigidbody_2d_property",
+    "unity.set_scene_view_camera",
+    "unity.set_sorting_layer",
+    "unity.set_terrain_layer",
+    "unity.set_terrain_size",
+    "unity.set_transform",
+    "unity.set_ui_image",
+    "unity.set_ui_text",
+    "unity.stop",
+    "unity.stop_audio",
+    "unity.stop_particle_system"
+  ]
+}

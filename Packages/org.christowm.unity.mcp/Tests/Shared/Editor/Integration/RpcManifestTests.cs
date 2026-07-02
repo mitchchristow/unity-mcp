@@ -1,7 +1,4 @@
-using System.IO;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace UnityMcp.Tests.Editor.Shared
 {
@@ -11,7 +8,7 @@ namespace UnityMcp.Tests.Editor.Shared
     public void SharedManifest_LoadsAndHasEntries()
     {
       var manifest = RpcManifestLoader.LoadSharedManifest();
-      var entries = manifest["entries"] as JArray;
+      var entries = manifest["entries"] as Newtonsoft.Json.Linq.JArray;
 
       Assert.IsNotNull(entries);
       Assert.Greater(entries.Count, 0);
@@ -24,11 +21,18 @@ namespace UnityMcp.Tests.Editor.Shared
     }
 
     [Test]
-    public void SharedManifest_AllRunnableEntries_ExecuteSuccessfully()
+    public void ReadOnlyManifest_HasEntries()
     {
-      var manifest = RpcManifestLoader.LoadSharedManifest();
+      var manifest = RpcManifestLoader.LoadReadOnlyManifest();
+      var entries = manifest["entries"] as Newtonsoft.Json.Linq.JArray;
+      Assert.IsNotNull(entries);
+      Assert.GreaterOrEqual(entries.Count, 30);
+    }
 
-      foreach (var entry in RpcManifestLoader.GetRunnableEntries(manifest))
+    [Test]
+    public void AllSharedManifestEntries_ExecuteSuccessfully()
+    {
+      foreach (var entry in RpcManifestLoader.GetAllSharedRunnableEntries())
       {
         JObject result = null;
         try
@@ -48,12 +52,20 @@ namespace UnityMcp.Tests.Editor.Shared
     }
 
     [Test]
-    public void SharedManifest_SmokeTaggedEntries_Exist()
+    public void ReadOnlyManifestEntries_ExecuteSuccessfully()
     {
-      var manifest = RpcManifestLoader.LoadSharedManifest();
-      var smokeEntries = RpcManifestLoader.GetRunnableEntries(manifest, smokeOnly: true);
+      foreach (var entry in RpcManifestLoader.GetRunnableEntries(
+        RpcManifestLoader.LoadReadOnlyManifest(), tagFilter: "readonly"))
+      {
+        RpcManifestRunner.ExecuteEntry(entry);
+      }
+    }
+
+    [Test]
+    public void SmokeTaggedEntries_Exist()
+    {
       var count = 0;
-      foreach (var _ in smokeEntries)
+      foreach (var _ in RpcManifestLoader.GetAllSharedRunnableEntries(smokeOnly: true))
         count++;
       Assert.GreaterOrEqual(count, 1);
     }

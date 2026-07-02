@@ -285,6 +285,7 @@ Tests are organized for **pruning by Unity editor line**. See `Packages/org.chri
 
 ```powershell
 .\scripts\test\run-gateway.ps1
+cd gateway; npm run sync:contract   # regenerate gateway-rpc-map.json after tool changes
 ```
 
 **Unity EditMode tests** (auto-detects version-specific assembly from `ProjectVersion.txt`):
