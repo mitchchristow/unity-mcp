@@ -25,6 +25,7 @@ namespace UnityMcp.Tests.Editor.Shared
     public static JObject LoadSharedManifest() => LoadManifest("rpc-manifest.shared.json");
 
     public static JObject LoadReadOnlyManifest() => LoadManifest("rpc-manifest.readonly.json");
+    public static JObject LoadMutatingManifest() => LoadManifest("rpc-manifest.mutating.json");
 
     public static JObject LoadVersionManifest(string unityLine)
     {

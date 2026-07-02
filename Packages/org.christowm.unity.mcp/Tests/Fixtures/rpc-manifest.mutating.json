@@ -1,0 +1,76 @@
+{
+  "description": "Mutating RPC scenarios run in-order with $entryId.field references.",
+  "entries": [
+    {
+      "id": "create_mutating_sphere",
+      "method": "unity.create_primitive",
+      "params": { "type": "Sphere", "name": "__mcp_mutating_sphere" },
+      "expect": { "hasKeys": ["id"] },
+      "cleanup": "destroyById",
+      "tags": ["mutating", "transform", "component", "material"]
+    },
+    {
+      "id": "set_mutating_transform",
+      "method": "unity.set_transform",
+      "params": {
+        "id": "$create_mutating_sphere.id",
+        "position": { "x": 0, "y": 0, "z": 0 },
+        "scale": { "x": 5, "y": 5, "z": 5 }
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "transform"]
+    },
+    {
+      "id": "create_mutating_material",
+      "method": "unity.create_material",
+      "params": { "name": "__mcp_mutating_blue_mat", "shader": "Standard" },
+      "expect": { "hasKeys": ["path"] },
+      "cleanup": "deleteAssetByPath",
+      "tags": ["mutating", "material"]
+    },
+    {
+      "id": "set_mutating_material_color",
+      "method": "unity.set_material_property",
+      "params": {
+        "path": "$create_mutating_material.path",
+        "color": { "name": "_Color", "r": 0, "g": 0, "b": 1, "a": 1 }
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "material"]
+    },
+    {
+      "id": "apply_mutating_material",
+      "method": "unity.set_material",
+      "params": {
+        "id": "$create_mutating_sphere.id",
+        "path": "$create_mutating_material.path"
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "material"]
+    },
+    {
+      "id": "add_mutating_component",
+      "method": "unity.add_component",
+      "params": {
+        "id": "$create_mutating_sphere.id",
+        "type": "Rigidbody"
+      },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "component"]
+    },
+    {
+      "id": "undo_group_begin",
+      "method": "unity.begin_undo_group",
+      "params": { "name": "MCP Mutating Manifest" },
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "undo"]
+    },
+    {
+      "id": "undo_group_end",
+      "method": "unity.end_undo_group",
+      "params": {},
+      "expect": { "hasKeys": ["ok"] },
+      "tags": ["mutating", "undo"]
+    }
+  ]
+}

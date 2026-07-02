@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace UnityMcp.Tests.Editor.Shared
 {
@@ -42,6 +44,42 @@ namespace UnityMcp.Tests.Editor.Shared
 
           if (entry["cleanup"]?.ToString() == "destroyById" && result?["id"] != null)
             Track(UnityMcp.Editor.MCP.McpObjectReference.ToGameObject(result["id"]));
+        }
+        finally
+        {
+          if (result != null)
+            RpcManifestRunner.CleanupEntry(entry, result);
+        }
+      }
+    }
+
+    [Test]
+    public void MutatingManifest_HasEntries()
+    {
+      var manifest = RpcManifestLoader.LoadMutatingManifest();
+      var entries = manifest["entries"] as JArray;
+      Assert.IsNotNull(entries);
+      Assert.GreaterOrEqual(entries.Count, 5);
+    }
+
+    [Test]
+    public void MutatingManifestEntries_ExecuteInOrder_WithReferences()
+    {
+      var context = new Dictionary<string, JObject>();
+      var entries = RpcManifestLoader.GetRunnableEntries(
+        RpcManifestLoader.LoadMutatingManifest(),
+        tagFilter: "mutating");
+
+      foreach (var entry in entries)
+      {
+        JObject result = null;
+        var entryId = entry["id"]?.ToString();
+        try
+        {
+          result = RpcManifestRunner.ExecuteEntry(entry, context);
+          RpcManifestRunner.AssertExpectations(entry, result);
+          if (!string.IsNullOrEmpty(entryId))
+            context[entryId] = result;
         }
         finally
         {
