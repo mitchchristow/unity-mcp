@@ -6,13 +6,13 @@ namespace UnityMcp.Editor.MCP
 {
     /// <summary>
     /// Version-safe wrappers for Unity object discovery APIs.
-    /// Unity 6.3+ uses FindObjectsInactive; 6.2 uses FindObjectsSortMode / legacy FindObjectsOfType.
+    /// Unity 6.5+ uses FindObjectsInactive; 6.2–6.4 use FindObjectsSortMode / legacy FindObjectsOfType.
     /// </summary>
     public static class McpFindObjects
     {
         public static T[] FindByType<T>(bool includeInactive = true) where T : UnityEngine.Object
         {
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
             return UnityEngine.Object.FindObjectsByType<T>(
                 includeInactive ? FindObjectsInactive.Include : FindObjectsInactive.Exclude);
 #else
@@ -29,7 +29,7 @@ namespace UnityMcp.Editor.MCP
 
         public static UnityEngine.Object[] FindByType(Type type, bool includeInactive = true)
         {
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
             return UnityEngine.Object.FindObjectsByType(
                 type,
                 includeInactive ? FindObjectsInactive.Include : FindObjectsInactive.Exclude);

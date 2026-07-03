@@ -13,6 +13,9 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 if ([string]::IsNullOrWhiteSpace($ProjectPath)) {
     $ProjectPath = $repoRoot.Path
 }
+else {
+    $ProjectPath = (Resolve-Path $ProjectPath).Path
+}
 
 $lineToAssembly = @{
     "6000.2" = "UnityMcp.Tests.Editor.V6000_2"
@@ -126,8 +129,7 @@ function Invoke-UnityTestRun {
         "-testPlatform", $Platform,
         "-assemblyNames", $assemblyList,
         "-testResults", $ResultsFile,
-        "-logFile", $LogFile,
-        "-quit"
+        "-logFile", $LogFile
     )
 
     Write-Host "Platform:   $Platform"
