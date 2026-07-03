@@ -18,7 +18,7 @@ namespace UnityMcp.Tests.Editor.V6000_2
             var resolved = McpObjectReference.ToGameObject(token);
 
             Assert.AreSame(go, resolved);
-            Assert.AreEqual(UnityEngine.Object.GetInstanceID(go), token.Value<int>());
+            Assert.AreEqual(go.GetInstanceID(), (int)token);
         }
     }
 }
