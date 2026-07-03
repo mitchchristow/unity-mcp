@@ -15,7 +15,7 @@ namespace UnityMcp.Tests.Editor.Shared
             McpControllerRegistry.RegisterAll();
         }
 
-        public static JObject Invoke(string method, JObject parameters = null, object requestId = 1)
+        public static JObject Invoke(string method, JObject parameters = null, int requestId = 1)
         {
             EnsureRegistered();
 

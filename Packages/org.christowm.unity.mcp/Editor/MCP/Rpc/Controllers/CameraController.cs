@@ -219,7 +219,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListCameras(JObject p)
         {
-            var cameras = Object.FindObjectsByType<Camera>(FindObjectsInactive.Include);
+            var cameras = McpFindObjects.FindByType<Camera>(true);
             var result = new JArray();
 
             foreach (var camera in cameras)

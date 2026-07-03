@@ -17,12 +17,12 @@ namespace UnityMcp.Tests.Playmode.Shared
             yield return null;
 
             var playResult = PlaymodeRpcTestHarness.Invoke("unity.play");
-            Assert.IsTrue(playResult["ok"]?.Value<bool>() ?? false);
+            Assert.IsTrue(playResult.Value<bool>("ok"));
 
             yield return new WaitUntil(() => EditorApplication.isPlaying);
 
             var stopResult = PlaymodeRpcTestHarness.Invoke("unity.stop");
-            Assert.IsTrue(stopResult["ok"]?.Value<bool>() ?? false);
+            Assert.IsTrue(stopResult.Value<bool>("ok"));
 
             yield return new WaitUntil(() => !EditorApplication.isPlaying);
         }

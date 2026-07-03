@@ -117,6 +117,10 @@ function Invoke-UnityTestRun {
         throw "Unity $Platform tests failed (exit $LASTEXITCODE). See $LogFile"
     }
 
+    if (-not (Test-Path $ResultsFile)) {
+        throw "Unity $Platform tests did not produce results file: $ResultsFile"
+    }
+
     Write-Host "Unity $Platform tests passed."
 }
 

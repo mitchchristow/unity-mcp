@@ -242,7 +242,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListTerrains(JObject p)
         {
-            var terrains = Object.FindObjectsByType<Terrain>(FindObjectsInactive.Include);
+            var terrains = McpFindObjects.FindByType<Terrain>(true);
             var result = new JArray();
 
             foreach (var terrain in terrains)

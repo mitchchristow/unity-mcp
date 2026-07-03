@@ -158,7 +158,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
             var findParams = new JObject { ["name"] = name, ["includeInactive"] = true };
             
             // Find all matching objects
-            var allObjects = Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include);
+            var allObjects = McpFindObjects.FindByType<GameObject>(true);
             var matches = new List<Object>();
             
             string pattern = "^" + System.Text.RegularExpressions.Regex.Escape(name).Replace("\\*", ".*") + "$";

@@ -291,7 +291,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListNavMeshAgents(JObject p)
         {
-            var agents = Object.FindObjectsByType<NavMeshAgent>(FindObjectsInactive.Include);
+            var agents = McpFindObjects.FindByType<NavMeshAgent>(true);
             var result = new JArray();
 
             foreach (var agent in agents)

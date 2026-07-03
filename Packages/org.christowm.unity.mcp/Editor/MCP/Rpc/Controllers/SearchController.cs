@@ -119,7 +119,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
                 };
             }
 
-            var components = Object.FindObjectsByType(componentType, includeInactive ? FindObjectsInactive.Include : FindObjectsInactive.Exclude);
+            var components = McpFindObjects.FindByType(componentType, includeInactive);
             var addedObjects = new HashSet<ulong>();
             
             foreach (var comp in components)

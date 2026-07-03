@@ -274,7 +274,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListLights(JObject p)
         {
-            var lights = Object.FindObjectsByType<Light>(FindObjectsInactive.Include);
+            var lights = McpFindObjects.FindByType<Light>(true);
             var result = new JArray();
 
             foreach (var light in lights)

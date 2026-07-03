@@ -512,7 +512,7 @@ namespace UnityMcp.Editor.MCP.Rpc.Controllers
         /// </summary>
         private static JObject ListUIElements(JObject p)
         {
-            var canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include);
+            var canvases = McpFindObjects.FindByType<Canvas>(true);
             var result = new JArray();
 
             foreach (var canvas in canvases)
