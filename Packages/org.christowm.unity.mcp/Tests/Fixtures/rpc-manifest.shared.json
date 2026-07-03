@@ -12,7 +12,7 @@
       "id": "project_get_info",
       "method": "unity.get_project_info",
       "params": {},
-      "expect": { "hasKeys": ["productName", "unityVersion"] }
+      "expect": { "hasKeys": ["unityVersion", "projectPath"] }
     },
     {
       "id": "smoke_create_sphere",

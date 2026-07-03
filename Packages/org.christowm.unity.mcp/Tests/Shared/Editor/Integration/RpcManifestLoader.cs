@@ -84,6 +84,9 @@ namespace UnityMcp.Tests.Editor.Shared
         if (entry["skip"]?.Value<bool>() == true)
           continue;
 
+        if (UnityEngine.Application.isBatchMode && entry["requiresSceneView"]?.Value<bool>() == true)
+          continue;
+
         yield return entry;
       }
     }

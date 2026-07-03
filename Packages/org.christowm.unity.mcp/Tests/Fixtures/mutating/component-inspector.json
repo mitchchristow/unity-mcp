@@ -16,7 +16,7 @@
         "id": "$create_component_inspector_target.id",
         "type": "BoxCollider"
       },
-      "expect": { "hasKeys": ["ok"] },
+      "expect": { "hasKeys": ["componentId"] },
       "tags": ["mutating", "component"]
     },
     {

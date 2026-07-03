@@ -10,32 +10,32 @@ namespace UnityMcp.Editor.MCP
     /// </summary>
     public static class McpFindObjects
     {
-        public static T[] FindByType<T>(bool includeInactive = true) where T : Object
+        public static T[] FindByType<T>(bool includeInactive = true) where T : UnityEngine.Object
         {
 #if UNITY_6000_3_OR_NEWER
-            return Object.FindObjectsByType<T>(
+            return UnityEngine.Object.FindObjectsByType<T>(
                 includeInactive ? FindObjectsInactive.Include : FindObjectsInactive.Exclude);
 #else
             if (includeInactive)
             {
 #pragma warning disable CS0618
-                return Object.FindObjectsOfType<T>(true);
+                return UnityEngine.Object.FindObjectsOfType<T>(true);
 #pragma warning restore CS0618
             }
 
-            return Object.FindObjectsByType<T>(FindObjectsSortMode.None);
+            return UnityEngine.Object.FindObjectsByType<T>(FindObjectsSortMode.None);
 #endif
         }
 
-        public static Object[] FindByType(Type type, bool includeInactive = true)
+        public static UnityEngine.Object[] FindByType(Type type, bool includeInactive = true)
         {
 #if UNITY_6000_3_OR_NEWER
-            return Object.FindObjectsByType(
+            return UnityEngine.Object.FindObjectsByType(
                 type,
                 includeInactive ? FindObjectsInactive.Include : FindObjectsInactive.Exclude);
 #else
 #pragma warning disable CS0618
-            return Object.FindObjectsOfType(type, includeInactive);
+            return UnityEngine.Object.FindObjectsOfType(type, includeInactive);
 #pragma warning restore CS0618
 #endif
         }

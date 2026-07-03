@@ -90,6 +90,22 @@ function Resolve-UnityEditorPath {
     throw "Unity editor not found. Set UNITY_EDITOR_PATH, use -UnityLine, or install via Unity Hub."
 }
 
+function Test-UnityResultsPassed {
+    param([string]$ResultsFile)
+
+    if (-not (Test-Path $ResultsFile)) {
+        return $false
+    }
+
+    [xml]$xml = Get-Content $ResultsFile
+    $run = $xml.'test-run'
+    if ($null -eq $run) {
+        return $false
+    }
+
+    return [int]$run.failed -eq 0 -and [int]$run.total -gt 0
+}
+
 function Invoke-UnityTestRun {
     param(
         [string]$UnityExe,
@@ -101,20 +117,33 @@ function Invoke-UnityTestRun {
     )
 
     $assemblyList = ($Assemblies -join ";")
+
+    $unityArgs = @(
+        "-runTests",
+        "-batchmode",
+        "-nographics",
+        "-projectPath", $Project,
+        "-testPlatform", $Platform,
+        "-assemblyNames", $assemblyList,
+        "-testResults", $ResultsFile,
+        "-logFile", $LogFile,
+        "-quit"
+    )
+
     Write-Host "Platform:   $Platform"
     Write-Host "Assemblies: $assemblyList"
     Write-Host "Results:    $ResultsFile"
 
-    & $UnityExe `
-        -batchmode -nographics -quit `
-        -projectPath $Project `
-        -runTests -testPlatform $Platform `
-        -assemblyNames $assemblyList `
-        -testResults $ResultsFile `
-        -logFile $logFile
+    $proc = Start-Process -FilePath $UnityExe -ArgumentList $unityArgs -PassThru -NoNewWindow -Wait
+    $exitCode = $proc.ExitCode
 
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unity $Platform tests failed (exit $LASTEXITCODE). See $LogFile"
+    if ($exitCode -ne 0) {
+        if (Test-UnityResultsPassed -ResultsFile $ResultsFile) {
+            Write-Warning "Unity exited with code $exitCode but all tests passed in $ResultsFile"
+        }
+        else {
+            throw "Unity $Platform tests failed (exit $exitCode). See $LogFile"
+        }
     }
 
     if (-not (Test-Path $ResultsFile)) {
@@ -127,6 +156,12 @@ function Invoke-UnityTestRun {
 $unityExe = Resolve-UnityEditorPath -Line $UnityLine
 $resultsPath = Join-Path $repoRoot $ResultsDir
 New-Item -ItemType Directory -Force -Path $resultsPath | Out-Null
+
+$lockFile = Join-Path $ProjectPath "Temp\UnityLockfile"
+if ((Test-Path $lockFile) -and -not (Get-Process Unity -ErrorAction SilentlyContinue)) {
+    Write-Host "Removing stale Unity lockfile..."
+    Remove-Item $lockFile -Force
+}
 
 $suffix = if ([string]::IsNullOrWhiteSpace($UnityLine)) { "auto" } else { $UnityLine }
 

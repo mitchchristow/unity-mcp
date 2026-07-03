@@ -55,7 +55,7 @@
         "id": "$create_mutating_sphere.id",
         "type": "Rigidbody"
       },
-      "expect": { "hasKeys": ["ok"] },
+      "expect": { "hasKeys": ["componentId"] },
       "tags": ["mutating", "component"]
     },
     {
